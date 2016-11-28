@@ -1,0 +1,17 @@
+sudo: false
+language: ruby
+
+rvm:
+  - 2.3.0
+
+before_install: gem install bundler -v 1.12.5
+
+gemfile:
+  - gemfiles/rails_4_0.gemfile
+  - gemfiles/rails_4_1.gemfile
+  - gemfiles/rails_4_2.gemfile
+  - gemfiles/rails_5_0.gemfile
+
+addons:
+  code_climate:
+    repo_token:
