@@ -5,21 +5,20 @@ RSpec.describe User::Register do
     service = User::Register.call(
       first_name: ' Michail',
       last_name: ' Belousov',
-      email: 'michail@soften-it.com'
+      email: 'michail@frontalle.com'
     )
 
     expect(service.success?).to be(true)
+    expect(service.any_warnings?).to be(false)
+
     expect(service.user.full_name).to eql('Michail Belousov')
-    expect(service.user.email).to eql('michail@soften-it.com')
+    expect(service.user.email).to eql('michail@frontalle.com')
   end
 
   it 'register without email' do
-    expect {
-      User::Register.call(
-        first_name: 'Michail',
-        last_name: 'Belousov'
-      )
-    }.to raise_error(Light::Service::ParamRequired)
+    expect do
+      User::Register.call(first_name: 'Michail', last_name: 'Belousov')
+    end.to raise_error(Light::Service::ParamRequired)
   end
 
   it 'register with already existed email' do
@@ -30,16 +29,22 @@ RSpec.describe User::Register do
     )
 
     expect(service.success?).to be(false)
-    expect(service.errors.to_hash).to eql({ email: [:taken] })
+    expect(service.errors.any?).to be(true)
+    expect(service.errors.blank?).to be(false)
+    expect(service.any_warnings?).to be(false)
+    expect(service.errors.to_hash).to eql(email: [:taken])
+
+    service.errors.delete(:email)
+    expect(service.errors.to_hash).to eql({})
   end
 
   it 'register with wrong parameter type' do
-    expect {
+    expect do
       User::Register.call(
         first_name: 123,
         last_name: 123,
-        email: 'michail@soften-it.com'
+        email: 'michail@frontalle.com'
       )
-    }.to raise_error(Light::Service::ParamType)
+    end.to raise_error(Light::Service::ParamType)
   end
 end

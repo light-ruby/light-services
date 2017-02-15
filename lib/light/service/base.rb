@@ -6,21 +6,16 @@ module Light
       include Light::Service::Callbacks
 
       # Getters
-      attr_reader :params, :outputs, :errors, :warnings
+      attr_reader :errors, :warnings
 
       def initialize(args = {})
         @args = args
 
-        @params   = initialize_params
-        @outputs  = initialize_outputs
+        initialize_params
+        initialize_outputs
+
         @errors   = Light::Service::Messages.new
         @warnings = Light::Service::Messages.new
-      end
-
-      def self.call(args = {})
-        service = new(args)
-        service.call
-        service
       end
 
       def call
@@ -32,7 +27,17 @@ module Light
       end
 
       def any_warnings?
-        !warnings.blank?
+        warnings.any?
+      end
+
+      class << self
+        def call(args = {})
+          service = new(args)
+          service.call
+          service
+        end
+
+        alias run call
       end
 
       private
@@ -44,7 +49,7 @@ module Light
         run_callbacks(:before)
         run if success?
         run_callbacks(:after) if success?
-        run_callbacks(:finally)
+        run_callbacks(:finally, break: false)
         success?
       end
     end

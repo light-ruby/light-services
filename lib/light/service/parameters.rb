@@ -11,60 +11,65 @@ module Light
         end
       end
 
+      def params
+        @params_storage.to_hash
+      end
+
+      def outputs
+        @outputs_storage.to_hash
+      end
+
       private
 
       def initialize_params
-        params = {}
+        @params_storage = Light::Service::Variables.new
 
         (self.class.parameters || []).each do |options|
           # Skip or raise exception if parameter not exist
           unless args.key?(options[:name])
-            if options[:required]
-              raise Light::Service::ParamRequired, "Parameter \"#{options[:name]}\" is required"
-            else
-              next
-            end
+            next unless options[:required]
+            raise Light::Service::ParamRequired, "Parameter \"#{options[:name]}\" is required"
           end
 
           # Load parameter value
-          param = args[options[:name]]
+          value = args[options[:name]]
 
           # Check type of parameter
-          if options[:type] && !param.is_a?(options[:type])
+          if options[:type] && !value.is_a?(options[:type])
             raise Light::Service::ParamType, "Type of \"#{options[:name]}\" must be \"#{options[:type]}\""
           end
 
           # Create instance variable and getter
-          params[options[:name]] = param
+          @params_storage.add(options[:name], value)
 
           define_singleton_method options[:name] do
-            params[options[:name]]
+            @params_storage.get(options[:name])
           end
 
-          define_singleton_method "#{options[:name]}=" do |value|
-            params[options[:name]] = value
+          define_singleton_method "#{options[:name]}=" do |val|
+            @params_storage.add(options[:name], val)
           end
         end
 
-        params
+        @params_storage
       end
 
       def initialize_outputs
-        outputs = {}
+        @outputs_storage = Light::Service::Variables.new
 
         (self.class.outputs || []).each do |options|
-          outputs[options[:name]] = options[:value]
+          @outputs_storage.add(options[:name], options[:value])
 
           define_singleton_method options[:name] do
-            outputs[options[:name]]
+            @outputs_storage.get(options[:name])
           end
 
           define_singleton_method "#{options[:name]}=" do |value|
-            outputs[options[:name]] = value
+            @outputs_storage.add(options[:name], value)
           end
         end
 
-        outputs
+        @outputs_storage
       end
 
       module ClassMethods
@@ -72,9 +77,9 @@ module Light
           self.parameters ||= []
           self.parameters << {
             name:     name,
-            required: options.key?(:required) ? options[:required] : true,
-            public:   options.key?(:private)  ? options[:private] : false,
-            type:     options[:type] || nil,
+            required: options.fetch(:required, true),
+            public:   options.fetch(:private, false),
+            type:     options[:type] || nil
           }
         end
 
@@ -83,7 +88,7 @@ module Light
           self.outputs << {
             name:   name,
             value:  value,
-            public: options.key?(:private) ? options[:private] : false
+            public: options.fetch(:private, false)
           }
         end
       end

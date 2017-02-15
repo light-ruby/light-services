@@ -20,26 +20,26 @@ RSpec.describe User::Update do
   end
 
   it 'update my profile without attributes' do
-    expect {
+    expect do
       User::Update.call(
         current_user: user,
         attributes: { full_name: 'Andrii Yemelianenko' }
       )
-    }.to raise_error(Light::Service::ParamRequired)
+    end.to raise_error(Light::Service::ParamRequired)
 
-    expect {
+    expect do
       User::Update.call(
         user: user,
         attributes: { full_name: 'Andrii Yemelianenko' }
       )
-    }.to raise_error(Light::Service::ParamRequired)
+    end.to raise_error(Light::Service::ParamRequired)
 
-    expect {
+    expect do
       User::Update.call(
         user: user,
         current_user: user
       )
-    }.to raise_error(Light::Service::ParamRequired)
+    end.to raise_error(Light::Service::ParamRequired)
   end
 
   it 'update another user' do

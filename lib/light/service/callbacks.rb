@@ -12,10 +12,12 @@ module Light
 
       private
 
-      def run_callbacks(type)
+      def run_callbacks(type, opts = {})
+        opts[:break] = true unless opts.key?(:break)
+
         callbacks = (self.class.callbacks || []).select { |callback| callback[:type] == type }
         callbacks.each do |callback|
-          break if !success? && type != :finally
+          break if !success? && opts[:break]
           send(callback[:method])
         end
       end

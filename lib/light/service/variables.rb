@@ -1,19 +1,16 @@
 module Light
   module Service
-    class Messages
+    class Variables
       def initialize
         @storage = {}
       end
 
-      def add(key, message)
-        @storage[key] ||= []
-        @storage[key] << message
+      def add(key, variable)
+        @storage[key] = variable
       end
 
-      def from_record(record)
-        record.errors.to_h.each do |key, value|
-          add(key, value)
-        end
+      def get(key)
+        @storage[key]
       end
 
       def delete(key)
