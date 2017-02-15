@@ -2,7 +2,7 @@ require 'simplecov'
 SimpleCov.start
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-require 'light/service'
+require 'light/services'
 
 # Load internal resources
 require_relative 'internal/structures/user'

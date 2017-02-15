@@ -18,7 +18,7 @@ RSpec.describe User::Register do
   it 'register without email' do
     expect do
       User::Register.call(first_name: 'Michail', last_name: 'Belousov')
-    end.to raise_error(Light::Service::ParamRequired)
+    end.to raise_error(Light::Services::ParamRequired)
   end
 
   it 'register with already existed email' do
@@ -45,6 +45,6 @@ RSpec.describe User::Register do
         last_name: 123,
         email: 'michail@frontalle.com'
       )
-    end.to raise_error(Light::Service::ParamType)
+    end.to raise_error(Light::Services::ParamType)
   end
 end

@@ -1,5 +1,5 @@
 module Light
-  module Service
+  module Services
     module Callbacks
       def self.included(base)
         base.extend ClassMethods

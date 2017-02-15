@@ -1,5 +1,5 @@
 module Light
-  module Service
+  module Services
     module Parameters
       def self.included(base)
         base.extend ClassMethods
@@ -22,13 +22,13 @@ module Light
       private
 
       def initialize_params
-        @params_storage = Light::Service::Variables.new
+        @params_storage = Light::Services::Variables.new
 
         (self.class.parameters || []).each do |options|
           # Skip or raise exception if parameter not exist
           unless args.key?(options[:name])
             next unless options[:required]
-            raise Light::Service::ParamRequired, "Parameter \"#{options[:name]}\" is required"
+            raise Light::Services::ParamRequired, "Parameter \"#{options[:name]}\" is required"
           end
 
           # Load parameter value
@@ -36,7 +36,7 @@ module Light
 
           # Check type of parameter
           if options[:type] && !value.is_a?(options[:type])
-            raise Light::Service::ParamType, "Type of \"#{options[:name]}\" must be \"#{options[:type]}\""
+            raise Light::Services::ParamType, "Type of \"#{options[:name]}\" must be \"#{options[:type]}\""
           end
 
           # Create instance variable and getter
@@ -55,7 +55,7 @@ module Light
       end
 
       def initialize_outputs
-        @outputs_storage = Light::Service::Variables.new
+        @outputs_storage = Light::Services::Variables.new
 
         (self.class.outputs || []).each do |options|
           @outputs_storage.add(options[:name], options[:value])

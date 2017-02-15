@@ -1,9 +1,9 @@
 module Light
-  module Service
+  module Services
     class Base
       # Includes
-      include Light::Service::Parameters
-      include Light::Service::Callbacks
+      include Light::Services::Parameters
+      include Light::Services::Callbacks
 
       # Getters
       attr_reader :errors, :warnings
@@ -14,8 +14,8 @@ module Light
         initialize_params
         initialize_outputs
 
-        @errors   = Light::Service::Messages.new
-        @warnings = Light::Service::Messages.new
+        @errors   = Light::Services::Messages.new
+        @warnings = Light::Services::Messages.new
       end
 
       def call

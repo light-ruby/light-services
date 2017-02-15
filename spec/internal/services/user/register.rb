@@ -1,4 +1,4 @@
-class User::Register < Light::Service::Base
+class User::Register < Light::Services::Base
   # Parameters
   param :first_name, type: String
   param :last_name,  type: String

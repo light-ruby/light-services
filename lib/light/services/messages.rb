@@ -1,5 +1,5 @@
 module Light
-  module Service
+  module Services
     class Messages
       def initialize
         @storage = {}

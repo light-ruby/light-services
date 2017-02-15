@@ -1,5 +1,5 @@
 module Light
-  module Service
+  module Services
     class Variables
       def initialize
         @storage = {}

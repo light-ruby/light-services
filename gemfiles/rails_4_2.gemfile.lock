@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    light-service (0.1.0)
+    light-services (0.1.0)
       rails (> 4.0)
 
 GEM
@@ -136,11 +136,11 @@ DEPENDENCIES
   appraisal (~> 2.1)
   bundler (~> 1.12)
   codeclimate-test-reporter
-  light-service!
+  light-services!
   rails (= 4.2.6)
   rake (~> 10.0)
   rspec (~> 3.0)
   simplecov (~> 0.11.2)
 
 BUNDLED WITH
-   1.14.3
+   1.14.4

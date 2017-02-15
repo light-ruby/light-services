@@ -1,8 +1,10 @@
-# Light::Service
+# Light::Services
 
 [![Build Status](https://travis-ci.org/light-ruby/light-services.svg?branch=master)](https://travis-ci.org/light-ruby/light-services)
 [![Code Climate](https://codeclimate.com/github/light-ruby/light-services/badges/gpa.svg)](https://codeclimate.com/github/light-ruby/light-services)
 [![Test Coverage](https://codeclimate.com/github/light-ruby/light-services/badges/coverage.svg)](https://codeclimate.com/github/light-ruby/light-services/coverage)
+
+# WARNING! GEM IN DEVELOPMENT!
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/light/service`. To experiment with that code, run `bin/console` for an interactive prompt.
 
@@ -13,7 +15,7 @@ TODO: Delete this and the text above, and describe your gem
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'light-service'
+gem 'light-services', '~> 0.1' 
 ```
 
 And then execute:

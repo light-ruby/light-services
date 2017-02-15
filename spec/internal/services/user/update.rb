@@ -1,4 +1,4 @@
-class User::Update < Light::Service::Base
+class User::Update < Light::Services::Base
   # Parameters
   param :user,         type: User
   param :attributes,   type: Hash

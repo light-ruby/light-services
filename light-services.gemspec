@@ -1,17 +1,17 @@
 # encoding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'light/service/version'
+require 'light/services/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'light-service'
-  spec.version       = Light::Service::VERSION
+  spec.name          = 'light-services'
+  spec.version       = Light::Services::VERSION
   spec.authors       = ['Andrew Emelianenko']
   spec.email         = ['emelianenko.web@gmail.com']
 
-  spec.summary       = 'Light pattern Service Object for Ruby/Rails'
-  spec.description   = 'Light pattern Service Object for Ruby/Rails from Light Ruby'
-  spec.homepage      = 'https://github.com/light-ruby/light-service'
+  spec.summary       = 'Light pattern Services Object for Ruby/Rails'
+  spec.description   = 'Light pattern Services Object for Ruby/Rails from Light Ruby'
+  spec.homepage      = 'https://github.com/light-ruby/light-services'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`
