@@ -11,8 +11,8 @@ module Light
         end
       end
 
-      def params
-        @params_storage.to_hash
+      def parameters
+        @parameters_storage.to_hash
       end
 
       def outputs
@@ -22,7 +22,7 @@ module Light
       private
 
       def initialize_params
-        @params_storage = Light::Services::Variables.new
+        @parameters_storage = Light::Services::Variables.new
 
         (self.class.parameters || []).each do |options|
           # Skip or raise exception if parameter not exist
@@ -40,18 +40,18 @@ module Light
           end
 
           # Create instance variable and getter
-          @params_storage.add(options[:name], value)
+          @parameters_storage.add(options[:name], value)
 
           define_singleton_method options[:name] do
-            @params_storage.get(options[:name])
+            @parameters_storage.get(options[:name])
           end
 
           define_singleton_method "#{options[:name]}=" do |val|
-            @params_storage.add(options[:name], val)
+            @parameters_storage.add(options[:name], val)
           end
         end
 
-        @params_storage
+        @parameters_storage
       end
 
       def initialize_outputs

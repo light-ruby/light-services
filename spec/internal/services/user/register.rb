@@ -13,8 +13,8 @@ class User::Register < Light::Services::Base
 
   def run
     self.user = User.new(
-      "#{first_name} #{params[:last_name]}",
-      params[:email],
+      "#{first_name} #{parameters[:last_name]}",
+      parameters[:email],
       false
     )
   end
