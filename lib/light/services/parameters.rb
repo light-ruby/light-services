@@ -28,6 +28,7 @@ module Light
           # Skip or raise exception if parameter not exist
           unless args.key?(options[:name])
             next unless options[:required]
+            next if options[:allow_nil]
             raise Light::Services::ParamRequired, "Parameter \"#{options[:name]}\" is required"
           end
 
@@ -35,7 +36,10 @@ module Light
           value = args[options[:name]]
 
           # Check type of parameter
-          if options[:type] && !value.is_a?(options[:type])
+          wrong_type    = options[:type] && !options[:type].include?(value.class)
+          not_allow_nil = !options[:allow_nil] || (options[:allow_nil] && !value.nil?)
+
+          if wrong_type && not_allow_nil
             raise Light::Services::ParamType, "Type of \"#{options[:name]}\" must be \"#{options[:type]}\""
           end
 
@@ -76,10 +80,11 @@ module Light
         def param(name, options = {})
           self.parameters ||= []
           self.parameters << {
-            name:     name,
-            required: options.fetch(:required, true),
-            public:   options.fetch(:private, false),
-            type:     options[:type] || nil
+            name:      name,
+            required:  options.fetch(:required, true),
+            public:    options.fetch(:private, false),
+            type:      [*options[:type]].compact,
+            allow_nil: options.fetch(:allow_nil, false)
           }
         end
 

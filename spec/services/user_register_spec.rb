@@ -25,7 +25,8 @@ RSpec.describe User::Register do
     service = User::Register.call(
       first_name: 'Andrew',
       last_name: 'Emelianenko',
-      email: 'emelianenko.web@gmail.com'
+      email: 'emelianenko.web@gmail.com',
+      referer: nil
     )
 
     expect(service.success?).to be(false)
@@ -44,6 +45,32 @@ RSpec.describe User::Register do
         first_name: 123,
         last_name: 123,
         email: 'michail@frontalle.com'
+      )
+    end.to raise_error(Light::Services::ParamType)
+  end
+
+  it 'register with referer nil' do
+    service = User::Register.call(
+      first_name: ' Michail',
+      last_name: ' Belousov',
+      email: 'michail@frontalle.com',
+      referer: nil
+    )
+
+    expect(service.success?).to be(true)
+    expect(service.any_warnings?).to be(false)
+
+    expect(service.user.full_name).to eql('Michail Belousov')
+    expect(service.user.email).to eql('michail@frontalle.com')
+  end
+
+  it 'register with referer nil' do
+    expect do
+      User::Register.call(
+        first_name: ' Michail',
+        last_name: ' Belousov',
+        email: 'michail@frontalle.com',
+        referer: 123
       )
     end.to raise_error(Light::Services::ParamType)
   end

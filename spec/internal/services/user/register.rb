@@ -3,6 +3,7 @@ class User::Register < Light::Services::Base
   param :first_name, type: String
   param :last_name,  type: String
   param :email,      type: String
+  param :referer,    type: String, allow_nil: true
 
   # Outputs
   output :user, {}
