@@ -25,10 +25,8 @@ module Light
         @parameters_storage = Light::Services::Variables.new
 
         (self.class.parameters || []).each do |options|
-          # Skip or raise exception if parameter not exist
-          unless args.key?(options[:name])
-            next unless options[:required]
-            next if options[:allow_nil]
+          # Raise exception if parameter not exist
+          if !args.key?(options[:name]) && options[:required] && !options[:allow_nil]
             raise Light::Services::ParamRequired, "Parameter \"#{options[:name]}\" is required"
           end
 

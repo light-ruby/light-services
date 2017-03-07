@@ -26,6 +26,7 @@ class User::Register < Light::Services::Base
     first_name.strip!
     last_name.strip!
     email.strip!
+    referer&.strip!
   end
 
   def unique_email

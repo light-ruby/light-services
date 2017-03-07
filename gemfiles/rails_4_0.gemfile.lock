@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    light-services (0.2.0)
+    light-services (0.4.0)
       rails (> 4.0)
 
 GEM
