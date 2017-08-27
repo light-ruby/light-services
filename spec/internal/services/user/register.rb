@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User::Register < Light::Services::Base
   # Parameters
   param :first_name, type: String
@@ -23,14 +25,14 @@ class User::Register < Light::Services::Base
   private
 
   def clear_data
-    first_name.strip!
-    last_name.strip!
-    email.strip!
-    referer&.strip!
+    self.first_name = first_name.strip
+    self.last_name  = last_name.strip
+    self.email      = email.strip
+    self.referer    = referer&.strip
   end
 
   def unique_email
-    return unless %w(emelianenko.web@gmail.com).include?(email)
+    return unless %w[emelianenko.web@gmail.com].include?(email)
     errors.add(:email, :taken)
   end
 end

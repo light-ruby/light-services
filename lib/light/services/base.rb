@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 module Light
   module Services
     class Base
       # Includes
       include Light::Services::Parameters
+      include Light::Services::Outputs
       include Light::Services::Callbacks
 
       # Getters
@@ -32,9 +35,7 @@ module Light
 
       class << self
         def call(args = {})
-          service = new(args)
-          service.call
-          service
+          new(args).tap(&:call)
         end
 
         alias run call
@@ -49,7 +50,7 @@ module Light
         run_callbacks(:before)
         run if success?
         run_callbacks(:after) if success?
-        run_callbacks(:finally, break: false)
+        run_callbacks(:finally, force_run: true)
         success?
       end
     end

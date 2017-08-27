@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User::Update < Light::Services::Base
   # Parameters
   param :user,         type: User

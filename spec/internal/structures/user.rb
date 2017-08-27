@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User
   # Getters
   attr_accessor :full_name, :email, :admin

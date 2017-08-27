@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    light-services (0.4.0)
+    light-services (0.5.0)
       rails (> 4.0)
 
 GEM
@@ -112,4 +112,4 @@ DEPENDENCIES
   simplecov (~> 0.11.2)
 
 BUNDLED WITH
-   1.14.4
+   1.15.4

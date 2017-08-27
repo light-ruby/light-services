@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Light
   module Services
     class Messages
@@ -6,8 +8,8 @@ module Light
       end
 
       def add(key, message)
-        @storage[key] ||= []
-        @storage[key] << message
+        storage[key] ||= []
+        storage[key] << message
       end
 
       def from_record(record)
@@ -17,11 +19,11 @@ module Light
       end
 
       def delete(key)
-        @storage.delete(key)
+        storage.delete(key)
       end
 
       def blank?
-        @storage.empty?
+        storage.empty?
       end
 
       def any?
@@ -29,8 +31,10 @@ module Light
       end
 
       def to_hash
-        @storage
+        storage
       end
+
+      alias to_h to_hash
 
       private
 
