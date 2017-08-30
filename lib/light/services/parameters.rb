@@ -23,12 +23,18 @@ module Light
       def initialize_params
         self.parameters = {}
 
-        (self.class.parameters || []).each do |options|
+        all_parameters.each do |options|
           validate_parameter(options)
           store_parameter(options)
         end
 
         generate_parameters_methods
+      end
+
+      def all_parameters
+        return @_all_parameters if defined?(@_all_parameters)
+        @_all_parameters = self.class.ancestors.select { |klass| klass.ancestors.include?(::Light::Services::Base) }
+                               .map(&:parameters).compact.flatten.uniq
       end
 
       def validate_parameter(options)

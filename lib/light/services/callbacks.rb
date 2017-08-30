@@ -22,7 +22,13 @@ module Light
       end
 
       def callbacks_by(type)
-        (self.class.callbacks || []).select { |callback| callback[:type] == type }
+        all_callbacks.select { |callback| callback[:type] == type }
+      end
+
+      def all_callbacks
+        return @_all_callbacks if defined?(@_all_callbacks)
+        @_all_callbacks = self.class.ancestors.select { |klass| klass.ancestors.include?(::Light::Services::Base) }
+                              .map(&:callbacks).compact.flatten.uniq
       end
 
       module ClassMethods
