@@ -28,7 +28,7 @@ module Light
       def all_callbacks
         return @_all_callbacks if defined?(@_all_callbacks)
         @_all_callbacks = self.class.ancestors.select { |klass| klass.ancestors.include?(::Light::Services::Base) }
-                              .map(&:callbacks).compact.flatten.uniq
+                              .map(&:callbacks).compact.reverse.flatten.uniq
       end
 
       module ClassMethods
