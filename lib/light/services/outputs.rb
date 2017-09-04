@@ -23,11 +23,17 @@ module Light
       def initialize_outputs
         self.outputs = {}
 
-        (self.class.outputs || []).each do |options|
+        all_outputs.each do |options|
           store_output(options)
         end
 
         generate_outputs_methods
+      end
+
+      def all_outputs
+        return @_all_outputs if defined?(@_all_outputs)
+        @_all_outputs = self.class.ancestors.select { |klass| klass.ancestors.include?(::Light::Services::Base) }
+                            .map(&:outputs).compact.flatten.uniq
       end
 
       def store_output(options)
