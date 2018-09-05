@@ -7,21 +7,27 @@ module Light
         @storage = {}
       end
 
-      def add(key, message)
+      def add(key, message, rollback: true)
         storage[key] ||= []
         storage[key] << message
+
+        rollback! if rollback
       end
 
-      def from_record(record)
+      def from_record(record, rollback: true)
         record.errors.to_h.each do |key, message|
           add(key, message)
         end
+
+        rollback! if rollback
       end
 
-      def from_service(service)
+      def from_service(service, rollback: true)
         service.errors.each do |key, message|
           add(key, message)
         end
+
+        rollback! if rollback
       end
 
       def delete(key)
@@ -58,8 +64,12 @@ module Light
 
       private
 
-      # Getters/Setters
+      # Getters / Setters
       attr_accessor :storage
+
+      def rollback!
+        raise ActiveRecord::Rollback if defined?(ActiveRecord::Rollback)
+      end
     end
   end
 end
