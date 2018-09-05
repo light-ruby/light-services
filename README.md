@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/light-ruby/light-services.svg?branch=master)](https://travis-ci.org/light-ruby/light-services)
 [![Code Climate](https://codeclimate.com/github/light-ruby/light-services/badges/gpa.svg)](https://codeclimate.com/github/light-ruby/light-services)
-[![Test Coverage](https://codeclimate.com/github/light-ruby/light-services/badges/coverage.svg)](https://codeclimate.com/github/light-ruby/light-services/coverage)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/ed8713a891f19318bd7c/test_coverage)](https://codeclimate.com/github/light-ruby/light-services/test_coverage)
 
 Implementation of Service Object Pattern for Ruby/Rails. Compatible with Rails 5.1 and 5.0, 4.2, 4.1, 4.0.
 
