@@ -5,17 +5,21 @@ appraise 'rails-4-0' do
 end
 
 appraise 'rails-4-1' do
-  gem 'rails', '4.1.15'
+  gem 'rails', '4.1.16'
 end
 
 appraise 'rails-4-2' do
-  gem 'rails', '4.2.6'
+  gem 'rails', '4.2.10'
 end
 
 appraise 'rails-5-0' do
-  gem 'rails', '5.0.5'
+  gem 'rails', '5.0.7'
 end
 
 appraise 'rails-5-1' do
-  gem 'rails', '5.1.3'
+  gem 'rails', '5.1.6'
+end
+
+appraise 'rails-5-2' do
+  gem 'rails', '5.2.1'
 end

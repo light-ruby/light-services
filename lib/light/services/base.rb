@@ -22,7 +22,7 @@ module Light
       end
 
       def call
-        run_service
+        within_transaction { run_service }
       end
 
       def success?
@@ -52,6 +52,16 @@ module Light
         run_callbacks(:after) if success?
         run_callbacks(:finally, force_run: true)
         success?
+      end
+
+      def within_transaction
+        if defined?(ActiveRecord::Base)
+          ActiveRecord::Base.transaction do
+            yield
+          end
+        else
+          yield
+        end
       end
     end
   end

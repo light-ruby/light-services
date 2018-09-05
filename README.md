@@ -15,7 +15,7 @@ Service Object Pattern – What is it? Check it here:
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'light-services', '~> 0.5' 
+gem 'light-services', '~> 0.6' 
 ```
 
 And then execute:
