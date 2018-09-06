@@ -11,7 +11,8 @@ RSpec.describe Light::Services::Messages do
     let(:expected_errors) { { email: [:taken] } }
 
     before do
-      allow(record).to receive(:errors).and_return(double(to_h: errors))
+      allow(record).to receive(:errors).and_return(double(to_h: errors, any?: true))
+
       messages.from_record(record)
     end
 

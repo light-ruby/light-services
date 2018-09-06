@@ -15,16 +15,20 @@ module Light
       end
 
       def from_record(record, rollback: true)
+        return unless record.errors.any?
+
         record.errors.to_h.each do |key, message|
-          add(key, message)
+          add(key, message, rollback: false)
         end
 
         rollback! if rollback
       end
 
       def from_service(service, rollback: true)
+        return unless service.errors.any?
+
         service.errors.each do |key, message|
-          add(key, message)
+          add(key, message, rollback: false)
         end
 
         rollback! if rollback
