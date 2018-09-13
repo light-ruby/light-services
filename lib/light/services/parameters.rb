@@ -54,7 +54,7 @@ module Light
       def parameter_wrong_type?(options)
         value = args[options[:name]]
 
-        wrong_type    = options[:type] && !options[:type].include?(value.class)
+        wrong_type    = options[:type]&.none? { |type| value.is_a?(type) }
         not_allow_nil = !options[:allow_nil] || (options[:allow_nil] && !value.nil?)
 
         wrong_type && not_allow_nil
