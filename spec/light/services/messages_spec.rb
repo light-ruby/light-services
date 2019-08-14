@@ -7,11 +7,11 @@ RSpec.describe Light::Services::Messages do
 
   describe '#from_record' do
     let(:record)          { User.new('Andrew Emelianenko', 'emelianenko.web@gmail.com', true) }
-    let(:errors)          { { email: :taken } }
+    let(:errors)          { { email: [:taken] } }
     let(:expected_errors) { { email: [:taken] } }
 
     before do
-      allow(record).to receive(:errors).and_return(double(to_h: errors, any?: true))
+      allow(record).to receive(:errors).and_return(double(messages: errors, any?: true))
 
       messages.from_record(record)
     end

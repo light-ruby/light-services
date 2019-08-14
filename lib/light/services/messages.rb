@@ -17,8 +17,10 @@ module Light
       def from_record(record, rollback: true)
         return unless record.errors.any?
 
-        record.errors.to_h.each do |key, message|
-          add(key, message, rollback: false)
+        record.errors.messages.each do |key, messages|
+          messages.each do |message|
+            add(key, message, rollback: false)
+          end
         end
 
         rollback! if rollback
