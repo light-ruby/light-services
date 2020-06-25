@@ -1,12 +1,19 @@
 # frozen_string_literal: true
 
-require 'simplecov'
+require "simplecov"
 SimpleCov.start
 
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-require 'light/services'
+require "bundler/setup"
+require "light/services"
 
-# Load internal resources
-require_relative 'internal/structures/user'
-require_relative 'internal/services/user/register'
-require_relative 'internal/services/user/update'
+RSpec.configure do |config|
+  # Enable flags like --only-failures and --next-failure
+  config.example_status_persistence_file_path = ".rspec_status"
+
+  # Disable RSpec exposing methods globally on `Module` and `main`
+  config.disable_monkey_patching!
+
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
+  end
+end

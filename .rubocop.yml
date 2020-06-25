@@ -1,16 +1,12 @@
+require:
+  - rubocop-rspec
+  - rubocop-performance
+
 AllCops:
-  TargetRubyVersion: 2.4
+  NewCops: enable
 
-Style/Documentation:
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/GuardClause:
   Enabled: false
-
-Style/ClassAndModuleChildren:
-  Exclude:
-    - 'spec/**/*'
-
-Metrics/LineLength:
-  Max: 120
-
-Metrics/BlockLength:
-  Exclude:
-    - 'spec/**/*'

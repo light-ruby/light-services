@@ -1,36 +1,32 @@
-# encoding: utf-8
 # frozen_string_literal: true
 
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-
-require 'light/services/version'
+require_relative "lib/light/services/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = 'light-services'
+  spec.name          = "light-services"
   spec.version       = Light::Services::VERSION
-  spec.authors       = ['Andrew Emelianenko']
-  spec.email         = ['emelianenko.web@gmail.com']
+  spec.authors       = ["Andrew Emelianenko"]
+  spec.email         = ["emelianenko.web@gmail.com"]
 
-  spec.summary       = 'Light pattern Services Object for Ruby/Rails'
-  spec.description   = 'Light pattern Services Object for Ruby/Rails from Light Ruby'
-  spec.homepage      = 'https://github.com/light-ruby/light-services'
-  spec.license       = 'MIT'
+  spec.summary       = "Light pattern Services Object for Ruby/Rails"
+  spec.description   = "Light pattern Services Object for Ruby/Rails"
+  spec.homepage      = "https://github.com/light-ruby/light-services"
+  spec.license       = "MIT"
+  spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 
-  spec.files         = `git ls-files -z`
-                       .split("\x0")
-                       .reject { |f| f.match(%r{^(test|spec|features)/}) }
+  spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
-  spec.bindir        = 'exe'
+  spec.metadata["homepage_uri"] = spec.homepage
+  spec.metadata["source_code_uri"] = "https://github.com/light-ruby/light-services"
+  spec.metadata["changelog_uri"] = "https://github.com/light-ruby/light-services/blob/master/CHANGELOG.md"
+
+  # Specify which files should be added to the gem when it is released.
+  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
+  spec.files = Dir.chdir(File.expand_path(__dir__)) do
+    `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  end
+
+  spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
-  spec.require_paths = ['lib']
-
-  spec.add_dependency 'rails', '> 5.0'
-
-  spec.add_development_dependency 'bundler', '~> 2.0'
-  spec.add_development_dependency 'rake', '~> 10.0'
-  spec.add_development_dependency 'appraisal', '~> 2.1'
-  spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'simplecov', '~> 0.11.2'
-  spec.add_development_dependency 'codeclimate-test-reporter'
+  spec.require_paths = ["lib"]
 end

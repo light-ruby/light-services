@@ -1,66 +1,60 @@
 # frozen_string_literal: true
 
+require "light/services/step"
+require "light/services/output"
+require "light/services/argument"
+require "light/services/collection"
+require "light/services/class_based_collection"
+require "light/services/mount_collection"
+
 module Light
   module Services
     class Base
       # Includes
-      include Light::Services::Parameters
-      include Light::Services::Outputs
-      include Light::Services::Callbacks
+      extend MountCollection
 
-      # Getters
-      attr_reader :errors, :warnings
+      # Collections
+      mount_collection :steps,     klass: Step,     singular: :step
+      mount_collection :outputs,   klass: Output,   singular: :output
+      mount_collection :arguments, klass: Argument, singular: :arg
+
+      # Steps
+      step :load_defaults_and_validate
 
       def initialize(args = {})
-        @args = args
-
-        initialize_params
-        initialize_outputs
-
-        @errors   = Light::Services::Messages.new
-        @warnings = Light::Services::Messages.new
+        @outputs = {}
+        @arguments = args
       end
 
-      def call
-        within_transaction { run_service }
-      end
-
-      def success?
-        errors.blank?
-      end
-
-      def any_warnings?
-        warnings.any?
+      def run
+        self.class.steps.each do |step|
+          step.run(self)
+        end
       end
 
       class << self
-        def call(args = {})
-          new(args).tap(&:call)
+        def run(args = {})
+          new(args).tap(&:run)
         end
-
-        alias run call
       end
 
       private
 
-      # Getters
-      attr_reader :args
+      def load_defaults_and_validate
+        self.class.outputs.each do |output|
+          next if !output.default_exists || @outputs.key?(output.name)
 
-      def run_service
-        run_callbacks(:before)
-        run if success?
-        run_callbacks(:after) if success?
-        run_callbacks(:finally, force_run: true)
-        success?
-      end
+          @outputs[output.name] = output.default
+        end
 
-      def within_transaction
-        if defined?(ActiveRecord::Base)
-          ActiveRecord::Base.transaction do
-            yield
+        self.class.arguments.each do |argument|
+          if argument.default_exists && !@arguments.key?(argument.name)
+            @arguments[argument.name] = argument.default
           end
-        else
-          yield
+
+          if !argument.optional || @arguments.key?(argument.name)
+            argument.valid_type?(@arguments[argument.name])
+          end
         end
       end
     end
