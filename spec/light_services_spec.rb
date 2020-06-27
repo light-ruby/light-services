@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "data/load"
-
 RSpec.describe Light::Services do
   it "has a version number" do
     expect(Light::Services::VERSION).not_to be nil

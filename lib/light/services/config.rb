@@ -14,16 +14,26 @@ module Light::Services
   class Config
     # Constants
     DEFAULT_ARGS = {
-      load_errors: true,
       use_transactions: true,
+
+      load_errors: true,
+      load_warnings: true,
+
+      break_on_error: true,
+      raise_on_error: false,
       rollback_on_error: true,
-      raise_on_error: false
+
+      break_on_warning: false,
+      raise_on_warning: false,
+      rollback_on_warning: false
     }.freeze
 
     # Getters / Setters
-    attr_accessor :load_errors, :use_transactions, :rollback_on_error, :raise_on_error
+    attr_accessor :load_errors, :use_transactions,
+                  :break_on_error, :raise_on_error, :rollback_on_error,
+                  :break_on_warning, :raise_on_warning, :rollback_on_warning
 
-    def initialize
+      def initialize
       reset_to_defaults!
     end
 
@@ -39,6 +49,10 @@ module Light::Services
       DEFAULT_ARGS.each do |key, value|
         set(key, value)
       end
+    end
+
+    def to_h
+      DEFAULT_ARGS.keys.map { |key| [key, get(key)] }.to_h
     end
   end
 end

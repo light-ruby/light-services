@@ -5,6 +5,7 @@ SimpleCov.start
 
 require "bundler/setup"
 require "light/services"
+require "data/load"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
