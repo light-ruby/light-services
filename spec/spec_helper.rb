@@ -4,7 +4,7 @@ require "simplecov"
 require "codecov"
 
 SimpleCov.start
-SimpleCov.formatter = SimpleCov::Formatter::Codecov
+SimpleCov.formatter = SimpleCov::Formatter::Codecov if ENV["CODECOV_TOKEN"]
 
 require "bundler/setup"
 require "database_cleaner/active_record"

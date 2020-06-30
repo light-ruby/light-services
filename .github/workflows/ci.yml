@@ -37,6 +37,26 @@ jobs:
       - name: RSpec
         run: bundle exec rspec
 
+  codecov:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: sudo apt-get install libsqlite3-dev
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1.38.0
+        with:
+          bundler-cache: true
+
+      - name: RSpec
+        run: bundle exec rspec
+
       - name: Code Coverage
         uses: codecov/codecov-action@v1
         with:
