@@ -35,7 +35,7 @@ module Light::Services
 
     def initialize
       reset_to_defaults!
-  end
+    end
 
     def set(key, value)
       instance_variable_set("@#{key}", value)

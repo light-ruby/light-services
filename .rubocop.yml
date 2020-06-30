@@ -10,3 +10,11 @@ Style/StringLiterals:
 
 Style/GuardClause:
   Enabled: false
+
+Style/ClassAndModuleChildren:
+  Exclude:
+    - spec/data/services/**/*.rb
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*_spec.rb

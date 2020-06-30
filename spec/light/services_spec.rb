@@ -5,16 +5,6 @@ RSpec.describe Light::Services do
     expect(Light::Services::VERSION).not_to be nil
   end
 
-  it "works" do
-    params = {
-      user: {
-        name: "Andrew"
-      }
-    }
-
-    User::Create.run(params: params)
-  end
-
   describe ".config" do
     let(:boolean_params) { %i[load_errors use_transactions rollback_on_error raise_on_error] }
 

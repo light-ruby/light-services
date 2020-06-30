@@ -46,7 +46,7 @@ module Light
           end
 
           @klass.define_method "#{@name}?" do
-            !!@arguments.get(__method__[0..-2].to_sym)
+            !!@arguments.get(__method__[0..-2].to_sym) # rubocop:disable Style/DoubleNegation
           end
 
           @klass.define_method "#{@name}=" do |value|
