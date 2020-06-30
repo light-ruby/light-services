@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: [2.5, 2.6, 2.7, head, debug, jruby, jruby-head, truffleruby, truffleruby-head]
+        ruby: [2.5, 2.6, 2.7, head, debug, truffleruby, truffleruby-head]
     steps:
       - name: Git Checkout
         uses: actions/checkout@v2
