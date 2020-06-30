@@ -9,6 +9,7 @@ group :test do
   gem "database_cleaner-active_record", "~> 1.8"
   gem "sqlite3", "~> 1.4"
 
+  gem "codecov", "~> 0.1.17"
   gem "rake", "~> 13.0"
   gem "rspec", "~> 3.9"
   gem "simplecov", "~> 0.18"

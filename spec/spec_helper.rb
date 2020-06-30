@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 require "simplecov"
+require "codecov"
+
 SimpleCov.start
+SimpleCov.formatter = SimpleCov::Formatter::Codecov
 
 require "bundler/setup"
 require "database_cleaner/active_record"
