@@ -1,14 +1,19 @@
 # frozen_string_literal: true
 
-class User::Create < CreateService
-  def user
-    entity
-  end
+class User::Update < UpdateService
+  # Arguments
+  arg :user, type: User
 
   private
 
-  def entity_class
-    User
+  def argument_key
+    :user
+  end
+
+  def authorize
+    return if user == current_user
+
+    errors.add(:user, "you are not authorized to update this user")
   end
 
   # If you're using Rails just use:

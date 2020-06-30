@@ -26,9 +26,7 @@ module Light
         def add_after(klass, after_name, item)
           index = find_index(klass, after_name)
 
-          unless index
-            raise Light::Services::NoStepError, "Cannot find step `#{after_name}` in service `#{klass}`"
-          end
+          raise Light::Services::NoStepError, "Cannot find step `#{after_name}` in service `#{klass}`" unless index
 
           @collection[klass].insert(index, item)
         end
@@ -36,9 +34,7 @@ module Light
         def add_before(klass, before_name, item)
           index = find_index(klass, before_name)
 
-          unless index
-            raise Light::Services::NoStepError, "Cannot find step `#{before_name}` in service `#{klass}`"
-          end
+          raise Light::Services::NoStepError, "Cannot find step `#{before_name}` in service `#{klass}`" unless index
 
           @collection[klass].insert(index + 1, item)
         end

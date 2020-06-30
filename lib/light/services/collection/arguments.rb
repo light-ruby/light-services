@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Light
   module Services
     module Collection
@@ -14,7 +16,7 @@ module Light
 
         def validate!
           settings_collection.each do |settings|
-            next if settings.optional && !key?(settings.name)
+            next if settings.optional && (!key?(settings.name) || get(settings.name).nil?)
 
             settings.valid_type?(get(settings.name))
           end

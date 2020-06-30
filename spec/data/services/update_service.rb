@@ -1,23 +1,23 @@
 # frozen_string_literal: true
 
-class CreateService < ApplicationService
+class UpdateService < ApplicationService
   # Arguments
   arg :params, type: Hash, default: {}
 
   # Outputs
   output :entity
-  output :data, default: {}
 
   # Steps
-  step :initialize_entity
+  step :load_entity
   step :assign_attributes
   step :authorize
+  step :validate
   step :save
   step :log_action
 
   private
 
-  def entity_class
+  def argument_key
     raise NotImplementedError
   end
 
@@ -25,8 +25,8 @@ class CreateService < ApplicationService
     raise NotImplementedError
   end
 
-  def initialize_entity
-    self.entity = entity_class.new
+  def load_entity
+    self.entity = arguments.get(argument_key)
   end
 
   def assign_attributes
@@ -35,6 +35,12 @@ class CreateService < ApplicationService
 
   def authorize
     # TODO: Implement this method
+  end
+
+  def validate
+    return if entity.valid?
+
+    errors.from(entity)
   end
 
   def save

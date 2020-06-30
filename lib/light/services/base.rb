@@ -14,7 +14,6 @@ require "light/services/collection/arguments"
 require "light/services/class_based_collection/base"
 require "light/services/class_based_collection/mount"
 
-
 module Light
   module Services
     class Base
@@ -50,20 +49,31 @@ module Light
           raise_on_add: @config[:raise_on_warning],
           rollback_on_add: @config[:use_transactions] && @config[:rollback_on_warning]
         )
+
+        @launched_steps = []
       end
 
       def run
-        self.class.steps.each do |step|
-          step.run(self)
+        within_transaction do
+          self.class.steps.each do |step|
+            @launched_steps << step.name if step.run(self)
 
-          break if @errors.break? || @warnings.break?
+            break if @errors.break? || @warnings.break?
+          end
+
+          return unless @parent_service
+
+          # TODO: Add `self_rollback_on_error` (and others) for parent class
+          @parent_service.errors.from(@errors) if @config[:load_errors]
+          @parent_service.warnings.from(@warnings) if @config[:load_warnings]
         end
 
-        return unless @parent_service
+        # Run steps with parameter `always` if they weren't launched because of errors
+        self.class.steps.select(&:always).each do |step|
+          next if @launched_steps.include?(step.name)
 
-        # TODO: Add `self_rollback_on_error` (and others) for parent class
-        @parent_service.errors.from(@errors) if @config[:load_errors]
-        @parent_service.warnings.from(@warnings) if @config[:load_warnings]
+          @launched_steps << step.name if step.run(self)
+        end
       end
 
       def success?
@@ -101,6 +111,16 @@ module Light
         @outputs.load_defaults
         @arguments.load_defaults
         @arguments.validate!
+      end
+
+      def within_transaction
+        if @config[:use_transactions] && defined?(ActiveRecord::Base)
+          ActiveRecord::Base.transaction do
+            yield
+          end
+        else
+          yield
+        end
       end
     end
   end

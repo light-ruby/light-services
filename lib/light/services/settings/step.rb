@@ -5,7 +5,7 @@ module Light
     module Settings
       class Step
         # Getters
-        attr_reader :name
+        attr_reader :name, :always
 
         def initialize(name, klass, opts = {})
           @name = name
@@ -21,10 +21,11 @@ module Light
         end
 
         def run(instance)
-          return unless run?(instance)
+          return false unless run?(instance)
 
           if instance.respond_to?(name, true)
             instance.send(name)
+            true
           else
             raise Light::Services::NoStepError, "Cannot find step `#{name}` in service `#{instance.class}`"
           end

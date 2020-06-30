@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Light
   module Services
     module Collection
@@ -24,7 +26,6 @@ module Light
         def get(key)
           @storage[key]
         end
-
 
         def load_defaults
           settings_collection.select(&:default_exists).each do |settings|

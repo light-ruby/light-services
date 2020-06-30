@@ -33,9 +33,9 @@ module Light::Services
                   :break_on_error, :raise_on_error, :rollback_on_error,
                   :break_on_warning, :raise_on_warning, :rollback_on_warning
 
-      def initialize
+    def initialize
       reset_to_defaults!
-    end
+  end
 
     def set(key, value)
       instance_variable_set("@#{key}", value)

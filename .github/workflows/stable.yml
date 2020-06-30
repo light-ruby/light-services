@@ -1,0 +1,35 @@
+name: Stable
+on: [push, pull_request]
+
+jobs:
+  rubocop:
+    name: Rubocop
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1.38.0
+
+      - name: Rubocop
+        uses: gimenete/rubocop-action@1.0
+
+  rspec:
+    name: RSpec
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: [2.5, 2.6, 2.7, head, debug, jruby, jruby-head, truffleruby, truffleruby-head]
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1.38.0
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: RSpec
+        run: bundle exec rspec
