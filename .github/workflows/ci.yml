@@ -1,4 +1,4 @@
-name: Stable
+name: CI
 on: [push, pull_request]
 
 jobs:
@@ -24,6 +24,9 @@ jobs:
     steps:
       - name: Git Checkout
         uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: sudo apt-get install libsqlite3-dev
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1.38.0
