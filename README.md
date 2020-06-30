@@ -1,4 +1,5 @@
 # Light Services
+![CI](https://github.com/light-ruby/light-services/workflows/CI/badge.svg)
 
 ## TODO
 
