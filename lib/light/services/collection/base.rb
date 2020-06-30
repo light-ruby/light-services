@@ -28,17 +28,11 @@ module Light
         end
 
         def load_defaults
-          settings_collection.select(&:default_exists).each do |settings|
-            next if key?(settings.name)
+          settings_collection.each do |name, settings|
+            next if !settings.default_exists || key?(name)
 
-            set(settings.name, settings.default)
+            set(name, settings.default)
           end
-        end
-
-        private
-
-        def settings_collection
-          raise NotImplementedError
         end
       end
     end

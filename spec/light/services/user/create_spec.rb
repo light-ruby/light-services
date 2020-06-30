@@ -19,17 +19,24 @@ RSpec.describe User::Create do
     it { expect(service.user.name).to eq(name) }
   end
 
-  context "when params are wrong" do
+  context "when params is wrong" do
     let(:params) { "hey" }
 
     it { expect { service }.to raise_error(Light::Services::ArgTypeError) }
   end
 
-  context "when user is absent" do
+  context "when params is empty" do
     let(:params) { {} }
 
     it { expect(service).to be_failed }
     it { expect(service.errors).to have_key(:params) }
+  end
+
+  context "when params is empty (and raise on error is true)" do
+    let(:service) { described_class.with(raise_on_error: true).run(params: params) }
+    let(:params) { {} }
+
+    it { expect { service }.to raise_error(Light::Services::Error)}
   end
 
   context "when name is absent" do

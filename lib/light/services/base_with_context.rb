@@ -8,7 +8,7 @@ module Light
         @config = config
         @parent_service = parent_service
 
-        return if parent_service.is_a?(Light::Services::Base)
+        return if parent_service.nil? || parent_service.is_a?(Light::Services::Base)
 
         raise Light::Services::ArgTypeError, "#{parent_service.class} - must be a subclass of Light::Services::Base"
       end

@@ -20,11 +20,11 @@ module Light
 
         @break = true if break_execution.nil? ? @config[:break_on_add] : break_execution
 
+        raise Light::Services::Error, "#{key.to_s.capitalize} #{message}" if @config[:raise_on_add]
+
         if defined?(ActiveRecord::Rollback) && (rollback.nil? ? @config[:rollback_on_add] : rollback)
           raise ActiveRecord::Rollback
         end
-
-        raise Light::Services::Error, "#{key.to_s.capitalize} #{message}" if @config[:raise_on_add]
       end
 
       def break?
@@ -44,9 +44,9 @@ module Light
         end
       end
 
-      def method_missing(method, *args)
+      def method_missing(method, *args, &block)
         if @messages.respond_to?(method)
-          @messages.public_send(method, *args)
+          @messages.public_send(method, *args, &block)
         else
           super
         end

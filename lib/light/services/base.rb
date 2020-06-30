@@ -23,7 +23,7 @@ module Light
       # Settings
       mount_class_based_collection :steps,     klass: Settings::Step,     shortcut: :step
       mount_class_based_collection :outputs,   klass: Settings::Output,   shortcut: :output
-      mount_class_based_collection :arguments, klass: Settings::Argument, shortcut: :arg
+      mount_class_based_collection :arguments, klass: Settings::Argument, shortcut: :arg, allow_redefine: true
 
       # Steps
       step :load_defaults_and_validate
@@ -55,24 +55,24 @@ module Light
 
       def run
         within_transaction do
-          self.class.steps.each do |step|
-            @launched_steps << step.name if step.run(self)
+          self.class.steps.each do |name, step|
+            @launched_steps << name if step.run(self)
 
             break if @errors.break? || @warnings.break?
           end
+        end
 
-          return unless @parent_service
-
+        if @parent_service
           # TODO: Add `self_rollback_on_error` (and others) for parent class
           @parent_service.errors.from(@errors) if @config[:load_errors]
           @parent_service.warnings.from(@warnings) if @config[:load_warnings]
         end
 
         # Run steps with parameter `always` if they weren't launched because of errors
-        self.class.steps.select(&:always).each do |step|
-          next if @launched_steps.include?(step.name)
+        self.class.steps.each do |name, step|
+          next if !step.always || @launched_steps.include?(name)
 
-          @launched_steps << step.name if step.run(self)
+          @launched_steps << name if step.run(self)
         end
       end
 

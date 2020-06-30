@@ -5,20 +5,20 @@ module Light
     module Collection
       class Arguments < Base
         def extend_with_context(args)
-          settings_collection.select(&:context).each do |settings|
-            next if args.key?(settings.name) || !key?(settings.name)
+          settings_collection.each do |name, settings|
+            next if !settings.context || args.key?(name) || !key?(name)
 
-            args[settings.name] = get(settings.name)
+            args[settings.name] = get(name)
           end
 
           args
         end
 
         def validate!
-          settings_collection.each do |settings|
-            next if settings.optional && (!key?(settings.name) || get(settings.name).nil?)
+          settings_collection.each do |name, settings|
+            next if settings.optional && (!key?(name) || get(name).nil?)
 
-            settings.valid_type?(get(settings.name))
+            settings.valid_type?(get(name))
           end
         end
 

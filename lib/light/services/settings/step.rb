@@ -36,8 +36,8 @@ module Light
         def run?(instance)
           if @if
             check_condition(@if, instance)
-          elsif @else
-            check_condition(@else, instance)
+          elsif @unless
+            !check_condition(@unless, instance)
           else
             true
           end
@@ -50,7 +50,7 @@ module Light
           when Proc
             condition.call
           else
-            raise Light::Services::Error, "#{klass}##{name} - condition should be a Symbol or Proc (currently: #{condition.class})"
+            raise Light::Services::Error, "#{@klass}##{@name} - condition should be a Symbol or Proc (currently: #{condition.class})"
           end
         end
       end
