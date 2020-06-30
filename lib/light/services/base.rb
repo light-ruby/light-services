@@ -54,6 +54,12 @@ module Light
       end
 
       def run
+        run_steps
+        run_always_steps
+        load_data_into_parent_service if @parent_service
+      end
+
+      def run_steps
         within_transaction do
           self.class.steps.each do |name, step|
             @launched_steps << name if step.run(self)
@@ -61,19 +67,21 @@ module Light
             break if @errors.break? || @warnings.break?
           end
         end
+      end
 
-        if @parent_service
-          # TODO: Add `self_rollback_on_error` (and others) for parent class
-          @parent_service.errors.from(@errors) if @config[:load_errors]
-          @parent_service.warnings.from(@warnings) if @config[:load_warnings]
-        end
-
-        # Run steps with parameter `always` if they weren't launched because of errors
+      # Run steps with parameter `always` if they weren't launched because of errors/warnings
+      def run_always_steps
         self.class.steps.each do |name, step|
           next if !step.always || @launched_steps.include?(name)
 
           @launched_steps << name if step.run(self)
         end
+      end
+
+      def load_data_into_parent_service
+        # TODO: Add `self_rollback_on_error` (and others) for parent class
+        @parent_service.errors.from(@errors) if @config[:load_errors]
+        @parent_service.warnings.from(@warnings) if @config[:load_warnings]
       end
 
       def success?

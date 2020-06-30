@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class WithConditions < ApplicationService
   # Arguments
   arg :add_c, type: :boolean, default: false

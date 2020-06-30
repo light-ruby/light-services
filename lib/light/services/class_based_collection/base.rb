@@ -13,7 +13,7 @@ module Light
         def add(klass, name, opts = {})
           @collection[klass] ||= all_from_superclass(klass)
 
-          if !@allow_redefine && all(klass).keys.include?(name)
+          if !@allow_redefine && all(klass).key?(name)
             # TODO: Update error class
             raise Light::Services::Error, "#{@item_class} with name `#{name}` already exists in service #{klass}"
           end

@@ -9,9 +9,9 @@ RSpec.describe Product::AddToCart do
 
     it { expect(service).to be_success }
     it { expect(service.order).to be_a(Order) }
-    it { expect(service.order?).to eql(true) }
+    it { expect(service.order?).to be(true) }
     it { expect(service.order.products).to include(product) }
-    it { expect(service.order.total_price).to eql(100_000) }
+    it { expect(service.order.total_price).to be(100_000) }
   end
 
   context "with quantity" do
@@ -22,7 +22,7 @@ RSpec.describe Product::AddToCart do
     it { expect(service).to be_success }
     it { expect(service.order).to be_a(Order) }
     it { expect(service.order.products).to include(product) }
-    it { expect(service.order.total_price).to eql(200_000) }
+    it { expect(service.order.total_price).to be(200_000) }
   end
 
   context "when current user is absent" do

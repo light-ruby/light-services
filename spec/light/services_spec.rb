@@ -16,11 +16,11 @@ RSpec.describe Light::Services do
   end
 
   describe ".configure" do
-    after { Light::Services.config.reset_to_defaults! }
+    after { described_class.config.reset_to_defaults! }
 
     it "responds to params" do
       expect do
-        Light::Services.configure do |config|
+        described_class.configure do |config|
           config.load_errors = false
           config.use_transactions = false
           config.rollback_on_error = false
@@ -112,7 +112,7 @@ RSpec.describe Light::Services do
     let(:service) { WithConditions.with(use_transactions: false).run(fake_error: true) }
 
     it { expect(service.word).to eql("error") }
-    it { expect(service.warnings?).to eql(true) }
+    it { expect(service.warnings?).to be(true) }
     it { expect(service.warnings).to have_key(:word) }
   end
 

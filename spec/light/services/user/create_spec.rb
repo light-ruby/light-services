@@ -36,7 +36,7 @@ RSpec.describe User::Create do
     let(:service) { described_class.with(raise_on_error: true).run(params: params) }
     let(:params) { {} }
 
-    it { expect { service }.to raise_error(Light::Services::Error)}
+    it { expect { service }.to raise_error(Light::Services::Error) }
   end
 
   context "when name is absent" do

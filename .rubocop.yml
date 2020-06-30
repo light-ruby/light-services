@@ -5,6 +5,13 @@ require:
 AllCops:
   NewCops: enable
 
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*_spec.rb
+
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
@@ -14,7 +21,3 @@ Style/GuardClause:
 Style/ClassAndModuleChildren:
   Exclude:
     - spec/data/services/**/*.rb
-
-Metrics/BlockLength:
-  Exclude:
-    - spec/**/*_spec.rb
