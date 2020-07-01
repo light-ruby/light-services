@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Andrew Emelianenko"]
   spec.email         = ["emelianenko.web@gmail.com"]
 
-  spec.summary       = "Light pattern Services Object for Ruby/Rails"
-  spec.description   = "Light pattern Services Object for Ruby/Rails"
+  spec.summary       = "Powerful implementation of Service Object pattern for Ruby and Rails"
+  spec.description   = "Powerful implementation of Service Object pattern for Ruby and Rails"
   spec.homepage      = "https://github.com/light-ruby/light-services"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")

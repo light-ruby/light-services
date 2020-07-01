@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
+# This class allows to run service object with context (parent class and custom config)
 module Light
   module Services
     class BaseWithContext
-      def initialize(klass, parent_service, config)
-        @klass = klass
+      def initialize(service_class, parent_service, config)
+        @service_class = service_class
         @config = config
         @parent_service = parent_service
 
@@ -14,7 +15,7 @@ module Light
       end
 
       def run(args = {})
-        @klass.new(extend_arguments(args), @config, @parent_service).tap(&:run)
+        @service_class.new(extend_arguments(args), @config, @parent_service).tap(&:run)
       end
 
       private

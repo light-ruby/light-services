@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# This class stores errors and warnings
 module Light
   module Services
     class Messages
@@ -18,13 +19,9 @@ module Light
           @messages[key] << message
         end
 
-        @break = true if break_execution.nil? ? @config[:break_on_add] : break_execution
-
-        raise Light::Services::Error, "#{key.to_s.capitalize} #{message}" if @config[:raise_on_add]
-
-        if defined?(ActiveRecord::Rollback) && (rollback.nil? ? @config[:rollback_on_add] : rollback)
-          raise ActiveRecord::Rollback
-        end
+        break!(break_execution)
+        raise!(key, message)
+        rollback!(rollback)
       end
 
       def break?
@@ -54,6 +51,26 @@ module Light
 
       def respond_to_missing?(method, include_private = false)
         @messages.respond_to?(method, include_private) || super
+      end
+
+      private
+
+      def break!(break_execution)
+        return unless break_execution.nil? ? @config[:break_on_add] : break_execution
+
+        @break = true
+      end
+
+      def raise!(key, message)
+        return unless @config[:raise_on_add]
+
+        raise Light::Services::Error, "#{key.to_s.capitalize} #{message}"
+      end
+
+      def rollback!(rollback)
+        return if !defined?(ActiveRecord::Rollback) || !(rollback.nil? ? @config[:rollback_on_add] : rollback)
+
+        raise ActiveRecord::Rollback
       end
     end
   end

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# This class defines settings for step
 module Light
   module Services
     module Settings
@@ -7,16 +8,17 @@ module Light
         # Getters
         attr_reader :name, :always
 
-        def initialize(name, klass, opts = {})
+        def initialize(name, service_class, opts = {})
           @name = name
-          @klass = klass
+          @service_class = service_class
 
           @if     = opts[:if]
           @unless = opts[:unless]
           @always = opts[:always]
 
           if @if && @unless
-            raise Light::Services::TwoConditions, "#{klass}##{name} - `if` and `unless` cannot be specified together"
+            raise Light::Services::TwoConditions, "#{service_class} `if` and `unless` cannot be specified " \
+                                                  "for the step `#{name}` at the same time"
           end
         end
 
@@ -27,7 +29,7 @@ module Light
             instance.send(name)
             true
           else
-            raise Light::Services::NoStepError, "Cannot find step `#{name}` in service `#{instance.class}`"
+            raise Light::Services::NoStepError, "Cannot find step `#{name}` in service `#{@service_class}`"
           end
         end
 
@@ -50,7 +52,8 @@ module Light
           when Proc
             condition.call
           else
-            raise Light::Services::Error, "#{@klass}##{@name} - condition should be a Symbol or Proc (currently: #{condition.class})"
+            raise Light::Services::Error, "#{@service_class} condition should be a Symbol or Proc " \
+                                          "for the step `#{@name}` (currently: #{condition.class})"
           end
         end
       end

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Collection to store outputs values
 module Light
   module Services
     module Collection

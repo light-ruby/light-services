@@ -12,6 +12,13 @@ Metrics/BlockLength:
   Exclude:
     - spec/**/*_spec.rb
 
+Security/Eval:
+  Exclude:
+    - spec/light/services/error_spec.rb
+
+Style/Documentation:
+  Enabled: false
+
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 

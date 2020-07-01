@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Collection to store, merge and validate arguments
 module Light
   module Services
     module Collection

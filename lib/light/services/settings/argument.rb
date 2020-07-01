@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# This class defines settings for argument
 module Light
   module Services
     module Settings
@@ -7,9 +8,9 @@ module Light
         # Getters
         attr_reader :name, :default_exists, :default, :context, :optional
 
-        def initialize(name, klass, opts = {})
+        def initialize(name, service_class, opts = {})
           @name = name
-          @klass = klass
+          @service_class = service_class
 
           @type = opts.delete(:type)
           @context = opts.delete(:context)
@@ -21,39 +22,27 @@ module Light
         end
 
         def valid_type?(value)
-          return unless @type
-
-          valid = [*@type].any? do |type|
-            case type
-            when :boolean
+          return if !@type || [*@type].any? do |type|
+            if type == :boolean
               value.is_a?(TrueClass) || value.is_a?(FalseClass)
             else
               value.is_a?(type)
             end
           end
 
-          return if valid
-
-          raise Light::Services::ArgTypeError, "`#{@klass}` argument `#{name}` must be a #{[*@type].join(', ')} (currently: #{value.class})"
+          raise Light::Services::ArgTypeError, "#{@service_class} argument `#{name}` must be " \
+                                               "a #{[*@type].join(', ')} (currently: #{value.class})"
         end
 
         private
 
-        # TODO: Refactor __method__
         def define_methods
-          @klass.define_method @name do
-            @arguments.get(__method__)
-          end
+          name = @name
 
-          @klass.define_method "#{@name}?" do
-            !!@arguments.get(__method__[0..-2].to_sym) # rubocop:disable Style/DoubleNegation
-          end
-
-          @klass.define_method "#{@name}=" do |value|
-            @arguments.set(__method__[0..-2].to_sym, value)
-          end
-
-          @klass.send :private, "#{@name}="
+          @service_class.define_method(@name) { @arguments.get(name) }
+          @service_class.define_method("#{@name}?") { !!@arguments.get(name) } # rubocop:disable Style/DoubleNegation
+          @service_class.define_method("#{@name}=") { |value| @arguments.set(name, value) }
+          @service_class.send(:private, "#{@name}=")
         end
       end
     end

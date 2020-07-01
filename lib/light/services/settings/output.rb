@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# This class defines settings for output
 module Light
   module Services
     module Settings
@@ -7,9 +8,9 @@ module Light
         # Getters
         attr_reader :name, :default_exists, :default
 
-        def initialize(name, klass, opts = {})
+        def initialize(name, service_class, opts = {})
           @name = name
-          @klass = klass
+          @service_class = service_class
 
           @default_exists = opts.key?(:default)
           @default = opts.delete(:default)
@@ -19,21 +20,13 @@ module Light
 
         private
 
-        # TODO: Refactor __method__
         def define_methods
-          @klass.define_method @name do
-            @outputs.get(__method__)
-          end
+          name = @name
 
-          @klass.define_method "#{@name}?" do
-            !!@outputs.get(__method__[0..-2].to_sym) # rubocop:disable Style/DoubleNegation
-          end
-
-          @klass.define_method "#{@name}=" do |value|
-            @outputs.set(__method__[0..-2].to_sym, value)
-          end
-
-          @klass.send :private, "#{@name}="
+          @service_class.define_method(@name) { @outputs.get(name) }
+          @service_class.define_method("#{@name}?") { !!@outputs.get(name) } # rubocop:disable Style/DoubleNegation
+          @service_class.define_method("#{@name}=") { |value| @outputs.set(name, value) }
+          @service_class.send(:private, "#{@name}=")
         end
       end
     end
