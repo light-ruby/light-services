@@ -15,8 +15,8 @@ jobs:
           ruby-version: head
           bundler-cache: true
 
-      - name: Rubocop
-        uses: gimenete/rubocop-action@1.0
+      - name: Rubocop Linter Action
+        uses: andrewmcodes/rubocop-linter-action@v3.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
