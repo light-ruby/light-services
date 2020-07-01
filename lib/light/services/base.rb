@@ -131,7 +131,7 @@ module Light
 
       def within_transaction
         if @config[:use_transactions] && defined?(ActiveRecord::Base)
-          ActiveRecord::Base.transaction do
+          ActiveRecord::Base.transaction(requires_new: true) do
             yield
           end
         else
