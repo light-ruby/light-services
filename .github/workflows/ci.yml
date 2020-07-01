@@ -11,6 +11,9 @@ jobs:
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1.38.0
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
 
       - name: Rubocop
         uses: gimenete/rubocop-action@1.0
