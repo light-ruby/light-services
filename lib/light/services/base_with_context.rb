@@ -15,7 +15,7 @@ module Light
       end
 
       def run(args = {})
-        @service_class.new(extend_arguments(args), @config, @parent_service).tap(&:run)
+        @service_class.new(extend_arguments(args), @config, @parent_service).tap(&:call)
       end
 
       private

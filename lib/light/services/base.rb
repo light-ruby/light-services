@@ -45,12 +45,6 @@ module Light
         initialize_warnings
       end
 
-      def run
-        run_steps
-        run_always_steps
-        load_data_into_parent_service if @parent_service
-      end
-
       def success?
         !errors?
       end
@@ -67,9 +61,15 @@ module Light
         @warnings.any?
       end
 
+      def call
+        run_steps
+        run_always_steps
+        load_data_into_parent_service if @parent_service
+      end
+
       class << self
         def run(args = {})
-          new(args).tap(&:run)
+          new(args).tap(&:call)
         end
 
         def with(service_or_config = {}, config = {})
