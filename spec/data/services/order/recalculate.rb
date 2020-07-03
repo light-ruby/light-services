@@ -29,6 +29,6 @@ class Order::Recalculate < ApplicationService
   def save
     order.save!
   rescue ActiveRecord::RecordInvalid
-    errors.from(order)
+    errors.copy_from(order)
   end
 end

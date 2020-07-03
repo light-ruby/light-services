@@ -110,21 +110,44 @@ RSpec.context Light::Services::Error do
     end
   end
 
-  context "when trying to load errors from string" do
+  context "when trying to copy errors from string" do
     let(:class_code) do
       <<-RUBY
-        class LoadErrorsFromString < ApplicationService
+        class CopyErrorsFromString < ApplicationService
           step :hello_world
 
           private
           
           def hello_world
             self.current_user = User.new
-            errors.from("Hello, world!")
+            errors.copy_from("Hello, world!")
           end
         end
 
-        LoadErrorsFromString.run
+        CopyErrorsFromString.run
+      RUBY
+    end
+
+    it do
+      expect { eval(class_code) }.to raise_error(described_class)
+    end
+  end
+
+  context "when trying to copy errors to string" do
+    let(:class_code) do
+      <<-RUBY
+        class CopyErrorsToString < ApplicationService
+          step :hello_world
+
+          private
+          
+          def hello_world
+            self.current_user = User.new
+            errors.copy_to("Hello, world!")
+          end
+        end
+
+        CopyErrorsToString.run
       RUBY
     end
 

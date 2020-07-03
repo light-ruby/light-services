@@ -68,6 +68,7 @@ module Light
       end
 
       class << self
+        # TODO: Create `run!`
         def run(args = {})
           new(args).tap(&:call)
         end
@@ -119,8 +120,8 @@ module Light
 
       def load_data_into_parent_service
         # TODO: Add `self_rollback_on_error` (and others) for parent class
-        @parent_service.errors.from(@errors) if @config[:load_errors]
-        @parent_service.warnings.from(@warnings) if @config[:load_warnings]
+        @parent_service.errors.copy_from(@errors) if @config[:load_errors]
+        @parent_service.warnings.copy_from(@warnings) if @config[:load_warnings]
       end
 
       def load_defaults_and_validate

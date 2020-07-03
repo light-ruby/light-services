@@ -37,7 +37,7 @@ class Order::AddProduct < ApplicationService
     order_item = order.order_items.new(product: product, quantity: quantity, price: product.price)
     order_item.save!
   rescue ActiveRecord::RecordInvalid
-    errors.from(order_item)
+    errors.copy_from(order_item)
   end
 
   def recalculate_order

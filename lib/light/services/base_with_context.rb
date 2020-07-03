@@ -14,6 +14,7 @@ module Light
         raise Light::Services::ArgTypeError, "#{parent_service.class} - must be a subclass of Light::Services::Base"
       end
 
+      # TODO: Create `run!`
       def run(args = {})
         @service_class.new(extend_arguments(args), @config, @parent_service).tap(&:call)
       end

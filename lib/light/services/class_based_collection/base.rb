@@ -11,6 +11,7 @@ module Light
   module Services
     module ClassBasedCollection
       class Base
+        # TODO: Add `prepend: true`
         def initialize(item_class, allow_redefine)
           @item_class = item_class
           @allow_redefine = allow_redefine

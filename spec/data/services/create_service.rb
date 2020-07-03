@@ -40,7 +40,7 @@ class CreateService < ApplicationService
   def save
     entity.save!
   rescue ActiveRecord::RecordInvalid
-    errors.from(entity)
+    errors.copy_from(entity)
   end
 
   def log_action

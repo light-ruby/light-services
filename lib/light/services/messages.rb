@@ -28,9 +28,9 @@ module Light
         @break
       end
 
-      def from(entity, break_execution: nil, rollback: nil)
+      def copy_from(entity, break_execution: nil, rollback: nil)
         if defined?(ActiveRecord::Base) && entity.is_a?(ActiveRecord::Base)
-          from(entity.errors.messages, break_execution: break_execution, rollback: rollback)
+          copy_from(entity.errors.messages, break_execution: break_execution, rollback: rollback)
         elsif entity.respond_to?(:each)
           entity.each do |key, message|
             add(key, message, break_execution: break_execution, rollback: rollback)
@@ -39,6 +39,32 @@ module Light
           # TODO: Update error
           raise Light::Services::Error
         end
+      end
+
+      def copy_to(entity)
+        if defined?(ActiveRecord::Base) && entity.is_a?(ActiveRecord::Base)
+          each do |key, message|
+            entity.errors.add(key, message)
+          end
+        elsif entity.is_a?(Hash)
+          each do |key, message|
+            entity[key] ||= []
+            entity[key] << message
+          end
+        else
+          # TODO: Update error
+          raise Light::Services::Error
+        end
+
+        entity
+      end
+
+      def errors_to_record(record)
+        errors.each do |key, message|
+          record.errors.add(key, message)
+        end
+
+        record
       end
 
       def method_missing(method, *args, &block)
