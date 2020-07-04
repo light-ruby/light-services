@@ -63,8 +63,10 @@ module Light
 
       def call
         run_steps
-        run_always_steps
-        load_data_into_parent_service if @parent_service
+        run_steps_with_always
+
+        copy_warnings_to_parent_service
+        copy_errors_to_parent_service
       end
 
       class << self
@@ -110,7 +112,7 @@ module Light
       end
 
       # Run steps with parameter `always` if they weren't launched because of errors/warnings
-      def run_always_steps
+      def run_steps_with_always
         self.class.steps.each do |name, step|
           next if !step.always || @launched_steps.include?(name)
 
@@ -118,10 +120,24 @@ module Light
         end
       end
 
-      def load_data_into_parent_service
-        # TODO: Add `self_rollback_on_error` (and others) for parent class
-        @parent_service.errors.copy_from(@errors) if @config[:load_errors]
-        @parent_service.warnings.copy_from(@warnings) if @config[:load_warnings]
+      def copy_warnings_to_parent_service
+        return if !@parent_service || !@config[:load_warnings]
+
+        @parent_service.warnings.copy_from(
+          @warnings,
+          break: @config[:self_break_on_warning],
+          rollback: @config[:self_rollback_on_warning]
+        )
+      end
+
+      def copy_errors_to_parent_service
+        return if !@parent_service || !@config[:load_errors]
+
+        @parent_service.errors.copy_from(
+          @errors,
+          break: @config[:self_break_on_error],
+          rollback: @config[:self_rollback_on_error]
+        )
       end
 
       def load_defaults_and_validate
@@ -132,9 +148,7 @@ module Light
 
       def within_transaction
         if @config[:use_transactions] && defined?(ActiveRecord::Base)
-          ActiveRecord::Base.transaction(requires_new: true) do
-            yield
-          end
+          ActiveRecord::Base.transaction(requires_new: true) { yield }
         else
           yield
         end

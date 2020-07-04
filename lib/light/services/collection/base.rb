@@ -32,7 +32,7 @@ module Light
           settings_collection.each do |name, settings|
             next if !settings.default_exists || key?(name)
 
-            set(name, settings.default)
+            set(name, settings.default.dup)
           end
         end
       end

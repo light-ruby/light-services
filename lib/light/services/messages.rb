@@ -10,7 +10,7 @@ module Light
         @messages = {}
       end
 
-      def add(key, message, break_execution: nil, rollback: nil)
+      def add(key, message, opts = {})
         @messages[key] ||= []
 
         if message.is_a?(Array)
@@ -19,21 +19,21 @@ module Light
           @messages[key] << message
         end
 
-        break!(break_execution)
         raise!(key, message)
-        rollback!(rollback)
+        break!(opts[:break])
+        rollback!(opts[:rollback])
       end
 
       def break?
         @break
       end
 
-      def copy_from(entity, break_execution: nil, rollback: nil)
+      def copy_from(entity, opts = {})
         if defined?(ActiveRecord::Base) && entity.is_a?(ActiveRecord::Base)
-          copy_from(entity.errors.messages, break_execution: break_execution, rollback: rollback)
+          copy_from(entity.errors.messages, opts)
         elsif entity.respond_to?(:each)
           entity.each do |key, message|
-            add(key, message, break_execution: break_execution, rollback: rollback)
+            add(key, message, opts)
           end
         else
           # TODO: Update error
@@ -60,6 +60,11 @@ module Light
       end
 
       def errors_to_record(record)
+        if !defined?(ActiveRecord::Base) || !record.is_a?(ActiveRecord::Base)
+          # TODO: Update error
+          raise Light::Services::Error
+        end
+
         errors.each do |key, message|
           record.errors.add(key, message)
         end
