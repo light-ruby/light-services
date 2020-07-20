@@ -32,8 +32,14 @@ module Light
           settings_collection.each do |name, settings|
             next if !settings.default_exists || key?(name)
 
-            set(name, settings.default.dup)
+            set(name, deep_dup(settings.default))
           end
+        end
+
+        private
+
+        def deep_dup(object)
+          Marshal.load(Marshal.dump(object))
         end
       end
     end
