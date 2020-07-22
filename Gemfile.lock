@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    light-services (2.0.0)
+    light-services (2.0.0.beta1)
 
 GEM
   remote: https://rubygems.org/
