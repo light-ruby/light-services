@@ -22,11 +22,20 @@ module Light
           end
         end
 
-        def run(instance)
+        def run(instance, benchmark: false)
           return false unless run?(instance)
 
           if instance.respond_to?(name, true)
-            instance.send(name)
+            if benchmark
+              time = Benchmark.ms do
+                instance.send(name)
+              end
+
+              puts "→ ⏱️ Step #{name} took #{time}ms"
+            else
+              instance.send(name)
+            end
+
             true
           else
             raise Light::Services::NoStepError, "Cannot find step `#{name}` in service `#{@service_class}`"
@@ -48,7 +57,7 @@ module Light
         def check_condition(condition, instance)
           case condition
           when Symbol
-            instance.public_send(condition)
+            instance.send(condition)
           when Proc
             condition.call
           else

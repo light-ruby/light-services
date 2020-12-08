@@ -26,6 +26,9 @@ module Light
       mount_class_based_collection :outputs,   item_class: Settings::Output,   shortcut: :output
       mount_class_based_collection :arguments, item_class: Settings::Argument, shortcut: :arg, allow_redefine: true
 
+      # Arguments
+      arg :benchmark, default: false
+
       # Steps
       step :load_defaults_and_validate
 
@@ -62,11 +65,20 @@ module Light
       end
 
       def call
-        run_steps
-        run_steps_with_always
+        time = Benchmark.ms do
+          run_steps
+          run_steps_with_always
 
-        copy_warnings_to_parent_service
-        copy_errors_to_parent_service
+          copy_warnings_to_parent_service
+          copy_errors_to_parent_service
+        end
+
+        return unless benchmark
+
+        message = "→ ⏱️ Service #{self.class} took #{time}ms"
+
+        puts message
+        puts "=" * message.length
       end
 
       class << self
@@ -104,7 +116,7 @@ module Light
       def run_steps
         within_transaction do
           self.class.steps.each do |name, step|
-            @launched_steps << name if step.run(self)
+            @launched_steps << name if step.run(self, benchmark: benchmark)
 
             break if @errors.break? || @warnings.break?
           end
