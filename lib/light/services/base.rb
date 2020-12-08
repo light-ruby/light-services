@@ -28,7 +28,7 @@ module Light
 
       # Arguments
       # TODO: Rename internal arguments
-      arg :benchmark, default: false, context: true
+      arg :benchmark, default: false
       arg :deepness, default: 0, context: true
 
       # Steps
