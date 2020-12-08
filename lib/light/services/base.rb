@@ -79,6 +79,7 @@ module Light
         return unless benchmark
 
         log "🟢 Finished #{self.class} in #{time}ms"
+        puts
       end
 
       class << self
