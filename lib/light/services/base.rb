@@ -33,6 +33,7 @@ module Light
 
       # Steps
       step :load_defaults_and_validate
+      step :log_header, if: :benchmark?
 
       # Getters
       attr_reader :outputs, :arguments, :errors, :warnings
@@ -67,8 +68,6 @@ module Light
       end
 
       def call
-        log "🏎 Run service #{self.class}" if benchmark
-
         time = Benchmark.ms do
           run_steps
           run_steps_with_always
@@ -79,7 +78,7 @@ module Light
 
         return unless benchmark
 
-        log "🏁 Finished #{self.class} took #{time}ms"
+        log "🏁 Finished #{self.class} in #{time}ms"
       end
 
       class << self
@@ -162,6 +161,10 @@ module Light
         @outputs.load_defaults
         @arguments.load_defaults
         @arguments.validate!
+      end
+
+      def log_header
+        log "🏎 Run service #{self.class}"
       end
 
       def within_transaction
