@@ -22,10 +22,11 @@ module Light
       private
 
       def extend_arguments(args)
-        return args unless @parent_service
-
         # TODO: Do we need `.dup` here?
-        @parent_service.arguments.extend_with_context(args)
+        args = @parent_service.arguments.extend_with_context(args) if @parent_service
+        args[:deepness] += 1 if args[:deepness]
+
+        args
       end
     end
   end

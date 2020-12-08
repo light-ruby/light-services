@@ -27,7 +27,9 @@ module Light
       mount_class_based_collection :arguments, item_class: Settings::Argument, shortcut: :arg, allow_redefine: true
 
       # Arguments
-      arg :benchmark, default: false, context: true
+      # TODO: Rename internal arguments
+      arg :benchmark, default: true, context: true
+      arg :deepness, default: 0, context: true
 
       # Steps
       step :load_defaults_and_validate
@@ -65,6 +67,8 @@ module Light
       end
 
       def call
+        log "🏎 Run service #{self.class}" if benchmark
+
         time = Benchmark.ms do
           run_steps
           run_steps_with_always
@@ -75,10 +79,7 @@ module Light
 
         return unless benchmark
 
-        message = "→ ⏱️ Service #{self.class} took #{time}ms"
-
-        puts message
-        puts "=" * message.length
+        log "🏁 Finished #{self.class} took #{time}ms"
       end
 
       class << self
@@ -93,6 +94,11 @@ module Light
 
           BaseWithContext.new(self, service, config)
         end
+      end
+
+      # TODO: Add possibility to specify logger
+      def log(message)
+        puts "#{'  ' * deepness}→ #{message}"
       end
 
       private

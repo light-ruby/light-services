@@ -31,7 +31,7 @@ module Light
                 instance.send(name)
               end
 
-              puts "→ ⏱️ Step #{name} took #{time}ms"
+              instance.log "⏱️ Step #{name} took #{time}ms"
             else
               instance.send(name)
             end
