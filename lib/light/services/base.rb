@@ -78,7 +78,7 @@ module Light
 
         return unless benchmark
 
-        log "🏁 Finished #{self.class} in #{time}ms"
+        log "🟢 Finished #{self.class} in #{time}ms"
       end
 
       class << self
