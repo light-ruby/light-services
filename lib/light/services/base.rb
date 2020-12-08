@@ -27,7 +27,7 @@ module Light
       mount_class_based_collection :arguments, item_class: Settings::Argument, shortcut: :arg, allow_redefine: true
 
       # Arguments
-      arg :benchmark, default: false
+      arg :benchmark, default: false, context: true
 
       # Steps
       step :load_defaults_and_validate
