@@ -1,3 +1,4 @@
+# Common
 /.bundle/
 /.yardoc
 /_yardoc/
@@ -8,5 +9,9 @@
 /tmp/
 /.idea/
 
-# rspec failure tracking
+# RSpec failure tracking
 .rspec_status
+
+# Ignore IDE files
+/.idea
+*.iml
