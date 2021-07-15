@@ -12,12 +12,7 @@ module Light
 
       def add(key, message, opts = {})
         @messages[key] ||= []
-
-        if message.is_a?(Array)
-          @messages[key] += message
-        else
-          @messages[key] << message
-        end
+        @messages[key] += [*message]
 
         raise!(key, message)
         break!(opts[:break])

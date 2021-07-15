@@ -15,3 +15,6 @@
 # Ignore IDE files
 /.idea
 *.iml
+
+# Ignore gem files
+*.gem
