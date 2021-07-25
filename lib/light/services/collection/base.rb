@@ -28,6 +28,14 @@ module Light
           @storage[key]
         end
 
+        def [](key)
+          get(key)
+        end
+
+        def []=(key, value)
+          set(key, value)
+        end
+
         def load_defaults
           settings_collection.each do |name, settings|
             next if !settings.default_exists || key?(name)
