@@ -45,6 +45,7 @@ module Light
         @outputs = Collection::Outputs.new(self)
         @arguments = Collection::Arguments.new(self, args)
 
+        @done = false
         @launched_steps = []
 
         initialize_errors
@@ -65,6 +66,14 @@ module Light
 
       def warnings?
         @warnings.any?
+      end
+
+      def done!
+        @done = true
+      end
+
+      def done?
+        @done
       end
 
       def call

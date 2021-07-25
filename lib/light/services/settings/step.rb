@@ -20,6 +20,10 @@ module Light
             raise Light::Services::TwoConditions, "#{service_class} `if` and `unless` cannot be specified " \
                                                   "for the step `#{name}` at the same time"
           end
+
+          if @always && (@if || @unless)
+            raise Light::Services::Error, "#{service_class} `always` cannot be combined with `if` and `unless`"
+          end
         end
 
         def run(instance, benchmark: false)
@@ -45,6 +49,8 @@ module Light
         private
 
         def run?(instance)
+          return false if instance.done?
+
           if @if
             check_condition(@if, instance)
           elsif @unless
