@@ -18,6 +18,6 @@ class Product::Create < CreateService
   def filtered_params
     errors.add(:params, "key `product` must be a Hash") unless params[:product].is_a?(Hash)
 
-    params[:product].slice(:user_id)
+    params[:product].slice(:name, :price)
   end
 end

@@ -16,6 +16,7 @@ require "data/services/with_done"
 
 require "data/services/user/create"
 require "data/services/user/update"
+require "data/services/product/create"
 require "data/services/order/create"
 require "data/services/order/update"
 require "data/services/order/recalculate"

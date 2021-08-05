@@ -10,13 +10,13 @@ module Light
         @messages = {}
       end
 
-      def add(key, message, opts = {})
+      def add(key, message, opts = {}, last: nil)
         @messages[key] ||= []
         @messages[key] += [*message]
 
         raise!(key, message)
         break!(opts[:break])
-        rollback!(opts[:rollback])
+        rollback!(opts[:rollback]) if last.nil? || last
       end
 
       def break?
@@ -27,8 +27,10 @@ module Light
         if defined?(ActiveRecord::Base) && entity.is_a?(ActiveRecord::Base)
           copy_from(entity.errors.messages, opts)
         elsif entity.respond_to?(:each)
-          entity.each do |key, message|
-            add(key, message, opts)
+          last_index = entity.size - 1
+
+          entity.each_with_index do |(key, message), index|
+            add(key, message, opts, last: index == last_index)
           end
         else
           # TODO: Update error
