@@ -37,6 +37,8 @@ class Product::AddToCart < ApplicationService
 
   def send_notification
     service = SendNotification.run(text: "")
+
+    errors.add(:base, "something went wrong", rollback: false)
     errors.copy_from(service)
   end
 end

@@ -10,7 +10,7 @@ module Light
         @messages = {}
       end
 
-      def add(key, text, opts = {}, last: nil)
+      def add(key, text, opts = {})
         raise Light::Services::Error, "Error text can't be blank" if !text || text.blank?
 
         message = nil
@@ -24,7 +24,7 @@ module Light
 
         raise!(message)
         break!(opts.key?(:break) ? opts[:break] : message.break?)
-        rollback!(opts.key?(:rollback) ? opts[:rollback] : message.rollback?) if last.nil? || last
+        rollback!(opts.key?(:rollback) ? opts[:rollback] : message.rollback?) if !opts.key?(:last) || opts[:last]
       end
 
       def break?
@@ -40,7 +40,7 @@ module Light
           last_index = entity.size - 1
 
           entity.each_with_index do |(key, message), index|
-            add(key, message, opts, last: index == last_index)
+            add(key, message, opts.merge(last: index == last_index))
           end
         else
           raise Light::Services::Error, "Don't know how to import errors from #{entity}"

@@ -41,22 +41,22 @@ RSpec.describe Product::AddToCart do
     it { expect { service }.to raise_error(Light::Services::ArgTypeError) }
   end
 
-  context "when child service fails" do
-    let(:service) { described_class.run(current_user: current_user, product: product, notify: true) }
-    let(:current_user) { User.create!(name: "Andrew Emelianenko") }
-    let(:product) { Product.create!(name: "Tesla Model X", price: 100_000) }
-    let(:copied_errors) { service.errors.copy_to({ hello: "world" }) }
-
-    it { expect(service).to be_failed }
-    it { expect(copied_errors).to eq({ hello: "world", text: ["must be present"] }) }
-  end
-
   context "when benchmark is enabled" do
     let(:service) { described_class.run(current_user: current_user, product: product, benchmark: true) }
     let(:current_user) { User.create!(name: "Andrew Emelianenko") }
     let(:product) { Product.create!(name: "Tesla Model X", price: 100_000) }
 
     it { expect { service }.to output(/Finished Product::AddToCart in/).to_stdout }
+  end
+
+  context "when copying errors to hash" do
+    let(:service) { described_class.run(current_user: current_user, product: product, notify: true) }
+    let(:current_user) { User.create!(name: "Andrew Emelianenko") }
+    let(:product) { Product.create!(name: "Tesla Model X", price: 100_000) }
+    let(:copied_errors) { service.errors.copy_to({ hello: "world" }) }
+
+    it { expect(service).to be_failed }
+    it { expect(copied_errors).to eq({ hello: "world", base: ["something went wrong"], text: ["must be present"] }) }
   end
 
   context "when copying errors to another service" do
@@ -68,6 +68,6 @@ RSpec.describe Product::AddToCart do
     before { service.errors.copy_to(another_service) }
 
     it { expect(another_service).to be_failed }
-    it { expect(another_service.errors.to_h).to eq({ text: ["must be present"] }) }
+    it { expect(another_service.errors.to_h).to eq({ base: ["something went wrong"], text: ["must be present"] }) }
   end
 end
