@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "light/services/message"
 require "light/services/messages"
 require "light/services/base_with_context"
 
@@ -92,9 +93,12 @@ module Light
       end
 
       class << self
-        # TODO: Create `run!`
-        def run(args = {})
-          new(args).tap(&:call)
+        def run(args = {}, config = {})
+          new(args, config).tap(&:call)
+        end
+
+        def run!(args = {})
+          run(args, raise_on_error: true)
         end
 
         def with(service_or_config = {}, config = {})

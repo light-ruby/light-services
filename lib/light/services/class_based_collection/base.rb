@@ -63,14 +63,12 @@ module Light
 
         def validate_name!(klass, name)
           if !@allow_redefine && all(klass).key?(name)
-            # TODO: Update error class
             raise Light::Services::Error, "#{@item_class} with name `#{name}` already exists in service #{klass}"
           end
         end
 
         def validate_opts!(klass, name, opts)
           if opts[:before] && opts[:after]
-            # TODO: Update error class
             raise Light::Services::Error, "You cannot specify `before` and `after` " \
                                           "for #{@item_class} `#{name}` in service #{klass} at the same time"
           end

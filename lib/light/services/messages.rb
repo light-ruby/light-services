@@ -10,13 +10,21 @@ module Light
         @messages = {}
       end
 
-      def add(key, message, opts = {}, last: nil)
-        @messages[key] ||= []
-        @messages[key] += [*message]
+      def add(key, text, opts = {}, last: nil)
+        raise Light::Services::Error, "Error text can't be blank" if !text || text.blank?
 
-        raise!(key, message)
-        break!(opts[:break])
-        rollback!(opts[:rollback]) if last.nil? || last
+        message = nil
+
+        [*text].each do |text|
+          message = text.is_a?(Message) ? text : Message.new(key, text, opts)
+
+          @messages[key] ||= []
+          @messages[key] << message
+        end
+
+        raise!(message)
+        break!(opts.key?(:break) ? opts[:break] : message.break?)
+        rollback!(opts.key?(:rollback) ? opts[:rollback] : message.rollback?) if last.nil? || last
       end
 
       def break?
@@ -26,6 +34,8 @@ module Light
       def copy_from(entity, opts = {})
         if defined?(ActiveRecord::Base) && entity.is_a?(ActiveRecord::Base)
           copy_from(entity.errors.messages, opts)
+        elsif entity.is_a?(Light::Services::Base)
+          copy_from(entity.errors, opts)
         elsif entity.respond_to?(:each)
           last_index = entity.size - 1
 
@@ -33,40 +43,31 @@ module Light
             add(key, message, opts, last: index == last_index)
           end
         else
-          # TODO: Update error
-          raise Light::Services::Error
+          raise Light::Services::Error, "Don't know how to import errors from #{entity}"
         end
       end
 
       def copy_to(entity)
-        if defined?(ActiveRecord::Base) && entity.is_a?(ActiveRecord::Base)
-          each do |key, message|
-            entity.errors.add(key, message)
+        if defined?(ActiveRecord::Base) && entity.is_a?(ActiveRecord::Base) || entity.is_a?(Light::Services::Base)
+          each do |key, messages|
+            messages.each do |message|
+              entity.errors.add(key, message.to_s)
+            end
           end
         elsif entity.is_a?(Hash)
-          each do |key, message|
+          each do |key, messages|
             entity[key] ||= []
-            entity[key] << message
+            entity[key] += messages.map(&:to_s)
           end
         else
-          # TODO: Update error
-          raise Light::Services::Error
+          raise Light::Services::Error, "Don't know how to export errors to #{entity}"
         end
 
         entity
       end
 
-      def errors_to_record(record)
-        if !defined?(ActiveRecord::Base) || !record.is_a?(ActiveRecord::Base)
-          # TODO: Update error
-          raise Light::Services::Error
-        end
-
-        errors.each do |key, message|
-          record.errors.add(key, message)
-        end
-
-        record
+      def to_h
+        @messages.to_h.map { |key, value| [key, value.map(&:to_s)] }.to_h
       end
 
       def method_missing(method, *args, &block)
@@ -89,10 +90,10 @@ module Light
         @break = true
       end
 
-      def raise!(key, message)
+      def raise!(message)
         return unless @config[:raise_on_add]
 
-        raise Light::Services::Error, "#{key.to_s.capitalize} #{message}"
+        raise Light::Services::Error, "#{message.key.to_s.capitalize} #{message}"
       end
 
       def rollback!(rollback)

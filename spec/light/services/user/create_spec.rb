@@ -39,6 +39,20 @@ RSpec.describe User::Create do
     it { expect { service }.to raise_error(Light::Services::Error) }
   end
 
+  context "when params is empty (run!)" do
+    let(:service) { described_class.run!(params: params) }
+    let(:params) { {} }
+
+    it { expect { service }.to raise_error(Light::Services::Error) }
+  end
+
+  context "when params is empty and context (run!)" do
+    let(:service) { described_class.with({ raise_on_error: false }).run!(params: params) }
+    let(:params) { {} }
+
+    it { expect { service }.to raise_error(Light::Services::Error) }
+  end
+
   context "when name is absent" do
     let(:service) { described_class.run(params: params) }
 

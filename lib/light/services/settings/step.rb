@@ -20,10 +20,6 @@ module Light
             raise Light::Services::TwoConditions, "#{service_class} `if` and `unless` cannot be specified " \
                                                   "for the step `#{name}` at the same time"
           end
-
-          if @always && (@if || @unless)
-            raise Light::Services::Error, "#{service_class} `always` cannot be combined with `if` and `unless`"
-          end
         end
 
         def run(instance, benchmark: false)
@@ -65,7 +61,7 @@ module Light
           when Symbol
             instance.send(condition)
           when Proc
-            condition.call
+            instance.instance_exec(&condition)
           else
             raise Light::Services::Error, "#{@service_class} condition should be a Symbol or Proc " \
                                           "for the step `#{@name}` (currently: #{condition.class})"

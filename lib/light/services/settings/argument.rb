@@ -6,7 +6,7 @@ module Light
     module Settings
       class Argument
         # Getters
-        attr_reader :name, :default_exists, :default, :context, :optional
+        attr_reader :name, :default_exists, :default, :context, :optional, :arg_types_cache
 
         def initialize(name, service_class, opts = {})
           @name = name
@@ -18,6 +18,8 @@ module Light
           @default = opts.delete(:default)
           @optional = opts.delete(:optional)
 
+          @arg_types_cache = {}
+
           define_methods
         end
 
@@ -25,6 +27,8 @@ module Light
           return if !@type || [*@type].any? do |type|
             if type == :boolean
               value.is_a?(TrueClass) || value.is_a?(FalseClass)
+            elsif type.is_a?(Symbol)
+              arg_type(value) == type
             else
               value.is_a?(type)
             end
@@ -35,6 +39,19 @@ module Light
         end
 
         private
+
+        def arg_type(value)
+          klass = value.class
+
+          @arg_types_cache[klass] ||= klass
+            .name
+            .gsub(/::/, '/')
+            .gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2')
+            .gsub(/([a-z\d])([A-Z])/,'\1_\2')
+            .tr("-", "_")
+            .downcase
+            .to_sym
+        end
 
         def define_methods
           name = @name

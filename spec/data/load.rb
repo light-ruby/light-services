@@ -13,6 +13,7 @@ require "data/services/create_service"
 require "data/services/update_service"
 require "data/services/with_conditions"
 require "data/services/with_done"
+require "data/services/send_notification"
 
 require "data/services/user/create"
 require "data/services/user/update"
