@@ -28,13 +28,9 @@ module Light
       mount_class_based_collection :arguments, item_class: Settings::Argument, shortcut: :arg, allow_redefine: true
 
       # Arguments
-      # TODO: Rename internal arguments
+      arg :verbose, default: false
       arg :benchmark, default: false
       arg :deepness, default: 0, context: true
-
-      # Steps
-      step :load_defaults_and_validate
-      step :log_header, if: :benchmark?
 
       # Getters
       attr_reader :outputs, :arguments, :errors, :warnings
@@ -78,6 +74,9 @@ module Light
       end
 
       def call
+        load_defaults_and_validate
+        log_header if benchmark? || verbose?
+
         time = Benchmark.ms do
           run_steps
           run_steps_with_always

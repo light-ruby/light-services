@@ -2,6 +2,6 @@
 
 module Light
   module Services
-    VERSION = "2.0.0.rc6"
+    VERSION = "2.0.0.rc7"
   end
 end
