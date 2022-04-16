@@ -102,7 +102,7 @@ module Light
 
         def with(service_or_config = {}, config = {})
           service = service_or_config.is_a?(Hash) ? nil : service_or_config
-          config = service ? config : service_or_config
+          config = service_or_config unless service
 
           BaseWithContext.new(self, service, config)
         end
@@ -180,9 +180,9 @@ module Light
         log "🏎 Run service #{self.class}"
       end
 
-      def within_transaction
+      def within_transaction(&block)
         if @config[:use_transactions] && defined?(ActiveRecord::Base)
-          ActiveRecord::Base.transaction(requires_new: true) { yield }
+          ActiveRecord::Base.transaction(requires_new: true, &block)
         else
           yield
         end

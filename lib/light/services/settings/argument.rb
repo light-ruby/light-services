@@ -25,9 +25,10 @@ module Light
 
         def valid_type?(value)
           return if !@type || [*@type].any? do |type|
-            if type == :boolean
+            case type
+            when :boolean
               value.is_a?(TrueClass) || value.is_a?(FalseClass)
-            elsif type.is_a?(Symbol)
+            when Symbol
               arg_type(value) == type
             else
               value.is_a?(type)
@@ -45,9 +46,9 @@ module Light
 
           @arg_types_cache[klass] ||= klass
             .name
-            .gsub(/::/, '/')
-            .gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2')
-            .gsub(/([a-z\d])([A-Z])/,'\1_\2')
+            .gsub(/::/, "/")
+            .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
+            .gsub(/([a-z\d])([A-Z])/, '\1_\2')
             .tr("-", "_")
             .downcase
             .to_sym

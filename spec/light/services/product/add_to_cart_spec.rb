@@ -71,7 +71,9 @@ RSpec.describe Product::AddToCart do
     let(:service) { described_class.run(current_user: current_user, product: product, notify: true) }
     let(:current_user) { User.create!(name: "Andrew Emelianenko") }
     let(:product) { Product.create!(name: "Tesla Model X", price: 100_000) }
-    let(:another_service) { Product::Create.with(rollback_on_error: false).run(params: { product: { name: "iPhone", price: 100 } }) }
+    let(:another_service) do
+      Product::Create.with(rollback_on_error: false).run(params: { product: { name: "iPhone", price: 100 } })
+    end
 
     before { service.errors.copy_to(another_service) }
 

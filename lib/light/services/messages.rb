@@ -10,12 +10,12 @@ module Light
         @messages = {}
       end
 
-      def add(key, text, opts = {})
-        raise Light::Services::Error, "Error text can't be blank" if !text || text.blank?
+      def add(key, texts, opts = {})
+        raise Light::Services::Error, "Error text can't be blank" if !texts || texts.blank?
 
         message = nil
 
-        [*text].each do |text|
+        [*texts].each do |text|
           message = text.is_a?(Message) ? text : Message.new(key, text, opts)
 
           @messages[key] ||= []
@@ -48,7 +48,7 @@ module Light
       end
 
       def copy_to(entity)
-        if defined?(ActiveRecord::Base) && entity.is_a?(ActiveRecord::Base) || entity.is_a?(Light::Services::Base)
+        if (defined?(ActiveRecord::Base) && entity.is_a?(ActiveRecord::Base)) || entity.is_a?(Light::Services::Base)
           each do |key, messages|
             messages.each do |message|
               entity.errors.add(key, message.to_s)
@@ -67,7 +67,7 @@ module Light
       end
 
       def to_h
-        @messages.to_h.map { |key, value| [key, value.map(&:to_s)] }.to_h
+        @messages.to_h.transform_values { |value| value.map(&:to_s) }
       end
 
       def method_missing(method, *args, &block)

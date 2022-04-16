@@ -36,7 +36,7 @@ RSpec.context Light::Services::Error do
           step :hello_world, if: 42
 
           private
-          
+
           def hello_world
             # Hey, whats up?
           end
@@ -73,14 +73,14 @@ RSpec.context Light::Services::Error do
         class TwoSameSteps < ApplicationService
           step :hello_world
           step :hello_world
-  
+
           private
-          
+
           def hello_world
             # Hey, whats up?
           end
         end
-  
+
         TwoSameSteps.run
       RUBY
     end
@@ -97,7 +97,7 @@ RSpec.context Light::Services::Error do
           step :hello_world, after: :i_do_not_exist
 
           private
-          
+
           def hello_world
             # Hey, whats up?
           end
@@ -117,7 +117,7 @@ RSpec.context Light::Services::Error do
           step :hello_world
 
           private
-          
+
           def hello_world
             self.current_user = User.new
             errors.copy_from("Hello, world!")
@@ -140,7 +140,7 @@ RSpec.context Light::Services::Error do
           step :hello_world
 
           private
-          
+
           def hello_world
             self.current_user = User.new
             errors.copy_to("Hello, world!")
@@ -163,7 +163,7 @@ RSpec.context Light::Services::Error do
           step :hello_world
 
           private
-          
+
           def hello_world
             errors.i_do_not_exist
           end
