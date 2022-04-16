@@ -30,6 +30,14 @@ As this gem was just for internal usage, it has some problems:
 2. Code doesn't have any comments
 3. Repo doesn't have any CI/CD
 
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'light-services', '~> 2.0.0.rc7' 
+```
+
 ## Simple Example
 
 ### Send notification
@@ -314,3 +322,7 @@ You can find more examples here:
 [https://github.com/light-ruby/light-services/tree/v2/spec/data/services](https://github.com/light-ruby/light-services/tree/v2/spec/data/services)
 
 # Happy coding!
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
