@@ -3,7 +3,8 @@
 module Light
   module Services
     class Error < StandardError; end
-    class ParamRequired < Light::Services::Error; end
-    class ParamType < Light::Services::Error; end
+    class ArgTypeError < Error; end
+    class NoStepError < Error; end
+    class TwoConditions < Error; end
   end
 end
