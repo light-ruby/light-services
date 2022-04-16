@@ -9,7 +9,8 @@ Implementation of Service Object pattern for Ruby/Rails applications.
    2. [Steps](#steps)
    3. [Outputs](#outputs)
    4. [Context](#context)
-3. [Complex Examples](#complex-examples)
+3. [Complex Example](#complex-example)
+4. [More Examples](#more-examples)
 
 ## 💪 Features
 
@@ -205,7 +206,7 @@ class User::Charge
 end
 ```
 
-## Complex Examples
+## Complex Example
 
 ### Creation of records
 
@@ -306,5 +307,10 @@ class Team::Create < CreateService
   end
 end
 ```
+
+## More examples
+
+You can find more examples here:
+[https://github.com/light-ruby/light-services/tree/v2/spec/data/services](https://github.com/light-ruby/light-services/tree/v2/spec/data/services)
 
 # Happy coding!
