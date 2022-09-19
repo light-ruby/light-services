@@ -40,7 +40,11 @@ module Light
           settings_collection.each do |name, settings|
             next if !settings.default_exists || key?(name)
 
-            set(name, deep_dup(settings.default))
+            if settings.default.is_a?(Proc)
+              set(name, settings.default.call)
+            else
+              set(name, deep_dup(settings.default))
+            end
           end
         end
 
