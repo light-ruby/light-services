@@ -6,6 +6,7 @@ class Product::AddToCart < ApplicationService
   arg :current_user, type: User
   arg :quantity, type: Integer, default: 1
   arg :notify, type: :boolean, default: -> { false }
+  arg :test_default, default: -> { product }
 
   # Outputs
   output :order

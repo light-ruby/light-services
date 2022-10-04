@@ -41,7 +41,7 @@ module Light
             next if !settings.default_exists || key?(name)
 
             if settings.default.is_a?(Proc)
-              set(name, settings.default.call)
+              set(name, @instance.instance_exec(&settings.default))
             else
               set(name, deep_dup(settings.default))
             end
