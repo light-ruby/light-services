@@ -5,11 +5,11 @@ require_relative "lib/light/services/version"
 Gem::Specification.new do |spec|
   spec.name          = "light-services"
   spec.version       = Light::Services::VERSION
-  spec.authors       = ["Andrew Emelianenko"]
-  spec.email         = ["emelianenko.web@gmail.com"]
+  spec.authors       = ["Andrew Kodkod"]
+  spec.email         = ["andrew@kodkod.me"]
 
-  spec.summary       = "Powerful implementation of Service Object pattern for Ruby and Rails"
-  spec.description   = "Powerful implementation of Service Object pattern for Ruby and Rails"
+  spec.summary       = "Streamlined Service Object Implementation for Ruby and Rails"
+  spec.description   = "Streamlined Service Object Implementation for Ruby and Rails"
   spec.homepage      = "https://github.com/light-ruby/light-services"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")

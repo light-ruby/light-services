@@ -89,6 +89,9 @@ module Light
 
         log "🟢 Finished #{self.class} in #{time}ms"
         puts
+      rescue StandardError => e
+        run_steps_with_always
+        raise e
       end
 
       class << self

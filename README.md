@@ -1,6 +1,6 @@
-# 🚀 Light Services <sup>BETA</sup>
+# 🚀 Light Services
 
-Implementation of Service Object pattern for Ruby/Rails applications.
+An implementation of the Service Object pattern for Ruby and Rails applications.
 
 ## 👀 Table of Contents
 1. [Simple Example](#simple-example)
@@ -14,35 +14,35 @@ Implementation of Service Object pattern for Ruby/Rails applications.
 
 ## 💪 Features
 
-1. Ability to define `arguments`, `steps` and `outputs`
-2. Isolated behaviour of each service object
-3. Raising of errors to stop processing next steps
-4. Wrapping actions into database transactions
-5. Ability to pass context to child service object
-6. Framework agnostic
-7. 100% test coverage
+1. Ability to define `arguments`, `steps`, and `outputs`
+1. Isolated behavior of each service object
+1. Errors raise to stop processing subsequent steps
+1. Wrapping actions in database transactions
+1. Ability to pass context to child service objects
+1. Framework agnostic
+1. 100% test coverage
 
 ## ❌ Problems
 
-As this gem was just for internal usage, it has some problems:
+This gem was initially intended for internal use and has several issues:
 
-1. Gem isn't documented well
-2. Code doesn't have any comments
-3. Repo doesn't have any CI/CD
+1. The gem is not well-documented
+1. The code lacks comments
+1. The repository does not include CI/CD
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'light-services', '~> 2.0.0.rc7' 
+gem "light-services", "~> 2.0" 
 ```
 
 ## Simple Example
 
-### Send notification
+### Send Notification
 
-Let's create an elementary service object that sends a notification to the user. 
+Create a basic service object that sends a notification to a user. 
 
 ```ruby
 class User::SendNotification < ApplicationService
@@ -84,7 +84,7 @@ end
 
 ### Arguments
 
-You may send some arguments into the service object.
+Pass arguments into the service object as shown:
 
 **How to define arguments:**
 ```ruby
@@ -106,7 +106,7 @@ class User::SendNotification < ApplicationService
 end
 ```
 
-**How to pass arguments in controller:**
+**How to pass arguments from a controller:**
 ```ruby
 class UsersController
   def send_notification
@@ -116,7 +116,7 @@ class UsersController
 end
 ```
 
-**How to pass arguments and context from parent to child service object:**
+**Passing arguments and context from parent to child service object:**
 ```ruby
 class User::Update
   # Arguments
@@ -132,15 +132,15 @@ class User::Update
 
   def send_notification
     User::SendNotification
-      .with(self) # This line specifies the current service object as a parent and passes all context arguments into a child service object
-      .run(text: "Your profile was updated") # We don't need to pass `user` here as it's a context argument
+      .with(self) # Specifies the current service object as parent, passing all context arguments to a child service object
+      .run(text: "Your profile was updated") # No need to pass `user` as it's a context argument
   end
 end
 ```
 
 ### Steps
 
-Steps are a bit more powerful than you think.
+Steps are a bit more powerful than they appear.
 
 ```ruby
 class User::Charge
@@ -160,7 +160,7 @@ end
 
 ### Outputs
 
-Outputs are pretty straightforward.
+Outputs are straightforward.
 
 ```ruby
 class User::Charge
@@ -176,9 +176,9 @@ end
 
 The context specifies the relationship between parent and child service objects.
 
-What context does:
-1. It tells the parent service object to pass context arguments into a child service object
-2. When the child service object fails, it tells the parent service object to fail too (customizable)
+What the context does:
+1. Tells the parent service object to pass context arguments to a child service object.
+1. Informs the parent service object to also fail when the child service object fails (this is customizable).
 
 ```ruby
 class User::Charge
@@ -216,9 +216,9 @@ end
 
 ## Complex Example
 
-### Creation of records
+### Record Creation
 
-Let's investigate a more exciting example where we create a wrapper to create database records.
+Explore a more intricate example of creating database records.
 
 **Here is an example of controller (pretty thin, yeah? but we can make it even thinner):**
 ```ruby
@@ -319,7 +319,7 @@ end
 ## More examples
 
 You can find more examples here:
-[https://github.com/light-ruby/light-services/tree/v2/spec/data/services](https://github.com/light-ruby/light-services/tree/v2/spec/data/services)
+[https://github.com/light-ruby/light-services/tree/spec/data/services](https://github.com/light-ruby/light-services/tree/v2/spec/data/services)
 
 # Happy coding!
 
