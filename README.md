@@ -28,7 +28,6 @@ This gem was initially intended for internal use and has several issues:
 
 1. The gem is not well-documented
 1. The code lacks comments
-1. The repository does not include CI/CD
 
 ## Installation
 
