@@ -1,6 +1,6 @@
+# Common
 /.bundle/
 /.yardoc
-/Gemfile.lock
 /_yardoc/
 /coverage/
 /doc/
@@ -8,6 +8,13 @@
 /spec/reports/
 /tmp/
 /.idea/
-/gemfiles/.bundle/
-/*.gem
-/*.iml
+
+# RSpec failure tracking
+.rspec_status
+
+# Ignore IDE files
+/.idea
+*.iml
+
+# Ignore gem files
+*.gem

@@ -1,0 +1,63 @@
+name: CI
+on: push
+
+jobs:
+  rubocop:
+    name: Rubocop
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+
+      - name: Rubocop
+        uses: andrewmcodes/rubocop-linter-action@v3.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  rspec:
+    name: RSpec
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: [2.5, 2.6, 2.7, head, debug]
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: sudo apt-get install libsqlite3-dev
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1.38.0
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: RSpec
+        run: bundle exec rspec
+
+  codecov:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: sudo apt-get install libsqlite3-dev
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1.38.0
+        with:
+          ruby-version: head
+          bundler-cache: true
+
+      - name: RSpec
+        run: bundle exec rspec
+
+      - name: Code Coverage
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
