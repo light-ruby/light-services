@@ -1,6 +1,6 @@
 # 🚀 Light Services
 
-An implementation of the Service Object pattern for Ruby and Rails applications.
+A streamlined Service Object implementation for Ruby and Rails, tested in multiple SaaS applications with hundreds of service objects. This gem offers a reliable framework for organizing business logic effectively.
 
 ## 👀 Table of Contents
 1. [Simple Example](#simple-example)
