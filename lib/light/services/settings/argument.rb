@@ -46,7 +46,7 @@ module Light
 
           @arg_types_cache[klass] ||= klass
             .name
-            .gsub(/::/, "/")
+            .gsub("::", "/")
             .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
             .gsub(/([a-z\d])([A-Z])/, '\1_\2')
             .tr("-", "_")
@@ -58,8 +58,8 @@ module Light
           name = @name
 
           @service_class.define_method(@name) { @arguments.get(name) }
-          @service_class.define_method("#{@name}?") { !!@arguments.get(name) } # rubocop:disable Style/DoubleNegation
-          @service_class.define_method("#{@name}=") { |value| @arguments.set(name, value) }
+          @service_class.define_method(:"#{@name}?") { !!@arguments.get(name) }
+          @service_class.define_method(:"#{@name}=") { |value| @arguments.set(name, value) }
           @service_class.send(:private, "#{@name}=")
         end
       end

@@ -76,7 +76,7 @@ module Light
 
         def insert_item(klass, name, opts, item)
           index = find_index(klass, opts[:before] || opts[:after])
-          index = opts[:before] ? index : index + 1
+          index += 1 unless opts[:before]
 
           @collection[klass] = @collection[klass].to_a.insert(index, [name, item]).to_h
         end

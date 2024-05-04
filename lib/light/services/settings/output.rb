@@ -24,8 +24,8 @@ module Light
           name = @name
 
           @service_class.define_method(@name) { @outputs.get(name) }
-          @service_class.define_method("#{@name}?") { !!@outputs.get(name) } # rubocop:disable Style/DoubleNegation
-          @service_class.define_method("#{@name}=") { |value| @outputs.set(name, value) }
+          @service_class.define_method(:"#{@name}?") { !!@outputs.get(name) }
+          @service_class.define_method(:"#{@name}=") { |value| @outputs.set(name, value) }
           @service_class.send(:private, "#{@name}=")
         end
       end

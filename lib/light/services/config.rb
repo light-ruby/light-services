@@ -38,11 +38,11 @@ module Light
       end
 
       def set(key, value)
-        instance_variable_set("@#{key}", value)
+        instance_variable_set(:"@#{key}", value)
       end
 
       def get(key)
-        instance_variable_get("@#{key}")
+        instance_variable_get(:"@#{key}")
       end
 
       def reset_to_defaults!
@@ -52,7 +52,7 @@ module Light
       end
 
       def to_h
-        DEFAULTS.keys.map { |key| [key, get(key)] }.to_h
+        DEFAULTS.keys.to_h { |key| [key, get(key)] }
       end
 
       def merge(config)
