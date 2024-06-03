@@ -19,7 +19,7 @@ module Light
           settings_collection.each do |name, settings|
             next if settings.optional && (!key?(name) || get(name).nil?)
 
-            settings.valid_type?(get(name))
+            settings.validate_type!(get(name))
           end
         end
 

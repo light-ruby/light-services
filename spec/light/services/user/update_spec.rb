@@ -23,7 +23,7 @@ RSpec.describe User::Update do
 
   context "when current user is absent" do
     let(:user) { User::Create.run(params: { user: { name: "Andrew Emelianenko" } }).user }
-    let(:current_user) {}
+    let(:current_user) { nil }
     let(:name) { "New Name" }
 
     let(:params) do
@@ -39,7 +39,7 @@ RSpec.describe User::Update do
   end
 
   context "when user is absent" do
-    let(:user) {}
+    let(:user) { nil }
     let(:current_user) { User::Create.run(params: { user: { name: "Andrew Emelianenko" } }).user }
     let(:name) { "New Name" }
 
@@ -57,8 +57,7 @@ RSpec.describe User::Update do
   context "when params are absent" do
     let(:user) { User::Create.run(params: { user: { name: "Andrew Emelianenko" } }).user }
     let(:current_user) { user }
-
-    let(:params) {}
+    let(:params) { nil }
 
     it { expect { service }.to raise_error(Light::Services::ArgTypeError) }
   end

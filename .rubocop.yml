@@ -1,4 +1,5 @@
 require:
+  - rubocop-rake
   - rubocop-rspec
   - rubocop-performance
 
@@ -17,6 +18,9 @@ Security/Eval:
     - spec/light/services/error_spec.rb
 
 Style/Documentation:
+  Enabled: false
+
+Style/ClassVars:
   Enabled: false
 
 Style/StringLiterals:

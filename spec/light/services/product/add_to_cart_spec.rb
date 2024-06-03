@@ -28,7 +28,7 @@ RSpec.describe Product::AddToCart do
   end
 
   context "when current user is absent" do
-    let(:current_user) {}
+    let(:current_user) { nil }
     let(:product) { Product.create!(name: "Tesla Model X", price: 100_000) }
 
     it { expect { service }.to raise_error(Light::Services::ArgTypeError) }
@@ -36,7 +36,7 @@ RSpec.describe Product::AddToCart do
 
   context "when product is absent" do
     let(:current_user) { User.create!(name: "Andrew Emelianenko") }
-    let(:product) {}
+    let(:product) { nil }
 
     it { expect { service }.to raise_error(Light::Services::ArgTypeError) }
   end

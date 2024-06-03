@@ -23,7 +23,7 @@ module Light
           define_methods
         end
 
-        def valid_type?(value)
+        def validate_type!(value)
           return if !@type || [*@type].any? do |type|
             case type
             when :boolean
