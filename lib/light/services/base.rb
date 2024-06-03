@@ -36,7 +36,7 @@ module Light
       attr_reader :outputs, :arguments, :errors, :warnings
 
       def initialize(args = {}, config = {}, parent_service = nil)
-        @config = Light::Services.config.merge(config)
+        @config = Light::Services.config.merge(self.class.class_config || {}).merge(config)
         @parent_service = parent_service
 
         @outputs = Collection::Outputs.new(self)
@@ -95,12 +95,18 @@ module Light
       end
 
       class << self
+        attr_accessor :class_config
+
+        def config(config = {})
+          self.class_config = config
+        end
+
         def run(args = {}, config = {})
           new(args, config).tap(&:call)
         end
 
-        def run!(args = {})
-          run(args, raise_on_error: true)
+        def run!(args = {}, config = {})
+          run(args, config.merge(raise_on_error: true))
         end
 
         def with(service_or_config = {}, config = {})
