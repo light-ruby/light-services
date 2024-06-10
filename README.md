@@ -1,326 +1,74 @@
 # 🚀 Light Services
 
-A streamlined Service Object implementation for Ruby and Rails, tested in multiple SaaS applications with hundreds of service objects. This gem offers a reliable framework for organizing business logic effectively.
+Light Services is a simple yet powerful way to organize your business logic. This Ruby gem helps you build services that are easy to test, maintain, and understand.
 
-## 👀 Table of Contents
-1. [Simple Example](#simple-example)
-2. [Usage](#usage)
-   1. [Arguments](#arguments)
-   2. [Steps](#steps)
-   3. [Outputs](#outputs)
-   4. [Context](#context)
-3. [Complex Example](#complex-example)
-4. [More Examples](#more-examples)
+## Features
 
-## 💪 Features
+- 🧩 **Simple**: Define your service as a class with `arguments`, `steps`, and `outputs`
+- 🎢 **Transactions**: Automatically rollback database changes if any step fails
+- 👵 **Inheritance**: Inherit from other services to reuse logic seamlessly
+- 🚨 **Error Handling**: Collect errors from steps and handle them your way
+- ⛓️ **Context**: Run multiple services sequentially within the same context
+- 🤔 **Framework Agnostic**: Compatible with Rails, Hanami, or any Ruby framework
+- 🏗️ **Modularity**: Isolate and test your services with ease
+- 🐛 **100% Test Coverage**: Bugs are not welcome here!
+- 🛡️ **Battle-Tested**: In production use since 2017
 
-1. Ability to define `arguments`, `steps`, and `outputs`
-1. Isolated behavior of each service object
-1. Errors raise to stop processing subsequent steps
-1. Wrapping actions in database transactions
-1. Ability to pass context to child service objects
-1. Framework agnostic
-1. 100% test coverage
-
-## ❌ Problems
-
-This gem was initially intended for internal use and has several issues:
-
-1. The gem is not well-documented
-1. The code lacks comments
-
-## Installation
-
-Add this line to your application's Gemfile:
+## Quick Example
 
 ```ruby
-gem "light-services", "~> 2.0" 
-```
-
-## Simple Example
-
-### Send Notification
-
-Create a basic service object that sends a notification to a user. 
-
-```ruby
-class User::SendNotification < ApplicationService
+class User::ResetPassword < Light::Services::Base
   # Arguments
-  arg :user, type: User
-  arg :text, type: :string
+  arg :user, type: User, optional: true
+  arg :email, type: :string, optional: true
+  arg :send_email, type: :boolean, default: true
 
   # Steps
-  step :validate_user
-  step :validate_text
-  step :send_notification
-  
-  # Outputs
-  output :response
-
-  private
-
-  def validate_user
-    return if user.active?
-    
-    errors.add(:user, "isn't active")
-  end
-
-  def validate_text
-    return if text.present?
-
-    errors.add(:text, "must be present")
-  end
-
-  def send_notification
-    self.response = ExternalAPI.send_message(...)
-  rescue ExternalAPI::Error
-    errors.add(:base, "External API doesn't work")
-  end
-end
-```
-
-## Usage
-
-### Arguments
-
-Pass arguments into the service object as shown:
-
-**How to define arguments:**
-```ruby
-class User::SendNotification < ApplicationService
-  # Required argument
-  arg :user, type: User
-  
-  # Optional argument
-  arg :device, type: Device, optional: true
-  
-  # Argument with default value
-  arg :text, type: :string, default: "Hello, how are you?"
-  
-  # Argument with multiple allowed types
-  arg :retry, type: [TrueClass, FalseClass], default: false
-  
-  # Argument which will be automatically passed into child components
-  arg :provider, type: Provider, context: true
-end
-```
-
-**How to pass arguments from a controller:**
-```ruby
-class UsersController
-  def send_notification
-    service = User::SendNotification.run(user: User.first, provider: Provider.first)
-    # ...
-  end
-end
-```
-
-**Passing arguments and context from parent to child service object:**
-```ruby
-class User::Update
-  # Arguments
-  arg :user, type: User, context: true
-
-  # Steps
-  # ...
-  step :send_notification
-
-  private
-
-  # ...
-
-  def send_notification
-    User::SendNotification
-      .with(self) # Specifies the current service object as parent, passing all context arguments to a child service object
-      .run(text: "Your profile was updated") # No need to pass `user` as it's a context argument
-  end
-end
-```
-
-### Steps
-
-Steps are a bit more powerful than they appear.
-
-```ruby
-class User::Charge
-  # Run step only when condition meets
-  step :create_payment_account, unless: :payment_account?
-  
-  # Run step only when condition meets
-  step :charge_credit_card, if: :pay_with_credit_card?
-  
-  # Run step after other step
-  step :update_payment_account, after: :create_payment_account
-  
-  # Or before
-  step :save_information, before: :log_action
-end
-```
-
-### Outputs
-
-Outputs are straightforward.
-
-```ruby
-class User::Charge
-  # Simple output
-  output :payment
-  
-  # Output with initial value
-  output :items, default: []
-end
-```
-
-### Context
-
-The context specifies the relationship between parent and child service objects.
-
-What the context does:
-1. Tells the parent service object to pass context arguments to a child service object.
-1. Informs the parent service object to also fail when the child service object fails (this is customizable).
-
-```ruby
-class User::Charge
-  # Arguments
-  arg :user, type: User, context: true
-  arg :cents, type: Integer
-  
-  # ...
-  
-  private
-  
-  # ...
-  
-  def send_notification
-    # Run service object w/o any context
-    User::SendNotification
-      .run(user: user, text: "...")
-  
-    # Run service object and specify current one as a parent
-    User::SendNotification
-      .with(self)
-      .run(text: "...")
-      
-    # Run service object with context but don't load errors from the child service object
-    service = User::SendNotification
-      .with(self, load_errors: false)
-      .run(text: "...")
-      
-    if service.failed?
-      # That's ok. Process it somehow...
-    end
-  end
-end
-```
-
-## Complex Example
-
-### Record Creation
-
-Explore a more intricate example of creating database records.
-
-**Here is an example of controller (pretty thin, yeah? but we can make it even thinner):**
-```ruby
-class ContactsController < ApplicationController
-  # ...
-
-  def create
-    service = Contact::Create.run(service_args)
-    
-    if service.success?
-      render locals: { contact: service.contact }, status: :ok
-    else
-      render "shared/errors", locals: { service: service }, status: :bad_request
-    end
-  end
-
-  # ...
-end
-```
-
-**Then, let's create a service object (no way, it couldn't be so simple):**
-```ruby
-class Contact::Create < CreateService
-  # We create alias just for a better readability
-  # so that we can call `service.contact` instead of `service.record`  
-  alias contact record
-  
-  private
-  
-  def filtered_params
-    params.require(:contact).permit(:name, :phone)
-  end
-end
-```
-
-**Let's check what logic we put into `CreateService`:**
-```ruby
-class CreateService < ApplicationService
-  # Arguments
-  arg :attributes, type: Hash, optional: true
-
-  # Outputs
-  output :record
-
-  # Steps
-  step :initialize_record
-  step :assign_attributes
-  step :authorize
   step :validate
-  step :save_record
+  step :find_user, unless: :user?
+  step :generate_reset_token
+  step :save_reset_token
+  step :send_reset_email, if: :send_email?
+
+  # Outputs
+  output :user, type: User
+  output :reset_token, type: :string
 
   private
-
-  def initialize_record
-    self.record = self.class.module_parent.new
-  end
-
-  def assign_attributes
-    record.assign_attributes(filtered_params)
-  end
-
-  def authorize
-    return if force || attributes
-
-    # Here is some Pundit logic 👇
-    authorize!(record, with_action: :create?)
-  end
 
   def validate
-    return if record.valid?
-
-    errors.copy_from(record)
+    errors.add(:base, "user or email is required") if !user? && !email?
   end
 
-  def save_record
-    record.save_with!(self)
+  def find_user
+    self.user = User.find_by("LOWER(email) = ?", email.downcase)
+    errors.add(:email, "not found") unless user
   end
 
-  def filtered_params
-    raise NotImplementedError
+  def generate_reset_token
+    self.reset_token = SecureRandom.hex(32)
+  end
+
+  def save_reset_token
+    user.update!(
+      reset_password_token: reset_token,
+      reset_password_sent_at: Time.current,
+    )
+  rescue ActiveRecord::RecordInvalid => e
+    errors.from_record(e.record)
+  end
+
+  def send_reset_email
+    Mailer::SendEmail
+      .with(self)
+      .run(template: :reset_password, user:, reset_token:)
   end
 end
 ```
 
-**Now we can easily reuse all this code and create as many services as we want:**
-```ruby
-class Team::Create < CreateService
-  alias team record
-  
-  private
-  
-  def filtered_params
-    params.require(:team).permit(:name)
-  end
-end
-```
+## Documentation
 
-## More examples
-
-You can find more examples here:
-[https://github.com/light-ruby/light-services/tree/spec/data/services](https://github.com/light-ruby/light-services/tree/v2/spec/data/services)
-
-# Happy coding!
+You can find the full documentation at [https://light-services-docs.vercel.app/](https://light-services-docs.vercel.app/).
 
 ## License
 
