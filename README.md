@@ -2,6 +2,9 @@
 
 Light Services is a simple yet powerful way to organize your business logic. This Ruby gem helps you build services that are easy to test, maintain, and understand.
 
+![GitHub CI](https://github.com/light-ruby/light-services/actions/workflows/ci.yml/badge.svg)
+[![Codecov](https://codecov.io/gh/light-ruby/light-services/graph/badge.svg?token=IGJNZ2BQ26)](https://codecov.io/gh/light-ruby/light-services)
+
 ## Features
 
 - 🧩 **Simple**: Define your service as a class with `arguments`, `steps`, and `outputs`
