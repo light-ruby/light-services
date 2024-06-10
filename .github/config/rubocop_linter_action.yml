@@ -2,4 +2,4 @@ versions:
   - rubocop: "1.64"
   - rubocop-performance: "1.21"
   - rubocop-rake: "0.6"
-  - rubocop-rspec: "2.30"
+  - rubocop-rspec: "2.31"
