@@ -71,7 +71,7 @@ end
 
 ## Documentation
 
-You can find the full documentation at [https://light-services-docs.vercel.app/](https://light-services-docs.vercel.app/).
+You can find the full documentation at [light-services-docs.vercel.app](https://light-services-docs.vercel.app/).
 
 ## License
 

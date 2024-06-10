@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Andrew Kodkod"]
   spec.email         = ["andrew@kodkod.me"]
 
-  spec.summary       = "Streamlined Service Object Implementation for Ruby and Rails"
-  spec.description   = "Streamlined Service Object Implementation for Ruby and Rails"
-  spec.homepage      = "https://github.com/light-ruby/light-services"
+  spec.summary       = "Robust service architecture for Ruby frameworks"
+  spec.description   = "Robust service architecture for Ruby frameworks"
+  spec.homepage      = "https://light-services-docs.vercel.app/"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.7.0")
 
