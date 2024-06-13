@@ -44,7 +44,7 @@ class GreetService < Light::Services::Base
 end
 ```
 
-## Comprehensive Example
+## Advanced Example
 
 ```ruby
 class User::ResetPassword < Light::Services::Base
@@ -90,7 +90,7 @@ class User::ResetPassword < Light::Services::Base
 
   def send_reset_email
     Mailer::SendEmail
-      .with(self)
+      .with(self) # Call sub-service with the same context
       .run(template: :reset_password, user:, reset_token:)
   end
 end
