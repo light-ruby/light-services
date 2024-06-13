@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-# This class defines settings for step
+# This class defines items for step
 module Light
   module Services
-    module Settings
+    module Items
       class Step
         # Getters
         attr_reader :name, :always

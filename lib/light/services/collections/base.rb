@@ -3,7 +3,7 @@
 # Collection to store arguments and outputs values
 module Light
   module Services
-    module Collection
+    module Collections
       class Base
         # Includes
         extend Forwardable
@@ -37,7 +37,7 @@ module Light
         end
 
         def load_defaults
-          settings_collection.each do |name, settings|
+          items_collection.each do |name, settings|
             next if !settings.default_exists || key?(name)
 
             if settings.default.is_a?(Proc)

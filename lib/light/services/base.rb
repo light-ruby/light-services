@@ -4,13 +4,13 @@ require "light/services/message"
 require "light/services/messages"
 require "light/services/base_with_context"
 
-require "light/services/settings/step"
-require "light/services/settings/output"
-require "light/services/settings/argument"
+require "light/services/items/step"
+require "light/services/items/output"
+require "light/services/items/argument"
 
-require "light/services/collection/base"
-require "light/services/collection/outputs"
-require "light/services/collection/arguments"
+require "light/services/collections/base"
+require "light/services/collections/outputs"
+require "light/services/collections/arguments"
 
 require "light/services/class_based_collection/base"
 require "light/services/class_based_collection/mount"
@@ -23,9 +23,9 @@ module Light
       extend ClassBasedCollection::Mount
 
       # Settings
-      mount_class_based_collection :steps,     item_class: Settings::Step,     shortcut: :step
-      mount_class_based_collection :outputs,   item_class: Settings::Output,   shortcut: :output
-      mount_class_based_collection :arguments, item_class: Settings::Argument, shortcut: :arg, allow_redefine: true
+      mount_class_based_collection :steps, item_class: Items::Step, shortcut: :step
+      mount_class_based_collection :outputs, item_class: Items::Output, shortcut: :output
+      mount_class_based_collection :arguments, item_class: Items::Argument, shortcut: :arg, allow_redefine: true
 
       # Arguments
       arg :verbose, default: false
@@ -39,8 +39,8 @@ module Light
         @config = Light::Services.config.merge(self.class.class_config || {}).merge(config)
         @parent_service = parent_service
 
-        @outputs = Collection::Outputs.new(self)
-        @arguments = Collection::Arguments.new(self, args)
+        @outputs = Collections::Outputs.new(self)
+        @arguments = Collections::Arguments.new(self, args)
 
         @done = false
         @launched_steps = []

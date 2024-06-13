@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-# This class defines settings for output
+# This class defines items for output
 module Light
   module Services
-    module Settings
+    module Items
       class Output
         # Getters
         attr_reader :name, :default_exists, :default

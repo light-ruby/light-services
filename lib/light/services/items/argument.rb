@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-# This class defines settings for argument
+# This class defines items for argument
 module Light
   module Services
-    module Settings
+    module Items
       class Argument
         # Getters
         attr_reader :name, :default_exists, :default, :context, :optional, :arg_types_cache
@@ -18,8 +18,6 @@ module Light
           @default = opts.delete(:default)
           @optional = opts.delete(:optional)
 
-          @arg_types_cache = {}
-
           define_methods
         end
 
@@ -29,7 +27,7 @@ module Light
             when :boolean
               value.is_a?(TrueClass) || value.is_a?(FalseClass)
             when Symbol
-              arg_type(value) == type
+              class_to_symbol(value.class) == type
             else
               value.is_a?(type)
             end
@@ -41,10 +39,8 @@ module Light
 
         private
 
-        def arg_type(value)
-          klass = value.class
-
-          @arg_types_cache[klass] ||= klass
+        def class_to_symbol(klass)
+          klass
             .name
             .gsub("::", "/")
             .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')

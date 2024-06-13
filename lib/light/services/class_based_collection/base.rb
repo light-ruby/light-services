@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Create class based collections for storing arguments settings, steps settings and outputs settings
+# Create class based collections for storing arguments items, steps items and outputs items
 #
 # General functionality:
 #   1. Collection automatically loads data from parent classes

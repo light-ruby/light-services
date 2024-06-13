@@ -3,11 +3,11 @@
 # Collection to store outputs values
 module Light
   module Services
-    module Collection
+    module Collections
       class Outputs < Base
         private
 
-        def settings_collection
+        def items_collection
           @instance.class.outputs
         end
       end
