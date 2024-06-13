@@ -17,7 +17,34 @@ Light Services is a simple yet powerful way to organize your business logic. Thi
 - 🐛 **100% Test Coverage**: Bugs are not welcome here!
 - 🛡️ **Battle-Tested**: In production use since 2017
 
-## Quick Example
+## Simple Example
+
+```ruby
+class GreetService < Light::Services::Base
+  # Attributes
+  arg :name
+  arg :age
+
+  # Steps
+  step :build_message
+  step :send_message
+
+  # Outputs
+  output :message
+
+  private
+
+  def build_message
+    self.message = "Hello, #{name}! You are #{age} years old."
+  end
+
+  def send_message
+    # Send logic goes here
+  end
+end
+```
+
+## Comprehensive Example
 
 ```ruby
 class User::ResetPassword < Light::Services::Base
@@ -71,7 +98,7 @@ end
 
 ## Documentation
 
-You can find the full documentation at [light-services-docs.vercel.app](https://light-services-docs.vercel.app/).
+You can find the full documentation at [light-services.kodkod.me](https://light-services.kodkod.me).
 
 ## License
 
