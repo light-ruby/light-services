@@ -21,7 +21,7 @@ Light Services is a simple yet powerful way to organize your business logic. Thi
 
 ```ruby
 class GreetService < Light::Services::Base
-  # Attributes
+  # Arguments
   arg :name
   arg :age
 
