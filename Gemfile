@@ -6,7 +6,7 @@ gemspec
 
 group :test do
   gem "activerecord", "~> 7.1"
-  gem "database_cleaner-active_record", "~> 2.1"
+  gem "database_cleaner-active_record", "~> 2.2"
   gem "sqlite3", "~> 1.7"
 
   gem "codecov", "~> 0.6.0"
