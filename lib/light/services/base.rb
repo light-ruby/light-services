@@ -74,24 +74,26 @@ module Light
       end
 
       def call
-        load_defaults_and_validate
-        log_header if benchmark? || verbose?
+        ActiveSupport::Notifications.instrument("call_service.light_services", { instance: self }) do
+          load_defaults_and_validate
+          log_header if benchmark? || verbose?
 
-        time = Benchmark.ms do
-          run_steps
+          time = Benchmark.realtime do
+            run_steps
+            run_steps_with_always
+
+            copy_warnings_to_parent_service
+            copy_errors_to_parent_service
+          end
+
+          return unless benchmark
+
+          log "🟢 Finished #{self.class} in #{time}ms"
+          puts
+        rescue StandardError => e
           run_steps_with_always
-
-          copy_warnings_to_parent_service
-          copy_errors_to_parent_service
+          raise e
         end
-
-        return unless benchmark
-
-        log "🟢 Finished #{self.class} in #{time}ms"
-        puts
-      rescue StandardError => e
-        run_steps_with_always
-        raise e
       end
 
       class << self
