@@ -119,7 +119,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord (~> 8.0)
-  database_cleaner-active_record (~> 2.1)
+  database_cleaner-active_record (~> 2.2)
   light-services!
   rake (~> 13.2)
   rspec (~> 3.13)

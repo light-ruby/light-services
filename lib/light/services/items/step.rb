@@ -29,7 +29,7 @@ module Light
             ActiveSupport::Notifications.instrument("run_step.light_services",
                                                     { instance: instance, step_name: name }) do
               if benchmark
-                time = ActiveSupport::Benchmark.realtime(:float_millisecond) do
+                time = Benchmark.realtime do
                   instance.send(name)
                 end
 

@@ -78,7 +78,7 @@ module Light
           load_defaults_and_validate
           log_header if benchmark? || verbose?
 
-          time = ActiveSupport::Benchmark.realtime(:float_millisecond) do
+          time = Benchmark.realtime do
             run_steps
             run_steps_with_always
 
