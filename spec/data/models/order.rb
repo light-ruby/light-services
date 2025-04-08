@@ -11,7 +11,7 @@ class Order < ApplicationRecord
   validates :discount, numericality: { greater_than_or_equal: 0 }
 
   # Enumerables
-  enum status: {
+  enum :status, {
     in_progress: 1,
     completed: 2,
     canceled: 3

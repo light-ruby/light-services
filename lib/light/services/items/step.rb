@@ -26,17 +26,20 @@ module Light
           return false unless run?(instance)
 
           if instance.respond_to?(name, true)
-            if benchmark
-              time = Benchmark.ms do
+            ActiveSupport::Notifications.instrument("run_step.light_services",
+                                                    { instance: instance, step_name: name }) do
+              if benchmark
+                time = ActiveSupport::Benchmark.realtime(:float_millisecond) do
+                  instance.send(name)
+                end
+
+                instance.log "⏱️ Step #{name} took #{time}ms"
+              else
                 instance.send(name)
               end
 
-              instance.log "⏱️ Step #{name} took #{time}ms"
-            else
-              instance.send(name)
+              true
             end
-
-            true
           else
             raise Light::Services::NoStepError, "Cannot find step `#{name}` in service `#{@service_class}`"
           end
