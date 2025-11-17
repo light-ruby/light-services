@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "benchmark"
+
 require "light/services/message"
 require "light/services/messages"
 require "light/services/base_with_context"
