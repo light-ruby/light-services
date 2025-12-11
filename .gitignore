@@ -18,3 +18,7 @@
 
 # Ignore gem files
 *.gem
+
+# Ignore mac files
+*.DS_Store
+

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# This class allows to run service object with context (parent class and custom config)
+# This class allows running a service object with context (parent class and custom config)
 module Light
   module Services
     class BaseWithContext
@@ -26,8 +26,7 @@ module Light
       private
 
       def extend_arguments(args)
-        # TODO: Do we need `.dup` here?
-        args = @parent_service.arguments.extend_with_context(args) if @parent_service
+        args = @parent_service.arguments.dup.extend_with_context(args) if @parent_service
         args[:deepness] += 1 if args[:deepness]
 
         args

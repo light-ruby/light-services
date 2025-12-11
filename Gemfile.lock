@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    light-services (2.2)
+    light-services (2.2.1)
       benchmark (>= 0.5)
 
 GEM

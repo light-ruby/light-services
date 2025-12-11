@@ -42,7 +42,7 @@ module Light
         @parent_service = parent_service
 
         @outputs = Collection::Outputs.new(self)
-        @arguments = Collection::Arguments.new(self, args)
+        @arguments = Collection::Arguments.new(self, args.dup)
 
         @done = false
         @launched_steps = []
@@ -115,7 +115,7 @@ module Light
           service = service_or_config.is_a?(Hash) ? nil : service_or_config
           config = service_or_config unless service
 
-          BaseWithContext.new(self, service, config)
+          BaseWithContext.new(self, service, config.dup)
         end
       end
 
