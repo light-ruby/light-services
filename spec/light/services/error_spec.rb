@@ -177,4 +177,66 @@ RSpec.context Light::Services::Error do
       expect { eval(class_code) }.to raise_error(NoMethodError)
     end
   end
+
+  context "when adding blank error text" do
+    let(:class_code_nil) do
+      <<-RUBY
+        class WithNilErrorText < ApplicationService
+          step :add_nil_error
+
+          private
+
+          def add_nil_error
+            errors.add(:base, nil)
+          end
+        end
+
+        WithNilErrorText.run
+      RUBY
+    end
+
+    let(:class_code_empty) do
+      <<-RUBY
+        class WithEmptyErrorText < ApplicationService
+          step :add_empty_error
+
+          private
+
+          def add_empty_error
+            errors.add(:base, "")
+          end
+        end
+
+        WithEmptyErrorText.run
+      RUBY
+    end
+
+    let(:class_code_whitespace) do
+      <<-RUBY
+        class WithWhitespaceErrorText < ApplicationService
+          step :add_whitespace_error
+
+          private
+
+          def add_whitespace_error
+            errors.add(:base, "   ")
+          end
+        end
+
+        WithWhitespaceErrorText.run
+      RUBY
+    end
+
+    it "raises error for nil text" do
+      expect { eval(class_code_nil) }.to raise_error(described_class, "Error text can't be blank")
+    end
+
+    it "raises error for empty string" do
+      expect { eval(class_code_empty) }.to raise_error(described_class, "Error text can't be blank")
+    end
+
+    it "raises error for whitespace only" do
+      expect { eval(class_code_whitespace) }.to raise_error(described_class, "Error text can't be blank")
+    end
+  end
 end

@@ -1,0 +1,183 @@
+# frozen_string_literal: true
+
+RSpec.describe Light::Services::Collection::Base do
+  describe "#[]" do
+    let(:service) { WithConditions.run }
+
+    it "returns value for key" do
+      expect(service.arguments[:add_c]).to be(false)
+    end
+
+    it "returns nil for missing key" do
+      expect(service.arguments[:nonexistent]).to be_nil
+    end
+  end
+
+  describe "#[]=" do
+    let(:service) { WithConditions.run }
+
+    it "sets value for key" do
+      service.arguments[:custom_key] = "custom_value"
+      expect(service.arguments[:custom_key]).to eq("custom_value")
+    end
+  end
+
+  describe "#get" do
+    let(:service) { WithConditions.run }
+
+    it "returns value for key" do
+      expect(service.arguments.get(:add_c)).to be(false)
+    end
+  end
+
+  describe "#set" do
+    let(:service) { WithConditions.run }
+
+    it "sets value for key" do
+      service.arguments.set(:custom, "value")
+      expect(service.arguments.get(:custom)).to eq("value")
+    end
+  end
+
+  describe "#key?" do
+    let(:service) { WithConditions.run }
+
+    it "returns true for existing key" do
+      expect(service.arguments.key?(:add_c)).to be(true)
+    end
+
+    it "returns false for missing key" do
+      expect(service.arguments.key?(:nonexistent)).to be(false)
+    end
+  end
+
+  describe "#to_h" do
+    let(:service) { WithConditions.run }
+
+    it "returns hash representation" do
+      hash = service.arguments.to_h
+      expect(hash).to be_a(Hash)
+      expect(hash).to include(:add_c, :do_not_add_d)
+    end
+  end
+
+  describe "#load_defaults" do
+    context "with static defaults" do
+      let(:service) { WithConditions.new }
+
+      before { service.arguments.load_defaults }
+
+      it "loads default values" do
+        expect(service.add_c).to be(false)
+        expect(service.do_not_add_d).to be(true)
+      end
+    end
+
+    context "with Proc defaults" do
+      let(:user) { User.create!(name: "Test") }
+      let(:product) { Product.create!(name: "Test", price: 100) }
+      let(:service) { Product::AddToCart.new(current_user: user, product: product) }
+
+      before do
+        service.arguments.load_defaults
+      end
+
+      it "evaluates Proc in instance context" do
+        expect(service.arguments[:test_default]).to eq(product)
+      end
+    end
+
+    context "with complex defaults" do
+      it "deep dups default values to avoid mutations" do
+        # Run two services with array/hash defaults
+        service1 = CreateService.new(params: {})
+        service2 = CreateService.new(params: {})
+
+        service1.outputs.load_defaults
+        service2.outputs.load_defaults
+
+        # Modify one service's default
+        service1.outputs[:data][:modified] = true
+
+        # The other should be unaffected
+        expect(service2.outputs[:data]).not_to have_key(:modified)
+      end
+    end
+  end
+
+  describe "initialization with non-Hash" do
+    it "raises ArgTypeError" do
+      expect { WithConditions.run("not a hash") }.to raise_error(Light::Services::ArgTypeError)
+    end
+  end
+end
+
+RSpec.describe Light::Services::Collection::Arguments do
+  describe "#extend_with_context" do
+    let(:user) { User.create!(name: "Test") }
+    let(:product) { Product.create!(name: "Test", price: 100) }
+
+    it "extends args with context arguments from parent" do
+      # ApplicationService has current_user as context: true
+      parent = ApplicationService.new(current_user: user)
+      parent.arguments.load_defaults
+
+      args = parent.arguments.dup.extend_with_context({})
+      expect(args[:current_user]).to eq(user)
+    end
+
+    it "does not override existing args" do
+      parent = ApplicationService.new(current_user: user)
+      parent.arguments.load_defaults
+
+      other_user = User.create!(name: "Other")
+      args = parent.arguments.dup.extend_with_context({ current_user: other_user })
+      expect(args[:current_user]).to eq(other_user)
+    end
+  end
+
+  describe "#validate!" do
+    context "with valid types" do
+      it "does not raise" do
+        expect { WithConditions.run(add_c: true) }.not_to raise_error
+      end
+    end
+
+    context "with invalid types" do
+      it "raises ArgTypeError" do
+        expect { WithMultipleTypes.run(value: 3.14) }
+          .to raise_error(Light::Services::ArgTypeError)
+      end
+    end
+
+    context "with optional nil values" do
+      it "skips validation" do
+        expect { WithMultipleTypes.run(value: "test", flag: nil) }.not_to raise_error
+      end
+    end
+  end
+end
+
+RSpec.describe Light::Services::Collection::Outputs do
+  describe "#load_defaults" do
+    let(:service) { WithConditions.new }
+
+    before { service.outputs.load_defaults }
+
+    it "loads default output values" do
+      expect(service.word).to eq("")
+    end
+  end
+
+  describe "accessor methods" do
+    let(:service) { WithConditions.run }
+
+    it "provides getter" do
+      expect(service.word).to eq("ab")
+    end
+
+    it "provides boolean check" do
+      expect(service.word?).to be(true)
+    end
+  end
+end
