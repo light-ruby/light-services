@@ -6,7 +6,7 @@ Outputs are the results of a service.
 
 - Define outputs using the `output` keyword in the service class
 - Outputs can have default values
-- Outputs can be validated by type \[In Development]
+- Outputs can be validated by type (validated when the service succeeds)
 
 ## Define Outputs
 
@@ -66,7 +66,7 @@ You can specify the type of output using the `type` option. The output type will
 ```ruby
 class AI::Chat < ApplicationService
   output :messages, type: Array
-  output :cost, type: :float
+  output :cost, type: Float
 end
 ```
 

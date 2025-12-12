@@ -14,9 +14,10 @@ Arguments are the inputs to a service. They are passed to the service when it is
 ```ruby
 class User::Charge < ApplicationService
   arg :user, type: User
-  arg :amount, type: :float
-  arg :send_receipt, type: :boolean, default: true
-  arg :invoice_date, type: Date, default: -> { Date.current }
+  arg :amount, type: Float
+  arg :send_receipt, type: [TrueClass, FalseClass], default: true
+  # In Rails you might prefer `Date.current`.
+  arg :invoice_date, type: Date, default: -> { Date.today }
 
   step :send_email_receipt, if: :send_receipt?
 
@@ -41,8 +42,8 @@ Arguments can be validated by type.
 
 ```ruby
 class HappyBirthdayService < ApplicationService
-  arg :name, type: String # or type: :string
-  arg :age, type: Integer # or type: :integer
+  arg :name, type: String
+  arg :age, type: Integer
 end
 ```
 
@@ -170,7 +171,7 @@ To remove an inherited argument, use `remove_arg`:
 ```ruby
 class BaseService < ApplicationService
   arg :current_user, type: User
-  arg :audit_log, type: :boolean, default: true
+  arg :audit_log, type: [TrueClass, FalseClass], default: true
 end
 
 class SystemTaskService < BaseService
@@ -244,7 +245,7 @@ Predicate methods are automatically generated for each argument, allowing you to
 class User::GenerateInvoice < ApplicationService
   # Arguments
   arg :user, type: User
-  arg :charge, type: :boolean, default: false
+  arg :charge, type: [TrueClass, FalseClass], default: false
 
   # Steps
   step :generate_invoice

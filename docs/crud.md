@@ -175,7 +175,7 @@ class CreateRecordService < ApplicationService
 
   # Extract permitted attributes using Pundit
   def params_attributes
-    return {} if attributes.present?
+    return {} if !attributes.nil? && !(attributes.respond_to?(:empty?) && attributes.empty?)
 
     permitted_attributes(record, :create)
   rescue ActionController::ParameterMissing
@@ -230,7 +230,7 @@ class UpdateRecordService < ApplicationService
 
   # Check if the user is authorized to update this record
   def authorize_user
-    auth(record, :update?) if attributes.blank?
+    auth(record, :update?) if attributes.nil? || (attributes.respond_to?(:empty?) && attributes.empty?)
   end
 
   # Assign attributes to the record
@@ -252,7 +252,7 @@ class UpdateRecordService < ApplicationService
 
   # Extract permitted attributes from params using Pundit
   def params_attributes
-    return {} if attributes.present?
+    return {} if !attributes.nil? && !(attributes.respond_to?(:empty?) && attributes.empty?)
 
     permitted_attributes(record, :update)
   rescue ActionController::ParameterMissing

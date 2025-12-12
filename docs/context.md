@@ -20,7 +20,7 @@ Let's say we have two services: `User::Create` and `Profile::Create`. We want to
 ```ruby
 class User::Create < ApplicationService
   # Arguments
-  arg :attributes, type: :hash
+  arg :attributes, type: Hash
 
   # Steps
   step :create_user
@@ -75,9 +75,9 @@ class Comment::Create < ApplicationService
   # Arguments
   # We don't need to specify current_user here
   # as it's automatically inherited from the ApplicationService
-  arg :post_id, type: :integer
-  arg :text, type: :string
-  arg :subscribe, type: :boolean
+  arg :post_id, type: Integer
+  arg :text, type: String
+  arg :subscribe, type: [TrueClass, FalseClass]
 
   # Steps
   step :create_comment
@@ -103,7 +103,7 @@ end
 ```ruby
 class Post::Subscribe < ApplicationService
   # Arguments
-  arg :post_id, type: :integer
+  arg :post_id, type: Integer
 
   # Steps
   step :subscribe

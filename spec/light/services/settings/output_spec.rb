@@ -15,8 +15,8 @@ RSpec.describe Light::Services::Settings::Output do
       end
     end
 
-    describe "with Symbol type (e.g., :hash)" do
-      it "accepts matching symbol type" do
+    describe "with Hash type" do
+      it "accepts a Hash" do
         service = WithTypedOutputs.run
         service.outputs.set(:data, { key: "value" })
         expect(service.data).to eq({ key: "value" })

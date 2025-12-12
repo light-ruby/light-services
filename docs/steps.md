@@ -8,9 +8,8 @@ Steps are the core components of a service, each representing a unit of work exe
 - Use `if` and `unless` options for conditional steps
 - Inherit steps from parent classes
 - Inject steps into the execution flow with `before` and `after` options
-- Ensure steps always run with the `always: true` option
+- Ensure cleanup steps run with the `always: true` option (unless `done!` was called)
 - Use a `run` method as a simple alternative for single-step services
-- Retry steps with the `retry` option \[In Development]
 
 ```ruby
 class GeneralParserService < ApplicationService
@@ -72,7 +71,7 @@ This feature works well with argument predicates.
 
 ```ruby
 class User::Charge < ApplicationService
-  arg :send_receipt, type: :boolean, default: true
+  arg :send_receipt, type: [TrueClass, FalseClass], default: true
 
   step :send_email_receipt, if: :send_receipt?
 
@@ -86,7 +85,7 @@ You can also use Procs (lambdas) for inline conditions:
 
 ```ruby
 class User::Charge < ApplicationService
-  arg :amount, type: :float
+  arg :amount, type: Float
 
   step :apply_discount, if: -> { amount > 100 }
   step :charge
@@ -158,11 +157,13 @@ By default, if neither `before` nor `after` is specified, the step is added at t
 
 ## Always Running Steps
 
-To ensure certain steps run regardless of previous step outcomes, use the `always: true` option. This is particularly useful for cleanup tasks, error logging, etc.
+To ensure certain steps run regardless of previous step outcomes (errors, warnings, failed validations), use the `always: true` option. This is particularly useful for cleanup tasks, error logging, etc.
+
+Note: if `done!` was called, the service exits early and `always: true` steps will **not** run.
 
 ```ruby
 class ParsePage < ApplicationService
-  arg :url, type: :string
+  arg :url, type: String
 
   step :create_browser
   step :parse_content
@@ -192,7 +193,7 @@ Use `done!` to stop executing remaining steps without adding an error. This is u
 
 ```ruby
 class User::FindOrCreate < ApplicationService
-  arg :email, type: :string
+  arg :email, type: String
 
   step :find_existing_user
   step :create_user
@@ -234,7 +235,7 @@ end
 ```
 
 {% hint style="info" %}
-`done!` only stops subsequent steps from running. Code after `done!` within the same step method will still execute.
+`done!` stops subsequent steps from running, including steps marked with `always: true`. Code after `done!` within the same step method will still execute.
 {% endhint %}
 
 ## Removing Inherited Steps
@@ -253,21 +254,6 @@ class InternalUpdate < UpdateRecordService
   # Remove authorization for internal system updates
   remove_step :authorize
   remove_step :send_notification
-end
-```
-
-## Retry Failed Steps
-
-{% hint style="warning" %}
-This feature is planned for a future release and is not yet implemented.
-{% endhint %}
-
-Steps will be able to be retried a specified number of times before giving up, using the `retry` option.
-
-```ruby
-class ParsePage < ApplicationService
-  step :parse_head, retry: true # Retry 3 times by default, no delay between retries
-  step :parse_body, retry: { times: 3, delay: 1.second }
 end
 ```
 

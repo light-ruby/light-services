@@ -71,8 +71,8 @@ Services use a declarative DSL:
 ```ruby
 class ExampleService < Light::Services::Base
   # Define input arguments
-  arg :name, type: :string
-  arg :age, type: :integer, optional: true, default: 25
+  arg :name, type: String
+  arg :age, type: Integer, optional: true, default: 25
 
   # Define execution steps
   step :validate_input
@@ -85,7 +85,7 @@ class ExampleService < Light::Services::Base
   private
 
   def validate_input
-    errors.add(:name, "required") if name.blank?
+    errors.add(:name, "required") if name.nil? || name.strip.empty?
   end
 
   def process_data
@@ -93,11 +93,11 @@ class ExampleService < Light::Services::Base
   end
 
   def cleanup
-    # Always runs regardless of errors
+    # Runs regardless of errors/warnings, unless done! was called
   end
 
   def should_process?
-    name.present?
+    !(name.nil? || name.strip.empty?)
   end
 end
 ```

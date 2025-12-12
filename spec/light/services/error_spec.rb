@@ -205,15 +205,15 @@ RSpec.context Light::Services::Error do
     end
 
     it "raises error for nil text" do
-      expect { eval(class_code_nil) }.to raise_error(described_class, "Error text can't be blank")
+      expect { eval(class_code_nil) }.to raise_error(described_class, "Error must be a non-empty string")
     end
 
     it "raises error for empty string" do
-      expect { eval(class_code_empty) }.to raise_error(described_class, "Error text can't be blank")
+      expect { eval(class_code_empty) }.to raise_error(described_class, "Error must be a non-empty string")
     end
 
     it "raises error for whitespace only" do
-      expect { eval(class_code_whitespace) }.to raise_error(described_class, "Error text can't be blank")
+      expect { eval(class_code_whitespace) }.to raise_error(described_class, "Error must be a non-empty string")
     end
   end
 end

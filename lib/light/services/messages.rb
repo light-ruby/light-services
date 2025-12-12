@@ -21,12 +21,14 @@ module Light
       end
 
       def add(key, texts, opts = {})
-        raise Light::Services::Error, "Error text can't be blank" if !texts || texts.blank?
+        raise Light::Services::Error, "Error must be a non-empty string" unless texts
 
         message = nil
 
         [*texts].each do |text|
           message = text.is_a?(Message) ? text : Message.new(key, text, opts)
+
+          raise Light::Services::Error, "Error must be a non-empty string" unless valid_error_text?(message.text)
 
           @messages[key] ||= []
           @messages[key] << message
@@ -63,6 +65,12 @@ module Light
       end
 
       private
+
+      def valid_error_text?(text)
+        return false unless text.is_a?(String)
+
+        !text.strip.empty?
+      end
 
       def break!(break_execution)
         return unless break_execution.nil? ? @config[:break_on_add] : break_execution

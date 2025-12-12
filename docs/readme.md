@@ -7,7 +7,7 @@ Light Services is a simple yet powerful way to organize your business logic. Thi
 ## Features
 
 - **Simple**: Define your service as a class with `arguments`, `steps`, and `outputs`
-- **No Dependencies**: Works fully stand-alone, without requiring any external gems
+- **No runtime dependencies**: Works stand-alone without requiring external gems at runtime
 - **Transactions**: Automatically rollback database changes if any step fails
 - **Inheritance**: Inherit from other services to reuse logic seamlessly
 - **Error Handling**: Collect errors from steps and handle them your way
@@ -50,8 +50,8 @@ end
 class User::ResetPassword < Light::Services::Base
   # Arguments
   arg :user, type: User, optional: true
-  arg :email, type: :string, optional: true
-  arg :send_email, type: :boolean, default: true
+  arg :email, type: String, optional: true
+  arg :send_email, type: [TrueClass, FalseClass], default: true
 
   # Steps
   step :validate
@@ -62,7 +62,7 @@ class User::ResetPassword < Light::Services::Base
 
   # Outputs
   output :user, type: User
-  output :reset_token, type: :string
+  output :reset_token, type: String
 
   private
 

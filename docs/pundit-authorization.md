@@ -149,15 +149,15 @@ end
 # app/policies/post_policy.rb
 class PostPolicy < ApplicationPolicy
   def create?
-    user.present?
+    !user.nil?
   end
 
   def update?
-    user.present? && (record.author == user || user.admin?)
+    !user.nil? && (record.author == user || user.admin?)
   end
 
   def destroy?
-    user.present? && (record.author == user || user.admin?)
+    !user.nil? && (record.author == user || user.admin?)
   end
 
   def permitted_attributes_for_create
@@ -299,7 +299,7 @@ Or create a "system" flag:
 
 ```ruby
 class ApplicationService < Light::Services::Base
-  arg :system, type: :boolean, default: false, context: true
+  arg :system, type: [TrueClass, FalseClass], default: false, context: true
 end
 
 class Post::Update < ApplicationService

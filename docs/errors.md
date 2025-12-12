@@ -24,7 +24,7 @@ By default, adding an error marks the service as failed, preventing subsequent s
 ```ruby
 class ParsePage < ApplicationService
   # Arguments
-  arg :url, type: :string
+  arg :url, type: String
   # ...
 
   # Steps
@@ -52,7 +52,7 @@ To check if a service has errors, you can use the `#failed?` method. You can als
 class ParsePage < ApplicationService
   def parse
     nodes.each do |node|
-      if node.blank?
+      if node.nil? || (node.respond_to?(:empty?) && node.empty?)
         errors.add(:base, "Node #{node} is blank")
       else
         parse_node(node)
@@ -80,7 +80,7 @@ end
 
 ## Adding Warnings
 
-Sometimes, you may want to add a warning instead of an error. Warnings are similar to errors but they do not mark the service as failed, do not stop execution, and do not roll back the transaction.
+Sometimes, you may want to add a warning instead of an error. Warnings are similar to errors but they do not mark the service as failed. By default they also do not stop execution and do not roll back the transaction (both behaviors can be configured globally or per-message).
 
 ```ruby
 class ParsePage < ApplicationService

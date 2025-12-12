@@ -51,8 +51,8 @@ end
 class User::ResetPassword < Light::Services::Base
   # Arguments
   arg :user, type: User, optional: true
-  arg :email, type: :string, optional: true
-  arg :send_email, type: :boolean, default: true
+  arg :email, type: String, optional: true
+  arg :send_email, type: [TrueClass, FalseClass], default: true
 
   # Steps
   step :validate
@@ -63,7 +63,7 @@ class User::ResetPassword < Light::Services::Base
 
   # Outputs
   output :user, type: User
-  output :reset_token, type: :string
+  output :reset_token, type: String
 
   private
 

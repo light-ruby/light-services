@@ -7,13 +7,13 @@ Light Services are framework-agnostic and can be used in any Ruby project.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "light-services", "~> 2.1"
+gem "light-services", "~> 3.0"
 ```
 
 Or you can install it yourself by running:
 
 ```bash
-bundle add light-services --version "~> 2.1"
+bundle add light-services --version "~> 3.0"
 ```
 
 ## Create `ApplicationService`

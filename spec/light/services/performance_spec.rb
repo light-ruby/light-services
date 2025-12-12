@@ -9,10 +9,10 @@ RSpec.describe "Light::Services Performance", type: :performance do # rubocop:di
   # Create a hierarchy to test memoization benefits
   let(:base_service) do
     Class.new(Light::Services::Base) do
-      arg :base_arg1, type: :string
-      arg :base_arg2, type: :integer
-      output :base_output1, type: :string
-      output :base_output2, type: :hash
+      arg :base_arg1, type: String
+      arg :base_arg2, type: Integer
+      output :base_output1, type: String
+      output :base_output2, type: Hash
       step :base_step1
       step :base_step2
 
@@ -30,12 +30,12 @@ RSpec.describe "Light::Services Performance", type: :performance do # rubocop:di
 
   let(:child_service) do
     Class.new(base_service) do
-      arg :child_arg1, type: :string
-      arg :child_arg2, type: :boolean, default: true
-      arg :child_arg3, type: :array, optional: true
-      output :child_output1, type: :integer
-      output :child_output2, type: :string
-      output :child_output3, type: :hash
+      arg :child_arg1, type: String
+      arg :child_arg2, type: [TrueClass, FalseClass], default: true
+      arg :child_arg3, type: Array, optional: true
+      output :child_output1, type: Integer
+      output :child_output2, type: String
+      output :child_output3, type: Hash
       step :child_step1
       step :child_step2
       step :child_step3
@@ -101,7 +101,7 @@ RSpec.describe "Light::Services Performance", type: :performance do # rubocop:di
 
       # Adding new argument should clear cache
       child_service.class_eval do
-        arg :new_arg, type: :string
+        arg :new_arg, type: String
       end
 
       new_args = child_service.arguments
@@ -114,7 +114,7 @@ RSpec.describe "Light::Services Performance", type: :performance do # rubocop:di
 
       # Adding new output should clear cache
       child_service.class_eval do
-        output :new_output, type: :string
+        output :new_output, type: String
       end
 
       new_outputs = child_service.outputs

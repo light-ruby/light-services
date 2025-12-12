@@ -30,19 +30,19 @@ RSpec.describe Light::Services::Messages do
 
     context "when text is nil" do
       it "raises an error" do
-        expect { messages.add(:base, nil) }.to raise_error(Light::Services::Error, "Error text can't be blank")
+        expect { messages.add(:base, nil) }.to raise_error(Light::Services::Error, "Error must be a non-empty string")
       end
     end
 
     context "when text is empty string" do
       it "raises an error" do
-        expect { messages.add(:base, "") }.to raise_error(Light::Services::Error, "Error text can't be blank")
+        expect { messages.add(:base, "") }.to raise_error(Light::Services::Error, "Error must be a non-empty string")
       end
     end
 
     context "when text is blank whitespace" do
       it "raises an error" do
-        expect { messages.add(:base, "   ") }.to raise_error(Light::Services::Error, "Error text can't be blank")
+        expect { messages.add(:base, "   ") }.to raise_error(Light::Services::Error, "Error must be a non-empty string")
       end
     end
   end

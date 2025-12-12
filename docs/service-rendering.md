@@ -59,7 +59,7 @@ class ApplicationController < ActionController::API
     # Returns the first output that is set
     service.class.outputs.each do |name, _|
       value = service.public_send(name)
-      return value if value.present?
+      return value unless value.nil? || (value.respond_to?(:empty?) && value.empty?)
     end
     
     {}
@@ -122,13 +122,13 @@ class ApplicationController < ActionController::API
     render json: {
       errors: service.errors.to_h,
       warnings: service.warnings.to_h
-    }.compact_blank, status: status
+    }.compact, status: status
   end
 
   def auto_detect_response(service)
     service.class.outputs.each do |name, _|
       value = service.public_send(name)
-      return value if value.present?
+      return value unless value.nil? || (value.respond_to?(:empty?) && value.empty?)
     end
     
     { success: true }
@@ -207,9 +207,9 @@ def determine_error_status(service, options)
   return options[:error_status] if options[:error_status]
   
   # Map specific error keys to HTTP statuses
-  return :not_found if service.errors[:record].present?
-  return :forbidden if service.errors[:authorization].present?
-  return :unauthorized if service.errors[:authentication].present?
+  return :not_found if service.errors[:record]&.any?
+  return :forbidden if service.errors[:authorization]&.any?
+  return :unauthorized if service.errors[:authentication]&.any?
   
   :unprocessable_entity
 end

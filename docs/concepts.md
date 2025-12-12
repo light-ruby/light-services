@@ -30,7 +30,7 @@ When you call `MyService.run(args)`, the following happens:
 │     └─────────────────────────────────────────────────────┘ │
 │  8. End around_service_run callback                          │
 ├─────────────────────────────────────────────────────────────┤
-│  9. Run steps marked with always: true                       │
+│  9. Run steps marked with always: true (unless done! called) │
 │ 10. Validate output types (if success)                       │
 │ 11. Copy errors/warnings to parent service (if in context)   │
 │ 12. Run after_service_run callback                           │
@@ -50,7 +50,7 @@ Arguments are the inputs provided to a service when it is invoked. They can be v
 
 ## Steps
 
-Steps are the fundamental units of work within a service, representing each individual task a service performs. They can be executed conditionally, retried (this feature is currently in development), or skipped.
+Steps are the fundamental units of work within a service, representing each individual task a service performs. They can be executed conditionally or skipped.
 
 [Read more about steps](steps.md)
 

@@ -2,6 +2,6 @@
 
 module Light
   module Services
-    VERSION = "2.2.1"
+    VERSION = "3.0.0"
   end
 end
