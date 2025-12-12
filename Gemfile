@@ -8,7 +8,7 @@ group :test do
   # Optional type system support
   gem "dry-types", "~> 1.0"
 
-  gem "activerecord"
+  gem "activerecord", "< 8"
   gem "connection_pool", "< 3"
   gem "database_cleaner-active_record"
   gem "sqlite3"
