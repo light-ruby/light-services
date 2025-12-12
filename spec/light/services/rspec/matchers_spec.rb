@@ -1201,6 +1201,23 @@ RSpec.describe Light::Services::RSpec::Matchers do
         expect(matcher.failure_message).to include("steps")
       end
 
+      it "provides failure message for execute_steps when tracking not available" do
+        service_without_tracking = Class.new(ApplicationService) do
+          step :process
+
+          private
+
+          def process; end
+        end.run
+
+        matcher = execute_steps(:process, :validate)
+        matcher.matches?(service_without_tracking)
+        message = matcher.failure_message
+        expect(message).to include("does not track executed steps")
+        expected = "Add `after_step_run { |service, step| service.executed_steps << step }` to your service"
+        expect(message).to include(expected)
+      end
+
       it "provides failure_message_when_negated for execute_steps" do
         service = service_class.run(skip_notify: false)
         matcher = execute_steps(:validate, :notify)
