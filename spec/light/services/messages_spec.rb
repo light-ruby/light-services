@@ -123,6 +123,27 @@ RSpec.describe Light::Services::Messages do
     end
   end
 
+  describe "#from_record" do
+    let(:user) { User.new(name: "") }
+
+    before { user.valid? }
+
+    it "copies errors from ActiveRecord object" do
+      messages.from_record(user)
+      expect(messages).to have_key(:name)
+    end
+
+    it "is an alias for copy_from" do
+      messages.from_record(user)
+      expect(messages.to_h).to eq({ name: ["can't be blank"] })
+    end
+
+    it "accepts options" do
+      messages.from_record(user, break: true)
+      expect(messages.break?).to be(true)
+    end
+  end
+
   describe "#copy_to" do
     before do
       messages.add(:base, "error message")
