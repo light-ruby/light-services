@@ -194,6 +194,54 @@ service.warnings? # => true/false (same as warnings.any?)
 
 By following these guidelines, you can effectively manage errors and warnings in Light Services, ensuring a smoother and more robust application experience.
 
+## Exception Classes
+
+Light Services defines several exception classes for different error scenarios:
+
+| Exception | Description |
+|-----------|-------------|
+| `Light::Services::Error` | Base exception class for all Light Services errors |
+| `Light::Services::ArgTypeError` | Raised when an argument type validation fails |
+| `Light::Services::ReservedNameError` | Raised when using a reserved name for arguments, outputs, or steps |
+| `Light::Services::InvalidNameError` | Raised when using an invalid name format |
+| `Light::Services::NoStepsError` | Raised when a service has no steps defined and no `run` method |
+
+### NoStepsError
+
+This exception is raised when you attempt to execute a service that has no steps defined and no `run` method as a fallback:
+
+```ruby
+class EmptyService < ApplicationService
+  # No steps defined and no run method
+end
+
+EmptyService.run # => raises Light::Services::NoStepsError
+```
+
+To fix this, either define at least one step or implement a `run` method:
+
+```ruby
+# Option 1: Define steps
+class MyService < ApplicationService
+  step :do_work
+
+  private
+
+  def do_work
+    # ...
+  end
+end
+
+# Option 2: Use run method
+class MyService < ApplicationService
+  private
+
+  def run
+    # ...
+  end
+end
+```
+
 ## What's next?
 
 Learn about callbacks to add logging, benchmarking, and other cross-cutting concerns to your services.

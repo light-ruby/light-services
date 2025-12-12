@@ -9,6 +9,7 @@ module Light
 
         # Execute the main service logic
         def execute_service
+          self.class.validate_steps!
           run_steps
           run_steps_with_always
           @outputs.validate! if success?

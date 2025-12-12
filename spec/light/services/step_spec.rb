@@ -149,4 +149,192 @@ RSpec.describe "Steps collection" do # rubocop:disable RSpec/DescribeClass
       expect(Order::Create.steps.keys).to include(:assign_user, :assign_default_attributes)
     end
   end
+
+  describe "run method as fallback step" do
+    context "when service has no steps but has a run method" do
+      let(:service_class) do
+        Class.new(Light::Services::Base) do
+          output :result
+
+          private
+
+          def run
+            self.result = "executed via run method"
+          end
+        end
+      end
+
+      it "uses the run method as a single step" do
+        expect(service_class.steps.keys).to eq([:run])
+      end
+
+      it "executes the run method successfully" do
+        result = service_class.run
+        expect(result.success?).to be true
+        expect(result.result).to eq("executed via run method")
+      end
+    end
+
+    context "when service has no steps and no run method" do
+      let(:service_class) do
+        Class.new(Light::Services::Base) do
+          output :result
+        end
+      end
+
+      it "raises NoStepsError when executed" do
+        expect { service_class.run }.to raise_error(
+          Light::Services::NoStepsError,
+          /has no steps defined\. Define at least one step or implement a `run` method/,
+        )
+      end
+    end
+
+    context "when parent service has steps" do
+      let(:parent_class) do
+        Class.new(Light::Services::Base) do
+          output :result
+
+          step :set_result
+
+          private
+
+          def set_result
+            self.result = "from parent step"
+          end
+        end
+      end
+
+      let(:child_class) do
+        Class.new(parent_class)
+      end
+
+      it "child inherits parent steps" do
+        expect(child_class.steps.keys).to eq([:set_result])
+      end
+
+      it "child executes inherited steps" do
+        result = child_class.run
+        expect(result.success?).to be true
+        expect(result.result).to eq("from parent step")
+      end
+    end
+
+    context "when child removes all parent steps but has run method" do
+      let(:parent_class) do
+        Class.new(Light::Services::Base) do
+          output :result
+
+          step :parent_step
+
+          private
+
+          def parent_step
+            self.result = "from parent"
+          end
+        end
+      end
+
+      let(:child_class) do
+        Class.new(parent_class) do
+          remove_step :parent_step
+
+          private
+
+          def run
+            self.result = "from child run"
+          end
+        end
+      end
+
+      it "uses the run method as fallback" do
+        expect(child_class.steps.keys).to eq([:run])
+      end
+
+      it "executes the run method" do
+        result = child_class.run
+        expect(result.success?).to be true
+        expect(result.result).to eq("from child run")
+      end
+    end
+
+    context "when child removes all parent steps and has no run method" do
+      let(:parent_class) do
+        Class.new(Light::Services::Base) do
+          output :result
+
+          step :parent_step
+
+          private
+
+          def parent_step
+            self.result = "from parent"
+          end
+        end
+      end
+
+      let(:child_class) do
+        Class.new(parent_class) do
+          remove_step :parent_step
+        end
+      end
+
+      it "raises NoStepsError when executed" do
+        expect { child_class.run }.to raise_error(
+          Light::Services::NoStepsError,
+          /has no steps defined/,
+        )
+      end
+    end
+
+    context "with deep inheritance (grandparent -> parent -> child)" do
+      let(:grandparent_class) do
+        Class.new(Light::Services::Base) do
+          output :result
+
+          private
+
+          def run
+            self.result = "from grandparent run"
+          end
+        end
+      end
+
+      let(:parent_class) do
+        Class.new(grandparent_class)
+      end
+
+      let(:child_class) do
+        Class.new(parent_class)
+      end
+
+      it "grandchild finds run method defined in grandparent" do
+        expect(child_class.steps.keys).to eq([:run])
+      end
+
+      it "grandchild executes grandparent's run method" do
+        result = child_class.run
+        expect(result.success?).to be true
+        expect(result.result).to eq("from grandparent run")
+      end
+
+      context "when grandchild overrides run method" do
+        let(:child_with_override) do
+          Class.new(parent_class) do
+            private
+
+            def run
+              self.result = "from grandchild run"
+            end
+          end
+        end
+
+        it "uses the overridden run method" do
+          result = child_with_override.run
+          expect(result.success?).to be true
+          expect(result.result).to eq("from grandchild run")
+        end
+      end
+    end
+  end
 end

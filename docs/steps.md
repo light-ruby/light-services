@@ -9,6 +9,7 @@ Steps are the core components of a service, each representing a unit of work exe
 - Inherit steps from parent classes
 - Inject steps into the execution flow with `before` and `after` options
 - Ensure steps always run with the `always: true` option
+- Use a `run` method as a simple alternative for single-step services
 - Retry steps with the `retry` option \[In Development]
 
 ```ruby
@@ -269,6 +270,78 @@ class ParsePage < ApplicationService
   step :parse_body, retry: { times: 3, delay: 1.second }
 end
 ```
+
+## Using `run` Method as a Simple Alternative
+
+For simple services that don't need multiple steps, you can define a `run` method instead of using the `step` DSL. If no steps are defined, Light Services will automatically use the `run` method as a single step.
+
+```ruby
+class User::SendWelcomeEmail < ApplicationService
+  arg :user, type: User
+
+  private
+
+  def run
+    Mailer.welcome(user).deliver_later
+  end
+end
+```
+
+This is equivalent to:
+
+```ruby
+class User::SendWelcomeEmail < ApplicationService
+  arg :user, type: User
+
+  step :run
+
+  private
+
+  def run
+    Mailer.welcome(user).deliver_later
+  end
+end
+```
+
+### Inheritance with `run` Method
+
+The `run` method works with inheritance. If a parent service defines a `run` method, child services will inherit it:
+
+```ruby
+class BaseNotificationService < ApplicationService
+  arg :message, type: String
+
+  private
+
+  def run
+    send_notification(message)
+  end
+
+  def send_notification(msg)
+    raise NotImplementedError
+  end
+end
+
+class SlackNotification < BaseNotificationService
+  private
+
+  def send_notification(msg)
+    SlackClient.post(msg)
+  end
+end
+
+class EmailNotification < BaseNotificationService
+  private
+
+  def send_notification(msg)
+    Mailer.notify(msg).deliver_later
+  end
+end
+```
+
+{% hint style="info" %}
+If a service has no steps defined and no `run` method (including from parent classes), a `Light::Services::NoStepsError` will be raised when the service is executed.
+{% endhint %}
 
 # What's Next?
 

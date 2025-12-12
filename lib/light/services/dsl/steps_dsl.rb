@@ -95,6 +95,17 @@ module Light
             @step_operations ||= []
           end
 
+          # Validate that the service has steps defined
+          # Called before executing the service
+          #
+          # @raise [NoStepsError] if no steps are defined
+          def validate_steps!
+            return unless steps.empty?
+
+            raise Light::Services::NoStepsError,
+                  "Service #{self} has no steps defined. Define at least one step or implement a `run` method."
+          end
+
           private
 
           # Validate step options to ensure they are valid
@@ -118,7 +129,27 @@ module Light
             # Apply operations in order
             step_operations.each { |op| apply_step_operation(result, op) }
 
+            # If no steps defined, check for `run` method as fallback
+            result[:run] = Settings::Step.new(:run, self, {}) if result.empty? && instance_method_defined?(:run)
+
             result
+          end
+
+          # Check if an instance method is defined in this class or its ancestors
+          # (excluding Light::Services::Base and its modules)
+          #
+          # @param method_name [Symbol] the method name to check
+          # @return [Boolean] true if the method is defined
+          def instance_method_defined?(method_name)
+            # Check if method exists and is not from base service classes
+            return false unless method_defined?(method_name) || private_method_defined?(method_name)
+
+            # Get the method owner to ensure it's defined in user's service class
+            owner = instance_method(method_name).owner
+
+            # Method should be defined in a class that inherits from Base,
+            # not in Base itself or its included modules
+            !owner.to_s.start_with?("Light::Services")
           end
 
           # Inherit steps from parent class
