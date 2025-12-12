@@ -73,7 +73,6 @@ GEM
       racc
     prism (1.6.0)
     racc (1.8.1)
-    rack (3.2.4)
     rainbow (3.1.1)
     rake (13.3.1)
     regexp_parser (2.11.3)
@@ -113,16 +112,6 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.47.1, < 2.0)
-    rubocop-rails (2.34.2)
-      activesupport (>= 4.2.0)
-      lint_roller (~> 1.1)
-      rack (>= 1.1)
-      rubocop (>= 1.75.0, < 2.0)
-      rubocop-ast (>= 1.44.0, < 2.0)
-    rubocop-rails-omakase (1.1.0)
-      rubocop (>= 1.72)
-      rubocop-performance (>= 1.24)
-      rubocop-rails (>= 2.30)
     rubocop-rake (0.7.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.72.1)
@@ -162,7 +151,6 @@ DEPENDENCIES
   rspec-benchmark
   rubocop
   rubocop-performance
-  rubocop-rails-omakase
   rubocop-rake
   rubocop-rspec
   simplecov

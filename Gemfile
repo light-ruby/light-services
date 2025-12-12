@@ -21,7 +21,6 @@ group :test do
 
   gem "rubocop"
   gem "rubocop-performance"
-  gem "rubocop-rails-omakase"
   gem "rubocop-rake"
   gem "rubocop-rspec"
 end
