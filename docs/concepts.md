@@ -1,6 +1,6 @@
 # Concepts
 
-In this section, we'll explore the core concepts of Light Services, which include **Arguments**, **Steps**, **Outputs**, **Context**, and **Errors**.
+In this section, we'll explore the core concepts of Light Services, which include **Arguments**, **Steps**, **Outputs**, **Context**, **Errors**, and **Callbacks**.
 
 ## Service Execution Flow
 
@@ -12,23 +12,31 @@ When you call `MyService.run(args)`, the following happens:
 ├─────────────────────────────────────────────────────────────┤
 │  1. Load default values for arguments and outputs            │
 │  2. Validate argument types                                  │
+│  3. Run before_service_run callbacks                         │
 ├─────────────────────────────────────────────────────────────┤
-│  3. Begin database transaction (if use_transactions: true)   │
+│  4. Begin around_service_run callback                        │
+│  5. Begin database transaction (if use_transactions: true)   │
 │     ┌─────────────────────────────────────────────────────┐ │
-│     │  4. Execute steps in order                          │ │
+│     │  6. Execute steps in order                          │ │
+│     │     - Run before_step_run / around_step_run         │ │
+│     │     - Execute step method                           │ │
+│     │     - Run after_step_run / on_step_success          │ │
 │     │     - Skip if condition (if:/unless:) not met       │ │
 │     │     - Stop if errors.break? is true                 │ │
 │     │     - Stop if done! was called                      │ │
 │     ├─────────────────────────────────────────────────────┤ │
-│     │  5. On error → Rollback transaction                 │ │
+│     │  7. On error → Rollback transaction                 │ │
 │     │     On success → Commit transaction                 │ │
 │     └─────────────────────────────────────────────────────┘ │
+│  8. End around_service_run callback                          │
 ├─────────────────────────────────────────────────────────────┤
-│  6. Run steps marked with always: true                       │
-│  7. Validate output types (if success)                       │
-│  8. Copy errors/warnings to parent service (if in context)   │
+│  9. Run steps marked with always: true                       │
+│ 10. Validate output types (if success)                       │
+│ 11. Copy errors/warnings to parent service (if in context)   │
+│ 12. Run after_service_run callback                           │
+│ 13. Run on_service_success or on_service_failure callback    │
 ├─────────────────────────────────────────────────────────────┤
-│  9. Return service instance                                  │
+│ 14. Return service instance                                  │
 │     - service.success? / service.failed?                     │
 │     - service.outputs / service.errors                       │
 └─────────────────────────────────────────────────────────────┘
@@ -63,4 +71,10 @@ Context refers to the shared state that passes between services in a service cha
 Errors are exceptions that occur during the execution of a service. When an error occurs, the execution halts, and all services within the same context chain stop as well. Each service is wrapped in a database transaction; if an error arises, the transaction is rolled back, although this can be disabled if necessary.
 
 [Read more about errors](errors.md)
+
+## Callbacks
+
+Callbacks are hooks that allow you to run custom code at specific points during service and step execution. They're perfect for logging, benchmarking, auditing, and other cross-cutting concerns. Callbacks can be defined using symbols (method names) or procs/lambdas and are inherited from parent classes.
+
+[Read more about callbacks](callbacks.md)
 

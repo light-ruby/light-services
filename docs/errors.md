@@ -208,7 +208,7 @@ By following these guidelines, you can effectively manage errors and warnings in
 
 ## What's next?
 
-Congratulations! Boring stuff is done. Now you can learn some best practices and start using Light Service in your projects.
+Learn about callbacks to add logging, benchmarking, and other cross-cutting concerns to your services.
 
-[Next: Best Practices](best-practices.md)
+[Next: Callbacks](callbacks.md)
 

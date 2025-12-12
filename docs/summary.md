@@ -9,6 +9,7 @@
   * [Outputs](outputs.md)
   * [Context](context.md)
   * [Errors](errors.md)
+  * [Callbacks](callbacks.md)
 * [Testing](testing.md)
 * [Best Practices](best-practices.md)
 * [Recipes](recipes.md)

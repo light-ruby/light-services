@@ -7,6 +7,7 @@ Light Services is a simple yet powerful way to organize your business logic. Thi
 ## Features
 
 - **Simple**: Define your service as a class with `arguments`, `steps`, and `outputs`
+- **No Dependencies**: Works fully stand-alone, without requiring any external gems
 - **Transactions**: Automatically rollback database changes if any step fails
 - **Inheritance**: Inherit from other services to reuse logic seamlessly
 - **Error Handling**: Collect errors from steps and handle them your way
