@@ -1,11 +1,11 @@
 # Context
 
-Light Services can be run within the same context.
+Context allows services to be run within the same execution scope, enabling shared state and coordinated transactions.
 
-## What Does This Mean?
+## Key Features
 
-- Services will share arguments marked as `context: true`.
-- If any service fails, the entire context will fail and rollback database changes.
+- Services share arguments marked as `context: true`
+- If any service fails, the entire context fails and rolls back database changes
 
 ## How to Run Services in the Same Context
 

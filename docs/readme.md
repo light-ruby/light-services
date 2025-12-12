@@ -1,6 +1,6 @@
 # Light Services
 
-Light Services is a simple yet powerful way to organize your business logic. This Ruby gem helps you build services that are easy to test, maintain, and understand.
+Light Services is a simple yet powerful way to organize business logic in Ruby applications. Build services that are easy to test, maintain, and understand.
 
 [Get started with Quickstart](quickstart.md)
 
@@ -12,9 +12,10 @@ Light Services is a simple yet powerful way to organize your business logic. Thi
 - **Inheritance**: Inherit from other services to reuse logic seamlessly
 - **Error Handling**: Collect errors from steps and handle them your way
 - **Context**: Run multiple services sequentially within the same context
+- **RSpec Matchers**: Built-in RSpec matchers for expressive service tests
 - **Framework Agnostic**: Compatible with Rails, Hanami, or any Ruby framework
 - **Modularity**: Isolate and test your services with ease
-- **100% Test Coverage**: Bugs are not welcome here!
+- **100% Test Coverage**: Thoroughly tested and reliable
 - **Battle-Tested**: In production use since 2017
 
 ## Simple Example
@@ -96,4 +97,4 @@ class User::ResetPassword < Light::Services::Base
 end
 ```
 
-Do you like what you see? [Get started with Light Services](quickstart.md) today!
+[Get started with Light Services](quickstart.md)

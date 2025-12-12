@@ -1,6 +1,6 @@
-# Handling Errors in Light Services
+# Errors
 
-Errors are a natural part of every application. In this guide, we'll explore how to handle errors within Light Services, drawing parallels to ActiveModel errors.
+Errors are a natural part of every application. This guide explores how to handle errors within Light Services, drawing parallels to ActiveModel errors.
 
 ## Error Structure
 

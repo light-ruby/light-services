@@ -1,22 +1,23 @@
 # 🚀 Light Services
 
-Light Services is a simple yet powerful way to organize your business logic. This Ruby gem helps you build services that are easy to test, maintain, and understand.
+Light Services is a simple yet powerful way to organize business logic in Ruby applications. Build services that are easy to test, maintain, and understand.
 
 ![GitHub CI](https://github.com/light-ruby/light-services/actions/workflows/ci.yml/badge.svg)
 [![Codecov](https://codecov.io/gh/light-ruby/light-services/graph/badge.svg?token=IGJNZ2BQ26)](https://codecov.io/gh/light-ruby/light-services)
 
 ## Features
 
-- 🧩 **Simple**: Define your service as a class with `arguments`, `steps`, and `outputs`
-- 🎢 **Transactions**: Automatically rollback database changes if any step fails
-- 👵 **Inheritance**: Inherit from other services to reuse logic seamlessly
-- 🚨 **Error Handling**: Collect errors from steps and handle them your way
-- ⛓️ **Context**: Run multiple services sequentially within the same context
-- � **RSpec Matchers**: Built-in RSpec matchers for expressive service tests
-- �🤔 **Framework Agnostic**: Compatible with Rails, Hanami, or any Ruby framework
-- 🏗️ **Modularity**: Isolate and test your services with ease
-- 🐛 **100% Test Coverage**: Bugs are not welcome here!
-- 🛡️ **Battle-Tested**: In production use since 2017
+- **Simple**: Define your service as a class with `arguments`, `steps`, and `outputs`
+- **No runtime dependencies**: Works stand-alone without requiring external gems at runtime
+- **Transactions**: Automatically rollback database changes if any step fails
+- **Inheritance**: Inherit from other services to reuse logic seamlessly
+- **Error Handling**: Collect errors from steps and handle them your way
+- **Context**: Run multiple services sequentially within the same context
+- **RSpec Matchers**: Built-in RSpec matchers for expressive service tests
+- **Framework Agnostic**: Compatible with Rails, Hanami, or any Ruby framework
+- **Modularity**: Isolate and test your services with ease
+- **100% Test Coverage**: Thoroughly tested and reliable
+- **Battle-Tested**: In production use since 2017
 
 ## Simple Example
 

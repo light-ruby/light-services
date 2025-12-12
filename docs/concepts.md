@@ -1,6 +1,6 @@
 # Concepts
 
-In this section, we'll explore the core concepts of Light Services, which include **Arguments**, **Steps**, **Outputs**, **Context**, **Errors**, and **Callbacks**.
+This section covers the core concepts of Light Services: **Arguments**, **Steps**, **Outputs**, **Context**, **Errors**, and **Callbacks**.
 
 ## Service Execution Flow
 
@@ -68,13 +68,13 @@ Context refers to the shared state that passes between services in a service cha
 
 ## Errors
 
-Errors are exceptions that occur during the execution of a service. When an error occurs, the execution halts, and all services within the same context chain stop as well. Each service is wrapped in a database transaction; if an error arises, the transaction is rolled back, although this can be disabled if necessary.
+Errors occur during service execution and cause execution to halt. When an error occurs, all services in the same context chain stop, and database transactions are rolled back (configurable).
 
 [Read more about errors](errors.md)
 
 ## Callbacks
 
-Callbacks are hooks that allow you to run custom code at specific points during service and step execution. They're perfect for logging, benchmarking, auditing, and other cross-cutting concerns. Callbacks can be defined using symbols (method names) or procs/lambdas and are inherited from parent classes.
+Callbacks allow you to run custom code at specific points during service and step execution. They're perfect for logging, benchmarking, auditing, and other cross-cutting concerns.
 
 [Read more about callbacks](callbacks.md)
 

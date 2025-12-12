@@ -1,6 +1,6 @@
 # Best Practices
 
-In this guide, we'll explore the best practices for building applications with Light Services. Our goal is to keep things simple and effective.
+This guide explores best practices for building applications with Light Services, keeping things simple and effective.
 
 ## Create Top-Level Services
 

@@ -20,8 +20,6 @@ bundle add light-services --version "~> 3.0"
 
 {% hint style="info" %}
 This step is optional but recommended. Creating a base class for your services can help organize your code. This base class will act as the parent for all your services, where you can include common logic such as helpers, logging, error handling, etc.
-
-P.S. I'm working on an installation script to automate this step.
 {% endhint %}
 
 First, create a folder for your services. The path will depend on the framework you are using. For Rails, you can create a folder in `app/services`.
