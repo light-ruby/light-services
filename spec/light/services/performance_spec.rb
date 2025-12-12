@@ -3,7 +3,7 @@
 require "spec_helper"
 require "rspec-benchmark"
 
-RSpec.describe "Light::Services Performance", type: :performance do
+RSpec.describe "Light::Services Performance", type: :performance do # rubocop:disable RSpec/DescribeClass
   include RSpec::Benchmark::Matchers
 
   # Create a hierarchy to test memoization benefits

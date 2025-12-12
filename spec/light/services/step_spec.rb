@@ -119,7 +119,7 @@ RSpec.describe Light::Services::Settings::Step do
   end
 end
 
-RSpec.describe "Steps collection" do
+RSpec.describe "Steps collection" do # rubocop:disable RSpec/DescribeClass
   describe "step indexing" do
     it "returns index of existing item" do
       steps = WithConditions.steps

@@ -58,25 +58,6 @@ module Light
       end
       alias from_record copy_from
 
-      def copy_to(entity)
-        if (defined?(ActiveRecord::Base) && entity.is_a?(ActiveRecord::Base)) || entity.is_a?(Light::Services::Base)
-          each do |key, messages|
-            messages.each do |message|
-              entity.errors.add(key, message.to_s)
-            end
-          end
-        elsif entity.is_a?(Hash)
-          each do |key, messages|
-            entity[key] ||= []
-            entity[key] += messages.map(&:to_s)
-          end
-        else
-          raise Light::Services::Error, "Don't know how to export errors to #{entity}"
-        end
-
-        entity
-      end
-
       def to_h
         @messages.to_h.transform_values { |value| value.map(&:to_s) }
       end

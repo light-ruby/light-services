@@ -144,41 +144,6 @@ RSpec.describe Light::Services::Messages do
     end
   end
 
-  describe "#copy_to" do
-    before do
-      messages.add(:base, "error message")
-      messages.add(:name, "name error")
-    end
-
-    context "with Light::Services::Base object" do
-      it "copies errors to service" do
-        service = Product::Create.with(rollback_on_error: false).run(params: { product: { name: "Test", price: 100 } })
-        messages.copy_to(service)
-        expect(service.errors.to_h).to include(base: ["error message"], name: ["name error"])
-      end
-    end
-
-    context "with Hash" do
-      it "copies to hash" do
-        hash = {}
-        messages.copy_to(hash)
-        expect(hash).to eq({ base: ["error message"], name: ["name error"] })
-      end
-
-      it "merges with existing hash values" do
-        hash = { base: ["existing error"] }
-        messages.copy_to(hash)
-        expect(hash[:base]).to eq(["existing error", "error message"])
-      end
-    end
-
-    context "with unsupported type" do
-      it "raises an error" do
-        expect { messages.copy_to("string") }.to raise_error(Light::Services::Error, /Don't know how to export/)
-      end
-    end
-  end
-
   describe "#respond_to_missing?" do
     it "returns true for Hash methods" do
       expect(messages.respond_to?(:keys)).to be(true)

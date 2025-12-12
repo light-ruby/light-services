@@ -40,28 +40,4 @@ RSpec.describe Product::AddToCart do
 
     it { expect { service }.to raise_error(Light::Services::ArgTypeError) }
   end
-
-  context "when copying errors to hash" do
-    let(:service) { described_class.run(current_user: current_user, product: product, notify: true) }
-    let(:current_user) { User.create!(name: "Andrew Emelianenko") }
-    let(:product) { Product.create!(name: "Tesla Model X", price: 100_000) }
-    let(:copied_errors) { service.errors.copy_to({ hello: "world" }) }
-
-    it { expect(service).to be_failed }
-    it { expect(copied_errors).to eq({ hello: "world", base: ["something went wrong"], text: ["must be present"] }) }
-  end
-
-  context "when copying errors to another service" do
-    let(:service) { described_class.run(current_user: current_user, product: product, notify: true) }
-    let(:current_user) { User.create!(name: "Andrew Emelianenko") }
-    let(:product) { Product.create!(name: "Tesla Model X", price: 100_000) }
-    let(:another_service) do
-      Product::Create.with(rollback_on_error: false).run(params: { product: { name: "iPhone", price: 100 } })
-    end
-
-    before { service.errors.copy_to(another_service) }
-
-    it { expect(another_service).to be_failed }
-    it { expect(another_service.errors.to_h).to eq({ base: ["something went wrong"], text: ["must be present"] }) }
-  end
 end

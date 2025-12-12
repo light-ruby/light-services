@@ -135,18 +135,6 @@ class Order::Process < ApplicationService
 end
 ```
 
-### To External Objects
-
-Export errors to an ActiveRecord model or hash using `errors.copy_to`:
-
-```ruby
-def validate_with_model
-  if errors.any?
-    errors.copy_to(record) # Copies service errors to the record's errors
-  end
-end
-```
-
 ## Converting Errors to Hash
 
 Use `errors.to_h` to get a hash representation of all errors:

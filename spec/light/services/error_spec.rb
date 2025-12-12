@@ -133,29 +133,6 @@ RSpec.context Light::Services::Error do
     end
   end
 
-  context "when trying to copy errors to string" do
-    let(:class_code) do
-      <<-RUBY
-        class CopyErrorsToString < ApplicationService
-          step :hello_world
-
-          private
-
-          def hello_world
-            self.current_user = User.new
-            errors.copy_to("Hello, world!")
-          end
-        end
-
-        CopyErrorsToString.run
-      RUBY
-    end
-
-    it do
-      expect { eval(class_code) }.to raise_error(described_class)
-    end
-  end
-
   context "when I want 100% coverage" do
     let(:class_code) do
       <<-RUBY
