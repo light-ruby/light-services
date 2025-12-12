@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Andrew Kodkod"]
   spec.email         = ["andrew@kodkod.me"]
 
-  spec.summary       = "Robust service architecture for Ruby frameworks"
-  spec.description   = "Robust service architecture for Ruby frameworks"
+  spec.summary       = "Robust service architecture for Ruby/Rails applications"
+  spec.description   = "Robust service architecture for Ruby/Rails applications"
   spec.homepage      = "https://light-services-docs.vercel.app/"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.7.0")
@@ -26,9 +26,9 @@ Gem::Specification.new do |spec|
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   end
 
-  spec.bindir        = "exe"
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
-  spec.require_paths = ["lib"]
+  spec.bindir                            = "exe"
+  spec.executables                       = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.require_paths                     = ["lib"]
   spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.add_dependency "benchmark", ">= 0.5"
