@@ -445,4 +445,20 @@ RSpec.describe Light::Services::Callbacks do
       end.to raise_error(ArgumentError, /requires a method name/)
     end
   end
+
+  describe "execute_callback" do
+    it "raises error when callback is not a Symbol or Proc at runtime" do
+      test_class = Class.new(Light::Services::Base) do
+        step :do_work
+
+        private
+
+        def do_work
+          execute_callback("invalid_callback", [])
+        end
+      end
+
+      expect { test_class.run }.to raise_error(ArgumentError, /Callback must be a Symbol or Proc/)
+    end
+  end
 end

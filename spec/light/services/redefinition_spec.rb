@@ -155,6 +155,53 @@ RSpec.describe WithRedefinitionBase do # rubocop:disable RSpec/SpecFilePathForma
     end
   end
 
+  describe "remove_arg" do
+    it "removes an argument from the service" do
+      test_class = Class.new(ApplicationService) do
+        arg :name, type: String
+        arg :email, type: String
+        step :process
+
+        private
+
+        def process
+          # no-op
+        end
+      end
+
+      expect(test_class.arguments.keys).to include(:name, :email)
+
+      test_class.remove_arg(:email)
+
+      expect(test_class.arguments.keys).to include(:name)
+      expect(test_class.arguments.keys).not_to include(:email)
+    end
+  end
+
+  describe "remove_output" do
+    it "removes an output from the service" do
+      test_class = Class.new(ApplicationService) do
+        output :result, type: String
+        output :metadata, type: Hash
+        step :process
+
+        private
+
+        def process
+          self.result = "done"
+          self.metadata = {}
+        end
+      end
+
+      expect(test_class.outputs.keys).to include(:result, :metadata)
+
+      test_class.remove_output(:metadata)
+
+      expect(test_class.outputs.keys).to include(:result)
+      expect(test_class.outputs.keys).not_to include(:metadata)
+    end
+  end
+
   describe "settings reflection" do
     it "child class has its own argument settings" do
       parent_count = described_class.arguments[:count]

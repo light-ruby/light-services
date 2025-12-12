@@ -110,6 +110,15 @@ RSpec.describe Light::Services::Collection::Base do
       expect { WithConditions.run("not a hash") }.to raise_error(Light::Services::ArgTypeError)
     end
   end
+
+  describe "initialization with invalid collection_type" do
+    it "raises ArgumentError for invalid collection type" do
+      service = WithConditions.new
+      expect do
+        described_class.new(service, :invalid_type)
+      end.to raise_error(ArgumentError, /collection_type must be one of/)
+    end
+  end
 end
 
 RSpec.describe Light::Services::Collection::Arguments do
