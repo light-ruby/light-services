@@ -14,6 +14,6 @@ class Order < ApplicationRecord
   enum :status, {
     in_progress: 1,
     completed: 2,
-    canceled: 3
+    canceled: 3,
   }
 end

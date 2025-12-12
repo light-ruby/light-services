@@ -46,7 +46,7 @@ module Light
           raise Light::Services::Error, "Don't know how to import errors from #{entity}"
         end
       end
-      alias_method :from_record, :copy_from
+      alias from_record copy_from
 
       def copy_to(entity)
         if (defined?(ActiveRecord::Base) && entity.is_a?(ActiveRecord::Base)) || entity.is_a?(Light::Services::Base)

@@ -22,18 +22,34 @@ module Light
           end
         end
 
-        def run(instance)
+        def run(instance) # rubocop:disable Naming/PredicateMethod
           return false unless run?(instance)
 
-          if instance.respond_to?(name, true)
-            instance.send(name)
-            true
-          else
-            raise Light::Services::NoStepError, "Cannot find step `#{name}` in service `#{@service_class}`"
+          unless instance.respond_to?(name, true)
+            raise Light::Services::NoStepError,
+                  "Cannot find step `#{name}` in service `#{@service_class}`"
           end
+
+          execute_with_callbacks(instance)
+          true
         end
 
         private
+
+        def execute_with_callbacks(instance)
+          instance.run_callbacks(:before_step_run, instance, name)
+
+          instance.run_callbacks(:around_step_run, instance, name) do
+            instance.send(name)
+          end
+
+          instance.run_callbacks(:after_step_run, instance, name)
+          instance.run_callbacks(:on_step_success, instance, name)
+        rescue StandardError => e
+          instance.run_callbacks(:after_step_run, instance, name)
+          instance.run_callbacks(:on_step_failure, instance, name, e)
+          raise e
+        end
 
         def run?(instance)
           return false if instance.done?

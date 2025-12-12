@@ -20,10 +20,11 @@ module Light
   module Services
     class Base
       # Includes
+      include Callbacks
       extend ClassBasedCollection::Mount
 
       # Settings
-      mount_class_based_collection :arguments, item_class: Settings::Argument, shortcut: :arg,    allow_redefine: true
+      mount_class_based_collection :arguments, item_class: Settings::Argument, shortcut: :arg, allow_redefine: true
       mount_class_based_collection :steps,     item_class: Settings::Step,     shortcut: :step
       mount_class_based_collection :outputs,   item_class: Settings::Output,   shortcut: :output, allow_redefine: true
 
@@ -71,12 +72,13 @@ module Light
       def call
         load_defaults_and_validate
 
-        run_steps
-        run_steps_with_always
-        @outputs.validate! if success?
+        run_callbacks(:before_service_run, self)
 
-        copy_warnings_to_parent_service
-        copy_errors_to_parent_service
+        run_callbacks(:around_service_run, self) do
+          execute_service
+        end
+
+        run_service_result_callbacks
       rescue StandardError => e
         run_steps_with_always
         raise e
@@ -107,11 +109,30 @@ module Light
 
       private
 
+      def execute_service
+        run_steps
+        run_steps_with_always
+        @outputs.validate! if success?
+
+        copy_warnings_to_parent_service
+        copy_errors_to_parent_service
+      end
+
+      def run_service_result_callbacks
+        run_callbacks(:after_service_run, self)
+
+        if success?
+          run_callbacks(:on_service_success, self)
+        else
+          run_callbacks(:on_service_failure, self)
+        end
+      end
+
       def initialize_errors
         @errors = Messages.new(
           break_on_add: @config[:break_on_error],
           raise_on_add: @config[:raise_on_error],
-          rollback_on_add: @config[:use_transactions] && @config[:rollback_on_error]
+          rollback_on_add: @config[:use_transactions] && @config[:rollback_on_error],
         )
       end
 
@@ -119,7 +140,7 @@ module Light
         @warnings = Messages.new(
           break_on_add: @config[:break_on_warning],
           raise_on_add: @config[:raise_on_warning],
-          rollback_on_add: @config[:use_transactions] && @config[:rollback_on_warning]
+          rollback_on_add: @config[:use_transactions] && @config[:rollback_on_warning],
         )
       end
 
@@ -148,7 +169,7 @@ module Light
         @parent_service.warnings.copy_from(
           @warnings,
           break: @config[:self_break_on_warning],
-          rollback: @config[:self_rollback_on_warning]
+          rollback: @config[:self_rollback_on_warning],
         )
       end
 
@@ -158,7 +179,7 @@ module Light
         @parent_service.errors.copy_from(
           @errors,
           break: @config[:self_break_on_error],
-          rollback: @config[:self_rollback_on_error]
+          rollback: @config[:self_rollback_on_error],
         )
       end
 

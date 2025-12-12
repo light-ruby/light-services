@@ -25,7 +25,7 @@ module Light
         load_warnings: true,
         break_on_warning: false,
         raise_on_warning: false,
-        rollback_on_warning: false
+        rollback_on_warning: false,
       }.freeze
 
       # Getters / Setters

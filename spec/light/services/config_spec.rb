@@ -124,16 +124,16 @@ RSpec.describe Light::Services::Config do
   describe "DEFAULTS" do
     it "has expected default values" do
       expect(described_class::DEFAULTS).to eq({
-                                                use_transactions: true,
-                                                load_errors: true,
-                                                break_on_error: true,
-                                                raise_on_error: false,
-                                                rollback_on_error: true,
-                                                load_warnings: true,
-                                                break_on_warning: false,
-                                                raise_on_warning: false,
-                                                rollback_on_warning: false
-                                              })
+        use_transactions: true,
+        load_errors: true,
+        break_on_error: true,
+        raise_on_error: false,
+        rollback_on_error: true,
+        load_warnings: true,
+        break_on_warning: false,
+        raise_on_warning: false,
+        rollback_on_warning: false,
+      })
     end
   end
 end

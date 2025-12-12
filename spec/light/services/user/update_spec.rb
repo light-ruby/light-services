@@ -11,8 +11,8 @@ RSpec.describe User::Update do
     let(:params) do
       {
         user: {
-          name: name
-        }
+          name: name,
+        },
       }
     end
 
@@ -29,8 +29,8 @@ RSpec.describe User::Update do
     let(:params) do
       {
         user: {
-          name: name
-        }
+          name: name,
+        },
       }
     end
 
@@ -46,8 +46,8 @@ RSpec.describe User::Update do
     let(:params) do
       {
         user: {
-          name: name
-        }
+          name: name,
+        },
       }
     end
 
@@ -70,8 +70,8 @@ RSpec.describe User::Update do
     let(:params) do
       {
         user: {
-          name: name
-        }
+          name: name,
+        },
       }
     end
 

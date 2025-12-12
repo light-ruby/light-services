@@ -11,8 +11,8 @@ RSpec.describe Product::Create do
       {
         product: {
           name: name,
-          price: price
-        }
+          price: price,
+        },
       }
     end
 
@@ -49,8 +49,8 @@ RSpec.describe Product::Create do
       {
         product: {
           name: "",
-          price: nil
-        }
+          price: nil,
+        },
       }
     end
 

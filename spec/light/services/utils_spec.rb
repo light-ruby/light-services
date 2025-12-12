@@ -67,7 +67,7 @@ RSpec.describe Light::Services::Utils do
       end
 
       it "handles frozen strings" do
-        original = "frozen".freeze
+        original = "frozen".freeze # rubocop:disable Style/RedundantFreeze
         copy = described_class.deep_dup(original)
 
         # Copy should be a new object (different object_id)
@@ -164,7 +164,7 @@ RSpec.describe Light::Services::Utils do
           end
 
           # Explicitly not responding to deep_dup
-          def respond_to?(method, include_all = false)
+          def respond_to?(method, include_all = false) # rubocop:disable Style/OptionalBooleanParameter
             return false if method.to_sym == :deep_dup
 
             super
@@ -209,7 +209,7 @@ RSpec.describe Light::Services::Utils do
       end
 
       it "uses Marshal.load/dump for complex structures" do
-        inner_data = { users: [{ name: "John", tags: %w[admin] }] }
+        inner_data = { users: [{ name: "John", tags: ["admin"] }] }
         original = MarshalableContainer.new(inner_data)
 
         copy = described_class.deep_dup(original)
@@ -219,7 +219,7 @@ RSpec.describe Light::Services::Utils do
         copy.data[:users][0][:name] = "Modified"
         copy.data[:users][0][:tags] << "new"
         expect(original.data[:users][0][:name]).to eq("John")
-        expect(original.data[:users][0][:tags]).to eq(%w[admin])
+        expect(original.data[:users][0][:tags]).to eq(["admin"])
       end
     end
 
@@ -277,8 +277,8 @@ RSpec.describe Light::Services::Utils do
           end
 
           # Explicitly make respond_to? return false for dup
-          def respond_to?(method, include_all = false)
-            return false if method == :dup || method == :deep_dup
+          def respond_to?(method, include_all = false) # rubocop:disable Style/OptionalBooleanParameter
+            return false if [:dup, :deep_dup].include?(method)
 
             super
           end
@@ -301,10 +301,10 @@ RSpec.describe Light::Services::Utils do
       let(:original) do
         {
           users: [
-            { name: "John", tags: %w[admin active], metadata: { created: "2024-01-01" } },
-            { name: "Jane", tags: %w[user], metadata: { created: "2024-01-02" } }
+            { name: "John", tags: ["admin", "active"], metadata: { created: "2024-01-01" } },
+            { name: "Jane", tags: ["user"], metadata: { created: "2024-01-02" } },
           ],
-          settings: { notifications: { email: true, sms: false }, features: %w[feature1 feature2] }
+          settings: { notifications: { email: true, sms: false }, features: ["feature1", "feature2"] },
         }
       end
 
@@ -318,10 +318,10 @@ RSpec.describe Light::Services::Utils do
         copy[:settings][:features] << "feature3"
 
         expect(original[:users][0][:name]).to eq("John")
-        expect(original[:users][0][:tags]).to eq(%w[admin active])
+        expect(original[:users][0][:tags]).to eq(["admin", "active"])
         expect(original[:users][0][:metadata][:created]).to eq("2024-01-01")
         expect(original[:settings][:notifications][:email]).to be(true)
-        expect(original[:settings][:features]).to eq(%w[feature1 feature2])
+        expect(original[:settings][:features]).to eq(["feature1", "feature2"])
       end
     end
 

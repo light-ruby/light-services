@@ -78,10 +78,10 @@ end
 # Grandchild service to test multi-level inheritance
 class WithRedefinedGrandchild < WithRedefinedArgTypes
   # Redefine again in grandchild
-  arg :name, type: String  # Back to String only
-  arg :extra, type: String, optional: true  # Add new argument
+  arg :name, type: String # Back to String only
+  arg :extra, type: String, optional: true # Add new argument
 
-  output :extra_output, type: String, optional: true  # Add new output
+  output :extra_output, type: String, optional: true # Add new output
 
   private
 

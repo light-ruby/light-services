@@ -1,6 +1,3 @@
-inherit_gem:
-  rubocop-rails-omakase: rubocop.yml
-
 plugins:
   - rubocop-rake
   - rubocop-rspec
@@ -9,6 +6,11 @@ plugins:
 AllCops:
   NewCops: enable
   TargetRubyVersion: 2.7
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+
+Metrics/MethodLength:
+  Max: 20
 
 Lint/EmptyFile:
   Enabled: true
@@ -18,6 +20,12 @@ Layout/SpaceInsideArrayLiteralBrackets:
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
+
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
 
 Metrics/BlockLength:
   Exclude:
@@ -31,6 +39,9 @@ RSpec/MultipleExpectations:
 
 RSpec/MultipleDescribes:
   Enabled: false
+
+RSpec/NestedGroups:
+  Max: 5
 
 Security/Eval:
   Exclude:
@@ -52,5 +63,20 @@ Style/GuardClause:
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
+Style/WordArray:
+  EnforcedStyle: brackets
+
 Style/SymbolArray:
   EnforcedStyle: brackets
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: diff_comma
+
+Style/ConditionalAssignment:
+  Enabled: false
