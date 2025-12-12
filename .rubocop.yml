@@ -4,22 +4,10 @@ plugins:
   - rubocop-performance
 
 AllCops:
-  NewCops: enable
-  TargetRubyVersion: 3.0
   DisplayCopNames: true
   DisplayStyleGuide: true
-
-Metrics/MethodLength:
-  Max: 20
-
-Lint/EmptyFile:
-  Enabled: true
-
-Layout/SpaceInsideArrayLiteralBrackets:
-  EnforcedStyle: no_space
-
-Layout/MultilineMethodCallIndentation:
-  EnforcedStyle: indented
+  NewCops: enable
+  TargetRubyVersion: 3
 
 Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
@@ -27,18 +15,48 @@ Layout/FirstArrayElementIndentation:
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Layout/SpaceInsideArrayLiteralBrackets:
+  EnforcedStyle: no_space
+
+Lint/EmptyFile:
+  Enabled: true
+
+Metrics/AbcSize:
+  Exclude:
+    - lib/light/services/dsl/steps_dsl.rb
+    - lib/light/services/messages.rb
+  Max: 20
+
 Metrics/BlockLength:
   Exclude:
     - spec/**/*_spec.rb
 
+Metrics/ClassLength:
+  Max: 150
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+Naming/PredicatePrefix:
+  Enabled: false
+
 RSpec/ExampleLength:
   Max: 20
 
-RSpec/MultipleExpectations:
-  Max: 10
-
 RSpec/MultipleDescribes:
   Enabled: false
+
+RSpec/MultipleExpectations:
+  Max: 10
 
 RSpec/NestedGroups:
   Max: 5
@@ -54,23 +72,27 @@ Style/ClassAndModuleChildren:
 Style/ClassVars:
   Enabled: false
 
+Style/ConditionalAssignment:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
 Style/GuardClause:
   Enabled: false
 
+Style/OptionalBooleanParameter:
+  Exclude:
+    - lib/light/services/rspec/matchers/**/*.rb
+
 Style/StringLiterals:
   EnforcedStyle: double_quotes
-
-Style/WordArray:
-  EnforcedStyle: brackets
 
 Style/SymbolArray:
   EnforcedStyle: brackets
 
-Naming/PredicatePrefix:
-  Enabled: false
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: diff_comma
 
 Style/TrailingCommaInArrayLiteral:
   EnforcedStyleForMultiline: consistent_comma
@@ -78,27 +100,5 @@ Style/TrailingCommaInArrayLiteral:
 Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: consistent_comma
 
-Style/TrailingCommaInArguments:
-  EnforcedStyleForMultiline: diff_comma
-
-Style/ConditionalAssignment:
-  Enabled: false
-
-Metrics/ClassLength:
-  Max: 150
-
-Metrics/CyclomaticComplexity:
-  Max: 10
-
-Metrics/PerceivedComplexity:
-  Max: 10
-
-Metrics/AbcSize:
-  Max: 20
-  Exclude:
-    - lib/light/services/dsl/steps_dsl.rb
-    - lib/light/services/messages.rb
-
-Style/OptionalBooleanParameter:
-  Exclude:
-    - lib/light/services/rspec/matchers/**/*.rb
+Style/WordArray:
+  EnforcedStyle: brackets
