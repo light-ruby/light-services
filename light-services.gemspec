@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["andrew@kodkod.me"]
 
   spec.summary       = "Robust service architecture for Ruby/Rails applications"
-  spec.description   = "Robust service architecture for Ruby/Rails applications"
+  spec.description   = "Light Services is a simple yet powerful way to organize business logic in Ruby applications. Build services that are easy to test, maintain, and understand." # rubocop:disable Layout/LineLength
   spec.homepage      = "https://light-services-docs.vercel.app/"
   spec.license       = "MIT"
   spec.required_ruby_version = Gem::Requirement.new(">= 3.0.0")
