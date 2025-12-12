@@ -18,6 +18,7 @@ require "data/services/with_exception"
 require "data/services/with_multiple_types"
 require "data/services/with_typed_outputs"
 require "data/services/with_step_insertion"
+require "data/services/with_redefinition"
 require "data/services/send_notification"
 
 require "data/services/user/create"

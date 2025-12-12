@@ -25,9 +25,9 @@ module Light
       extend ClassBasedCollection::Mount
 
       # Settings
+      mount_class_based_collection :arguments, item_class: Settings::Argument, shortcut: :arg,    allow_redefine: true
       mount_class_based_collection :steps,     item_class: Settings::Step,     shortcut: :step
-      mount_class_based_collection :outputs,   item_class: Settings::Output,   shortcut: :output
-      mount_class_based_collection :arguments, item_class: Settings::Argument, shortcut: :arg, allow_redefine: true
+      mount_class_based_collection :outputs,   item_class: Settings::Output,   shortcut: :output, allow_redefine: true
 
       # Arguments
       arg :verbose, default: false
