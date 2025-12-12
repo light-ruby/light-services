@@ -55,7 +55,10 @@ module Light
           settings_collection.each do |name, field|
             next if field.optional && (!key?(name) || get(name).nil?)
 
-            field.validate_type!(get(name))
+            # validate_type! returns the (possibly coerced) value
+            coerced_value = field.validate_type!(get(name))
+            # Store the coerced value back (supports dry-types coercion)
+            set(name, coerced_value) if coerced_value != get(name)
           end
         end
 

@@ -78,6 +78,29 @@ class AI::Chat < ApplicationService
 end
 ```
 
+### dry-types Support
+
+Outputs also support [dry-types](https://dry-rb.org/gems/dry-types) for advanced type validation and coercion.
+
+```ruby
+require "dry-types"
+
+module Types
+  include Dry.Types()
+end
+
+class AI::Chat < ApplicationService
+  # Strict type validation
+  output :messages, type: Types::Strict::Array.of(Types::Hash)
+  
+  # Coercible types - values are coerced on output validation
+  output :total_tokens, type: Types::Coercible::Integer
+  
+  # Constrained types
+  output :cost, type: Types::Float.constrained(gteq: 0)
+end
+```
+
 ## Default Values
 
 Set default values for outputs using the `default` option. The default value will be automatically set before the execution of steps.

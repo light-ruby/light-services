@@ -9,6 +9,9 @@ group :test do
   gem "database_cleaner-active_record"
   gem "sqlite3"
 
+  # Optional type system support
+  gem "dry-types", "~> 1.0"
+
   gem "codecov"
   gem "rake"
   gem "rspec"

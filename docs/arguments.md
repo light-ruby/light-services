@@ -54,6 +54,52 @@ class HappyBirthdayService < ApplicationService
 end
 ```
 
+### dry-types Support
+
+Light Services supports [dry-types](https://dry-rb.org/gems/dry-types) for advanced type validation and coercion. When using dry-types, values are automatically coerced to the expected type.
+
+First, set up your types module:
+
+```ruby
+require "dry-types"
+
+module Types
+  include Dry.Types()
+end
+```
+
+Then use dry-types in your service arguments:
+
+```ruby
+class User::Create < ApplicationService
+  # Strict types - must match exactly
+  arg :name, type: Types::Strict::String
+  
+  # Coercible types - automatically convert values
+  arg :age, type: Types::Coercible::Integer
+  
+  # Constrained types - add validation rules
+  arg :email, type: Types::String.constrained(format: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i)
+  
+  # Enum types - restrict to specific values
+  arg :status, type: Types::String.enum("active", "inactive", "pending")
+  
+  # Array types with element validation
+  arg :tags, type: Types::Array.of(Types::String)
+  
+  # Hash schemas
+  arg :metadata, type: Types::Hash.schema(key: Types::String)
+end
+```
+
+**Coercion Example:**
+
+```ruby
+# With coercible types, string "25" is automatically converted to integer 25
+service = User::Create.run(name: "John", age: "25")
+service.age # => 25 (Integer, not String)
+```
+
 ## Required Arguments
 
 By default, arguments are required. You can make them optional by setting `optional` to `true`.
