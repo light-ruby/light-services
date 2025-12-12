@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../constants"
+
 module Light
   module Services
     module Dsl
@@ -13,9 +15,25 @@ module Light
           # Define an output for the service
           #
           # @param name [Symbol] the output name
-          # @param opts [Hash] options for the output (type, optional, default, etc.)
+          # @param opts [Hash] options for configuring the output
+          # @option opts [Class, Array<Class>] :type Type(s) to validate against
+          #   (e.g., Hash, String, [String, Symbol])
+          # @option opts [Boolean] :optional (false) Whether nil values are allowed
+          # @option opts [Object, Proc] :default Default value or proc to evaluate in instance context
+          #
+          # @example Define a required hash output
+          #   output :result, type: Hash
+          #
+          # @example Define an optional output with default
+          #   output :status, type: String, optional: true, default: "pending"
+          #
+          # @example Define an output with multiple allowed types
+          #   output :data, type: [Hash, Array]
+          #
+          # @example Define an output with proc default
+          #   output :metadata, type: Hash, default: -> { {} }
           def output(name, opts = {})
-            own_outputs[name] = Settings::Field.new(name, self, opts.merge(field_type: :output))
+            own_outputs[name] = Settings::Field.new(name, self, opts.merge(field_type: FieldTypes::OUTPUT))
             @outputs = nil # Clear memoized outputs since we're modifying them
           end
 

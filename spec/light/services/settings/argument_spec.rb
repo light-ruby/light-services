@@ -15,12 +15,12 @@ RSpec.describe Light::Services::Settings::Argument do
 
       it "rejects string when type is boolean" do
         expect { WithMultipleTypes.run(value: "test", flag: "true") }
-          .to raise_error(Light::Services::ArgTypeError, /must be a TrueClass, FalseClass/)
+          .to raise_error(Light::Services::ArgTypeError, /must be TrueClass or FalseClass/)
       end
 
       it "rejects integer when type is boolean" do
         expect { WithMultipleTypes.run(value: "test", flag: 1) }
-          .to raise_error(Light::Services::ArgTypeError, /must be a TrueClass, FalseClass/)
+          .to raise_error(Light::Services::ArgTypeError, /must be TrueClass or FalseClass/)
       end
     end
 
@@ -32,7 +32,7 @@ RSpec.describe Light::Services::Settings::Argument do
 
       it "rejects non-matching type" do
         expect { WithMultipleTypes.run(value: "test", data: "not a hash") }
-          .to raise_error(Light::Services::ArgTypeError, /must be a Hash/)
+          .to raise_error(Light::Services::ArgTypeError, /must be Hash/)
       end
     end
 
@@ -49,7 +49,7 @@ RSpec.describe Light::Services::Settings::Argument do
 
       it "rejects other types" do
         expect { WithMultipleTypes.run(value: 3.14) }
-          .to raise_error(Light::Services::ArgTypeError, /must be a String, Integer/)
+          .to raise_error(Light::Services::ArgTypeError, /must be String or Integer/)
       end
 
       it "rejects nil when not optional" do
@@ -69,7 +69,7 @@ RSpec.describe Light::Services::Settings::Argument do
       it "rejects instances of other classes" do
         product = Product.create!(name: "Test", price: 100)
         expect { Product::AddToCart.run(current_user: "not a user", product: product) }
-          .to raise_error(Light::Services::ArgTypeError, /must be a User/)
+          .to raise_error(Light::Services::ArgTypeError, /must be User/)
       end
     end
 

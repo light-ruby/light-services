@@ -12,17 +12,44 @@ module Light
         module ClassMethods
           # Define a step for the service
           #
-          # @param name [Symbol] the step name
-          # @param opts [Hash] options for the step (if, unless, always, before, after, etc.)
+          # @param name [Symbol] the step name (must correspond to a private method)
+          # @param opts [Hash] options for configuring the step
+          # @option opts [Symbol, Proc] :if Condition to determine if step should run
+          # @option opts [Symbol, Proc] :unless Condition to skip step (returns truthy to skip)
+          # @option opts [Boolean] :always (false) Run step even after errors/warnings
+          # @option opts [Symbol] :before Insert this step before the specified step
+          # @option opts [Symbol] :after Insert this step after the specified step
+          #
+          # @example Define a simple step
+          #   step :validate_input
+          #
+          # @example Define a conditional step
+          #   step :send_notification, if: :should_notify?
+          #   step :skip_validation, unless: :production?
+          #
+          # @example Define a step that always runs
+          #   step :cleanup, always: true
+          #
+          # @example Define step ordering
+          #   step :log_start, before: :validate_input
+          #   step :log_end, after: :process_data
+          #
+          # @example Define a step with proc condition
+          #   step :premium_feature, if: -> { user.premium? && feature_enabled? }
           def step(name, opts = {})
             validate_step_opts!(name, opts)
 
             # Build current steps to check for duplicates and find insertion targets
             current = steps
-            raise Light::Services::Error, "Step `#{name}` already exists in service #{self}" if current.key?(name)
+            if current.key?(name)
+              raise Light::Services::Error,
+                    "Step `#{name}` is already defined in service #{self}. Each step must have a unique name."
+            end
 
             if (target = opts[:before] || opts[:after]) && !current.key?(target)
-              raise Light::Services::Error, "Cannot find step `#{target}` in service #{self}"
+              available = current.keys.join(", ")
+              raise Light::Services::Error,
+                    "Cannot find target step `#{target}` in service #{self}. Available steps: [#{available}]"
             end
 
             step_obj = Settings::Step.new(name, self, opts)

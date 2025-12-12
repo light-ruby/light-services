@@ -89,18 +89,10 @@ module Light
 
       def execute_callback(callback, args, &block)
         case callback
-        when Symbol
-          if block_given?
-            send(callback, *args, &block)
-          else
-            send(callback, *args)
-          end
-        when Proc
-          if block_given?
-            instance_exec(*args, block, &callback)
-          else
-            instance_exec(*args, &callback)
-          end
+        in Symbol
+          block_given? ? send(callback, *args, &block) : send(callback, *args)
+        in Proc
+          block_given? ? instance_exec(*args, block, &callback) : instance_exec(*args, &callback)
         else
           raise ArgumentError, "Callback must be a Symbol or Proc, got #{callback.class}"
         end

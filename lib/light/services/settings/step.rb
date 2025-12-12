@@ -26,7 +26,10 @@ module Light
           return false unless run?(instance)
 
           unless instance.respond_to?(name, true)
-            raise Light::Services::Error, "Cannot find step `#{name}` in service `#{@service_class}`"
+            available_steps = @service_class.steps.keys.join(", ")
+            raise Light::Services::Error,
+                  "Step method `#{name}` is not defined in #{@service_class}. " \
+                  "Defined steps: [#{available_steps}]"
           end
 
           execute_with_callbacks(instance)

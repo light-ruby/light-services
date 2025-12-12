@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../constants"
+
 module Light
   module Services
     module Dsl
@@ -13,9 +15,29 @@ module Light
           # Define an argument for the service
           #
           # @param name [Symbol] the argument name
-          # @param opts [Hash] options for the argument (type, optional, default, etc.)
+          # @param opts [Hash] options for configuring the argument
+          # @option opts [Class, Array<Class>] :type Type(s) to validate against
+          #   (e.g., String, Integer, [String, Symbol])
+          # @option opts [Boolean] :optional (false) Whether nil values are allowed
+          # @option opts [Object, Proc] :default Default value or proc to evaluate in instance context
+          # @option opts [Boolean] :context (false) Whether to pass this argument to child services
+          #
+          # @example Define a required string argument
+          #   arg :name, type: String
+          #
+          # @example Define an optional argument with default
+          #   arg :age, type: Integer, optional: true, default: 25
+          #
+          # @example Define an argument with multiple allowed types
+          #   arg :id, type: [String, Integer]
+          #
+          # @example Define an argument with proc default
+          #   arg :timestamp, type: Time, default: -> { Time.now }
+          #
+          # @example Define a context argument passed to child services
+          #   arg :current_user, type: User, context: true
           def arg(name, opts = {})
-            own_arguments[name] = Settings::Field.new(name, self, opts.merge(field_type: :argument))
+            own_arguments[name] = Settings::Field.new(name, self, opts.merge(field_type: FieldTypes::ARGUMENT))
             @arguments = nil # Clear memoized arguments since we're modifying them
           end
 

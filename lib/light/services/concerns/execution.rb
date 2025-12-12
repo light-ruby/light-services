@@ -1,0 +1,75 @@
+# frozen_string_literal: true
+
+module Light
+  module Services
+    module Concerns
+      # Handles service execution logic including steps and validation
+      module Execution
+        private
+
+        # Execute the main service logic
+        def execute_service
+          run_steps
+          run_steps_with_always
+          @outputs.validate! if success?
+
+          copy_warnings_to_parent_service
+          copy_errors_to_parent_service
+        end
+
+        # Run all service result callbacks based on success/failure
+        def run_service_result_callbacks
+          run_callbacks(:after_service_run, self)
+
+          if success?
+            run_callbacks(:on_service_success, self)
+          else
+            run_callbacks(:on_service_failure, self)
+          end
+        end
+
+        # Run normal steps within transaction
+        def run_steps
+          within_transaction do
+            # Cache steps once for both normal and always execution
+            @cached_steps = self.class.steps
+
+            @cached_steps.each do |name, step|
+              @launched_steps << name if step.run(self)
+
+              break if @errors.break? || @warnings.break?
+            end
+          end
+        end
+
+        # Run steps with parameter `always` if they weren't launched because of errors/warnings
+        def run_steps_with_always
+          # Use cached steps from run_steps, or get them if run_steps wasn't called
+          steps_to_check = @cached_steps || self.class.steps
+
+          steps_to_check.each do |name, step|
+            next if !step.always || @launched_steps.include?(name)
+
+            @launched_steps << name if step.run(self)
+          end
+        end
+
+        # Load defaults for outputs and arguments, then validate arguments
+        def load_defaults_and_validate
+          @outputs.load_defaults
+          @arguments.load_defaults
+          @arguments.validate!
+        end
+
+        # Execute block within transaction if configured
+        def within_transaction(&block)
+          if @config[:use_transactions] && defined?(ActiveRecord::Base)
+            ActiveRecord::Base.transaction(requires_new: true, &block)
+          else
+            yield
+          end
+        end
+      end
+    end
+  end
+end

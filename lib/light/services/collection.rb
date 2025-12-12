@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "constants"
+
 # Collection to store arguments and outputs values
 module Light
   module Services
@@ -10,6 +12,8 @@ module Light
         def_delegators :@storage, :key?, :to_h
 
         def initialize(instance, collection_type, storage = {})
+          validate_collection_type!(collection_type)
+
           @instance = instance
           @collection_type = collection_type
           @storage = storage
@@ -57,7 +61,7 @@ module Light
 
         # Extend args with context values (only for arguments)
         def extend_with_context(args)
-          return args unless @collection_type == :arguments
+          return args unless @collection_type == CollectionTypes::ARGUMENTS
 
           settings_collection.each do |name, field|
             next if !field.context || args.key?(name) || !key?(name)
@@ -69,6 +73,13 @@ module Light
         end
 
         private
+
+        def validate_collection_type!(type)
+          return if CollectionTypes::ALL.include?(type)
+
+          raise ArgumentError,
+                "collection_type must be one of #{CollectionTypes::ALL.join(', ')}, got: #{type.inspect}"
+        end
 
         def settings_collection
           @instance.class.public_send(@collection_type)

@@ -113,7 +113,7 @@ RSpec.describe Light::Services::Settings::Step do
 
       it "raises NoStepError" do
         instance = TestStepService.new
-        expect { step.run(instance) }.to raise_error(Light::Services::NoStepError, /Cannot find step/)
+        expect { step.run(instance) }.to raise_error(Light::Services::NoStepError, /Step method .* is not defined/)
       end
     end
   end

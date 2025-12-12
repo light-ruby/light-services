@@ -26,7 +26,7 @@ RSpec.describe Light::Services::Settings::Output do
     describe "with wrong type" do
       it "raises ArgTypeError when output has wrong type" do
         expect { WithTypedOutputs.run(return_wrong_type: true) }
-          .to raise_error(Light::Services::ArgTypeError, /output `message` must be a String/)
+          .to raise_error(Light::Services::ArgTypeError, /output `message` must be String/)
       end
     end
 
