@@ -12,6 +12,7 @@ group :test do
   gem "codecov"
   gem "rake"
   gem "rspec"
+  gem "rspec-benchmark"
   gem "simplecov"
 
   gem "rubocop"

@@ -11,6 +11,7 @@ end
 
 require "bundler/setup"
 require "database_cleaner/active_record"
+require "rspec-benchmark"
 
 require "light/services"
 require "data/load"
@@ -25,6 +26,9 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  # Include benchmark matchers
+  config.include RSpec::Benchmark::Matchers
 
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction

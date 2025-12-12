@@ -97,19 +97,25 @@ module Light
 
         def arg(name, opts = {})
           own_arguments[name] = Settings::Field.new(name, self, opts.merge(field_type: :argument))
+          @arguments = nil # Clear memoized arguments since we're modifying them
         end
 
         def remove_arg(name)
           own_arguments.delete(name)
+          @arguments = nil # Clear memoized arguments since we're modifying them
         end
 
         def arguments
-          inherited = superclass.respond_to?(:arguments) ? superclass.arguments.dup : {}
-          inherited.merge(own_arguments)
+          @arguments ||= build_arguments
         end
 
         def own_arguments
           @own_arguments ||= {}
+        end
+
+        def build_arguments
+          inherited = superclass.respond_to?(:arguments) ? superclass.arguments.dup : {}
+          inherited.merge(own_arguments)
         end
 
         # ========== Steps DSL ==========
@@ -118,7 +124,7 @@ module Light
           validate_step_opts!(name, opts)
 
           # Build current steps to check for duplicates and find insertion targets
-          current = build_steps
+          current = steps
           raise Light::Services::Error, "Step `#{name}` already exists in service #{self}" if current.key?(name)
 
           if (target = opts[:before] || opts[:after]) && !current.key?(target)
@@ -133,14 +139,20 @@ module Light
           else
             step_operations << { action: :add, name: name, step: step_obj }
           end
+
+          # Clear memoized steps since we're modifying them
+          @steps = nil
         end
 
         def remove_step(name)
           step_operations << { action: :remove, name: name }
+
+          # Clear memoized steps since we're modifying them
+          @steps = nil
         end
 
         def steps
-          build_steps
+          @steps ||= build_steps
         end
 
         def step_operations
@@ -151,19 +163,27 @@ module Light
 
         def output(name, opts = {})
           own_outputs[name] = Settings::Field.new(name, self, opts.merge(field_type: :output))
+          # Clear memoized outputs since we're modifying them
+          @outputs = nil
         end
 
         def remove_output(name)
           own_outputs.delete(name)
+          # Clear memoized outputs since we're modifying them
+          @outputs = nil
         end
 
         def outputs
-          inherited = superclass.respond_to?(:outputs) ? superclass.outputs.dup : {}
-          inherited.merge(own_outputs)
+          @outputs ||= build_outputs
         end
 
         def own_outputs
           @own_outputs ||= {}
+        end
+
+        def build_outputs
+          inherited = superclass.respond_to?(:outputs) ? superclass.outputs.dup : {}
+          inherited.merge(own_outputs)
         end
 
         private
@@ -177,26 +197,45 @@ module Light
 
         def build_steps
           # Start with inherited steps
-          result = superclass.respond_to?(:steps) ? superclass.steps.dup : {}
+          result = inherit_steps
 
           # Apply operations in order
-          step_operations.each do |op|
-            case op[:action]
-            when :add
-              result[op[:name]] = op[:step]
-            when :remove
-              result.delete(op[:name])
-            when :insert
-              target = op[:before] || op[:after]
-              index = result.keys.index(target)
-              next unless index
-
-              index += 1 if op[:after]
-              result = result.to_a.insert(index, [op[:name], op[:step]]).to_h
-            end
-          end
+          step_operations.each { |op| apply_step_operation(result, op) }
 
           result
+        end
+
+        def inherit_steps
+          superclass.respond_to?(:steps) ? superclass.steps.dup : {}
+        end
+
+        def apply_step_operation(steps, operation)
+          case operation[:action]
+          when :add
+            steps[operation[:name]] = operation[:step]
+          when :remove
+            steps.delete(operation[:name])
+          when :insert
+            insert_step(steps, operation)
+          end
+        end
+
+        def insert_step(steps, operation)
+          target = operation[:before] || operation[:after]
+          keys = steps.keys
+          index = keys.index(target)
+          return unless index
+
+          # More efficient insertion using ordered hash reconstruction
+          new_steps = {}
+          keys.each_with_index do |key, i|
+            # Insert before target
+            new_steps[operation[:name]] = operation[:step] if operation[:before] && i == index
+            new_steps[key] = steps[key]
+            # Insert after target
+            new_steps[operation[:name]] = operation[:step] if operation[:after] && i == index
+          end
+          steps.replace(new_steps)
         end
       end
 
@@ -239,7 +278,10 @@ module Light
 
       def run_steps
         within_transaction do
-          self.class.steps.each do |name, step|
+          # Cache steps once for both normal and always execution
+          @cached_steps = self.class.steps
+
+          @cached_steps.each do |name, step|
             @launched_steps << name if step.run(self)
 
             break if @errors.break? || @warnings.break?
@@ -249,7 +291,10 @@ module Light
 
       # Run steps with parameter `always` if they weren't launched because of errors/warnings
       def run_steps_with_always
-        self.class.steps.each do |name, step|
+        # Use cached steps from run_steps, or get them if run_steps wasn't called
+        steps_to_check = @cached_steps || self.class.steps
+
+        steps_to_check.each do |name, step|
           next if !step.always || @launched_steps.include?(name)
 
           @launched_steps << name if step.run(self)

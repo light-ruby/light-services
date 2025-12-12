@@ -27,6 +27,9 @@ GEM
       uri (>= 0.13.1)
     ast (2.4.3)
     base64 (0.3.0)
+    benchmark-malloc (0.2.0)
+    benchmark-perf (0.6.0)
+    benchmark-trend (0.4.0)
     bigdecimal (3.3.1)
     codecov (0.6.0)
       simplecov (>= 0.15, < 0.22)
@@ -61,6 +64,11 @@ GEM
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
       rspec-mocks (~> 3.13.0)
+    rspec-benchmark (0.6.0)
+      benchmark-malloc (~> 0.2)
+      benchmark-perf (~> 0.6)
+      benchmark-trend (~> 0.4)
+      rspec (>= 3.0)
     rspec-core (3.13.6)
       rspec-support (~> 3.13.0)
     rspec-expectations (3.13.5)
@@ -132,6 +140,7 @@ DEPENDENCIES
   light-services!
   rake
   rspec
+  rspec-benchmark
   rubocop
   rubocop-performance
   rubocop-rails-omakase
