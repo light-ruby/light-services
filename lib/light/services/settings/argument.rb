@@ -1,12 +1,16 @@
 # frozen_string_literal: true
 
+require "light/services/settings/type_validatable"
+
 # This class defines settings for argument
 module Light
   module Services
     module Settings
       class Argument
+        include TypeValidatable
+
         # Getters
-        attr_reader :name, :default_exists, :default, :context, :optional, :arg_types_cache
+        attr_reader :name, :default_exists, :default, :context, :optional
 
         def initialize(name, service_class, opts = {})
           @name = name
@@ -18,40 +22,13 @@ module Light
           @default = opts.delete(:default)
           @optional = opts.delete(:optional)
 
-          @arg_types_cache = {}
-
           define_methods
-        end
-
-        def validate_type!(value)
-          return if !@type || [*@type].any? do |type|
-            case type
-            when :boolean
-              value.is_a?(TrueClass) || value.is_a?(FalseClass)
-            when Symbol
-              arg_type(value) == type
-            else
-              value.is_a?(type)
-            end
-          end
-
-          raise Light::Services::ArgTypeError, "#{@service_class} argument `#{name}` must be " \
-                                               "a #{[*@type].join(', ')} (currently: #{value.class})"
         end
 
         private
 
-        def arg_type(value)
-          klass = value.class
-
-          @arg_types_cache[klass] ||= klass
-            .name
-            .gsub("::", "/")
-            .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
-            .gsub(/([a-z\d])([A-Z])/, '\1_\2')
-            .tr("-", "_")
-            .downcase
-            .to_sym
+        def setting_type
+          "argument"
         end
 
         def define_methods

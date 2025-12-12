@@ -146,11 +146,4 @@ RSpec.describe Light::Services::Settings::Argument do
     end
   end
 
-  describe "#arg_types_cache" do
-    it "caches type conversions" do
-      argument = described_class.new(:test, ApplicationService, type: :string)
-      # Access internal method via send to test caching
-      expect(argument.arg_types_cache).to be_a(Hash)
-    end
-  end
 end

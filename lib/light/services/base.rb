@@ -82,6 +82,7 @@ module Light
         time = Benchmark.ms do
           run_steps
           run_steps_with_always
+          @outputs.validate! if success?
 
           copy_warnings_to_parent_service
           copy_errors_to_parent_service

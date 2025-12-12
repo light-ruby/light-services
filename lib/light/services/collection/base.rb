@@ -51,7 +51,11 @@ module Light
         private
 
         def deep_dup(object)
+          return object.deep_dup if object.respond_to?(:deep_dup)
+
           Marshal.load(Marshal.dump(object))
+        rescue TypeError
+          object.respond_to?(:dup) ? object.dup : object
         end
       end
     end

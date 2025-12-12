@@ -1,24 +1,34 @@
 # frozen_string_literal: true
 
+require "light/services/settings/type_validatable"
+
 # This class defines settings for output
 module Light
   module Services
     module Settings
       class Output
+        include TypeValidatable
+
         # Getters
-        attr_reader :name, :default_exists, :default
+        attr_reader :name, :default_exists, :default, :optional
 
         def initialize(name, service_class, opts = {})
           @name = name
           @service_class = service_class
 
+          @type = opts.delete(:type)
           @default_exists = opts.key?(:default)
           @default = opts.delete(:default)
+          @optional = opts.delete(:optional)
 
           define_methods
         end
 
         private
+
+        def setting_type
+          "output"
+        end
 
         def define_methods
           name = @name
