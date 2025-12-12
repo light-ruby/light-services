@@ -12,7 +12,8 @@ Light Services is a simple yet powerful way to organize your business logic. Thi
 - 👵 **Inheritance**: Inherit from other services to reuse logic seamlessly
 - 🚨 **Error Handling**: Collect errors from steps and handle them your way
 - ⛓️ **Context**: Run multiple services sequentially within the same context
-- 🤔 **Framework Agnostic**: Compatible with Rails, Hanami, or any Ruby framework
+- � **RSpec Matchers**: Built-in RSpec matchers for expressive service tests
+- �🤔 **Framework Agnostic**: Compatible with Rails, Hanami, or any Ruby framework
 - 🏗️ **Modularity**: Isolate and test your services with ease
 - 🐛 **100% Test Coverage**: Bugs are not welcome here!
 - 🛡️ **Battle-Tested**: In production use since 2017

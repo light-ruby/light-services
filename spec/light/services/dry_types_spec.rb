@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Dry Types Support" do
+RSpec.describe "Dry Types Support" do # rubocop:disable RSpec/DescribeClass
   describe WithDryTypes do
     describe "argument validation with dry-types" do
       context "with valid strict string" do

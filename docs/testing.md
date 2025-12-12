@@ -367,6 +367,180 @@ RSpec.configure do |config|
 end
 ```
 
+## Custom RSpec Matchers
+
+Light Services provides built-in RSpec matchers to make testing more expressive and readable.
+
+### Setup
+
+Add this to your `spec/spec_helper.rb` or `spec/rails_helper.rb`:
+
+```ruby
+require 'light/services/rspec'
+```
+
+This automatically includes all matchers in your RSpec tests.
+
+### DSL Definition Matchers
+
+#### `define_argument`
+
+Test that a service defines specific arguments:
+
+```ruby
+RSpec.describe User::Create do
+  it { expect(described_class).to define_argument(:email) }
+  it { expect(described_class).to define_argument(:email).with_type(String) }
+  it { expect(described_class).to define_argument(:role).optional }
+  it { expect(described_class).to define_argument(:status).with_default("pending") }
+  it { expect(described_class).to define_argument(:current_user).with_context }
+  
+  # Chaining modifiers
+  it { expect(described_class).to define_argument(:age).with_type(Integer).with_default(18) }
+end
+```
+
+#### `define_output`
+
+Test that a service defines specific outputs:
+
+```ruby
+RSpec.describe User::Create do
+  it { expect(described_class).to define_output(:user) }
+  it { expect(described_class).to define_output(:user).with_type(User) }
+  it { expect(described_class).to define_output(:token).optional }
+  it { expect(described_class).to define_output(:count).with_default(0) }
+end
+```
+
+#### `define_step` and `define_steps`
+
+Test that a service defines specific steps:
+
+```ruby
+RSpec.describe User::Create do
+  # Single step
+  it { expect(described_class).to define_step(:validate) }
+  it { expect(described_class).to define_step(:cleanup).with_always(true) }
+  it { expect(described_class).to define_step(:notify).with_if(:should_notify?) }
+  it { expect(described_class).to define_step(:skip_log).with_unless(:logging_enabled?) }
+  
+  # Multiple steps
+  it { expect(described_class).to define_steps(:validate, :process, :save) }
+  
+  # Steps in order
+  it { expect(described_class).to define_steps_in_order(:validate, :process, :save) }
+end
+```
+
+### Error and Warning Matchers
+
+#### `have_error_on` and `have_errors_on`
+
+Test service errors:
+
+```ruby
+RSpec.describe User::Create do
+  context "with invalid email" do
+    let(:service) { described_class.run(email: "") }
+    
+    it { expect(service).to have_error_on(:email) }
+    it { expect(service).to have_error_on(:email).with_message("can't be blank") }
+    it { expect(service).to have_error_on(:email).with_message(/blank/) } # regex
+    
+    # Multiple errors (requires break_on_error: false)
+    it { expect(service).to have_errors_on(:email, :password) }
+  end
+end
+```
+
+#### `have_warning_on` and `have_warnings_on`
+
+Test service warnings:
+
+```ruby
+RSpec.describe Data::Import do
+  context "with deprecated format" do
+    let(:service) { described_class.run(format: "csv_v1") }
+    
+    it { expect(service).to have_warning_on(:format) }
+    it { expect(service).to have_warning_on(:format).with_message("format is deprecated") }
+  end
+end
+```
+
+### Execution Matchers
+
+These matchers require step tracking. Add this to your service:
+
+```ruby
+class ApplicationService < Light::Services::Base
+  output :executed_steps, default: -> { [] }
+  
+  after_step_run do |service, step_name|
+    service.executed_steps << step_name
+  end
+end
+```
+
+#### `execute_step` and `skip_step`
+
+```ruby
+RSpec.describe Order::Process do
+  context "with premium user" do
+    let(:service) { described_class.run(user: premium_user) }
+    
+    it { expect(service).to execute_step(:apply_discount) }
+    it { expect(service).to skip_step(:show_ads) }
+  end
+end
+```
+
+#### `execute_steps` and `execute_steps_in_order`
+
+```ruby
+RSpec.describe Order::Process do
+  let(:service) { described_class.run(order: order) }
+  
+  it { expect(service).to execute_steps(:validate, :charge, :fulfill) }
+  it { expect(service).to execute_steps_in_order(:validate, :charge, :fulfill) }
+end
+```
+
+### Callback Matchers
+
+These matchers require callback tracking. Add this to your service:
+
+```ruby
+class ApplicationService < Light::Services::Base
+  output :callback_log, default: -> { [] }
+  
+  before_service_run { |service| service.callback_log << :before_service_run }
+  after_service_run { |service| service.callback_log << :after_service_run }
+  on_service_success { |service| service.callback_log << :on_service_success }
+  on_service_failure { |service| service.callback_log << :on_service_failure }
+  
+  after_step_run { |service, step| service.callback_log << [:after_step_run, step] }
+end
+```
+
+#### `trigger_callback`
+
+```ruby
+RSpec.describe Order::Process do
+  context "when successful" do
+    let(:service) { described_class.run(order: valid_order) }
+    
+    it { expect(service).to trigger_callback(:before_service_run) }
+    it { expect(service).to trigger_callback(:on_service_success) }
+    it { expect(service).not_to trigger_callback(:on_service_failure) }
+    
+    # Step-specific callbacks
+    it { expect(service).to trigger_callback(:after_step_run).for_step(:validate) }
+  end
+end
+```
+
 ## What's Next?
 
 Learn best practices for organizing your services:

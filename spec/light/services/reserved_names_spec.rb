@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Reserved Names Validation" do
+RSpec.describe "Reserved Names Validation" do # rubocop:disable RSpec/DescribeClass
   describe "ReservedNames constants" do
     it "includes expected base methods" do
       expect(Light::Services::ReservedNames::BASE_METHODS).to include(

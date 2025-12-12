@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Symbol Name Validation" do
+RSpec.describe "Symbol Name Validation" do # rubocop:disable RSpec/DescribeClass
   describe "argument name validation" do
     it "raises InvalidNameError when argument name is a String" do
       expect do
