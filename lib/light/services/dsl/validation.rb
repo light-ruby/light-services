@@ -16,7 +16,8 @@ module Light
           return if name.is_a?(Symbol)
 
           raise Light::Services::InvalidNameError,
-                "#{field_type.to_s.capitalize} name must be a Symbol, got #{name.class} (#{name.inspect}) in #{service_class}"
+                "#{field_type.to_s.capitalize} name must be a Symbol, " \
+                "got #{name.class} (#{name.inspect}) in #{service_class}"
         end
 
         # Validate that the name is not a reserved word

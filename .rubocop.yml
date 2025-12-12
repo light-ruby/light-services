@@ -83,3 +83,22 @@ Style/TrailingCommaInArguments:
 
 Style/ConditionalAssignment:
   Enabled: false
+
+Metrics/ClassLength:
+  Max: 150
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+Metrics/AbcSize:
+  Max: 20
+  Exclude:
+    - lib/light/services/dsl/steps_dsl.rb
+    - lib/light/services/messages.rb
+
+Style/OptionalBooleanParameter:
+  Exclude:
+    - lib/light/services/rspec/matchers/**/*.rb

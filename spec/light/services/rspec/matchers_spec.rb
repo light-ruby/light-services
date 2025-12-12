@@ -92,7 +92,7 @@ RSpec.describe Light::Services::RSpec::Matchers do
       end
     end
 
-    context "failure messages" do
+    context "with failure messages" do
       let(:service_class) do
         Class.new(ApplicationService) do
           arg :name, type: String, optional: true
@@ -349,7 +349,7 @@ RSpec.describe Light::Services::RSpec::Matchers do
       end
     end
 
-    context "failure messages" do
+    context "with failure messages" do
       let(:service) { service_class.run(name: "") }
 
       it "provides helpful message when error key is missing" do
@@ -566,7 +566,7 @@ RSpec.describe Light::Services::RSpec::Matchers do
       end
     end
 
-    context "service-level callbacks" do
+    context "with service-level callbacks" do
       let(:service) { service_class.run }
 
       it "matches when callback was triggered" do
@@ -580,7 +580,7 @@ RSpec.describe Light::Services::RSpec::Matchers do
       end
     end
 
-    context "step-level callbacks" do
+    context "with step-level callbacks" do
       let(:service) { service_class.run }
 
       describe ".for_step" do
@@ -595,7 +595,7 @@ RSpec.describe Light::Services::RSpec::Matchers do
       end
     end
 
-    context "failure messages" do
+    context "with failure messages" do
       let(:service_without_tracking) do
         Class.new(ApplicationService) do
           step :process

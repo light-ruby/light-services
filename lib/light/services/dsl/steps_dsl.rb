@@ -39,7 +39,7 @@ module Light
           #
           # @example Define a step with proc condition
           #   step :premium_feature, if: -> { user.premium? && feature_enabled? }
-          def step(name, opts = {})
+          def step(name, opts = {}) # rubocop:disable Metrics/MethodLength
             Validation.validate_symbol_name!(name, :step, self)
             Validation.validate_reserved_name!(name, :step, self)
             Validation.validate_name_conflicts!(name, :step, self)
