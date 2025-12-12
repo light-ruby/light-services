@@ -3,29 +3,12 @@
 module Light
   module Services
     module Callbacks
-      # All supported callback events
       EVENTS = [
         :before_step_run,
         :after_step_run,
         :around_step_run,
         :on_step_success,
         :on_step_failure,
-        :before_service_run,
-        :after_service_run,
-        :around_service_run,
-        :on_service_success,
-        :on_service_failure,
-      ].freeze
-
-      STEP_EVENTS = [
-        :before_step_run,
-        :after_step_run,
-        :around_step_run,
-        :on_step_success,
-        :on_step_failure,
-      ].freeze
-
-      SERVICE_EVENTS = [
         :before_service_run,
         :after_service_run,
         :around_service_run,

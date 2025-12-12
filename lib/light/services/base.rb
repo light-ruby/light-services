@@ -5,28 +5,15 @@ require "light/services/messages"
 require "light/services/base_with_context"
 
 require "light/services/settings/step"
-require "light/services/settings/output"
-require "light/services/settings/argument"
+require "light/services/settings/field"
 
-require "light/services/collection/base"
-require "light/services/collection/outputs"
-require "light/services/collection/arguments"
-
-require "light/services/class_based_collection/base"
-require "light/services/class_based_collection/mount"
+require "light/services/collection"
 
 # Base class for all service objects
 module Light
   module Services
     class Base
-      # Includes
       include Callbacks
-      extend ClassBasedCollection::Mount
-
-      # Settings
-      mount_class_based_collection :arguments, item_class: Settings::Argument, shortcut: :arg, allow_redefine: true
-      mount_class_based_collection :steps,     item_class: Settings::Step,     shortcut: :step
-      mount_class_based_collection :outputs,   item_class: Settings::Output,   shortcut: :output, allow_redefine: true
 
       # Getters
       attr_reader :outputs, :arguments, :errors, :warnings
@@ -35,8 +22,8 @@ module Light
         @config = Light::Services.config.merge(self.class.class_config || {}).merge(config)
         @parent_service = parent_service
 
-        @outputs = Collection::Outputs.new(self)
-        @arguments = Collection::Arguments.new(self, args.dup)
+        @outputs = Collection::Base.new(self, :outputs)
+        @arguments = Collection::Base.new(self, :arguments, args.dup)
 
         @done = false
         @launched_steps = []
@@ -104,6 +91,112 @@ module Light
           config = service_or_config unless service
 
           BaseWithContext.new(self, service, config.dup)
+        end
+
+        # ========== Arguments DSL ==========
+
+        def arg(name, opts = {})
+          own_arguments[name] = Settings::Field.new(name, self, opts.merge(field_type: :argument))
+        end
+
+        def remove_arg(name)
+          own_arguments.delete(name)
+        end
+
+        def arguments
+          inherited = superclass.respond_to?(:arguments) ? superclass.arguments.dup : {}
+          inherited.merge(own_arguments)
+        end
+
+        def own_arguments
+          @own_arguments ||= {}
+        end
+
+        # ========== Steps DSL ==========
+
+        def step(name, opts = {})
+          validate_step_opts!(name, opts)
+
+          # Build current steps to check for duplicates and find insertion targets
+          current = build_steps
+          raise Light::Services::Error, "Step `#{name}` already exists in service #{self}" if current.key?(name)
+
+          if (target = opts[:before] || opts[:after]) && !current.key?(target)
+            raise Light::Services::Error, "Cannot find step `#{target}` in service #{self}"
+          end
+
+          step_obj = Settings::Step.new(name, self, opts)
+
+          if opts[:before] || opts[:after]
+            step_operations << { action: :insert, name: name, step: step_obj, before: opts[:before],
+                                 after: opts[:after], }
+          else
+            step_operations << { action: :add, name: name, step: step_obj }
+          end
+        end
+
+        def remove_step(name)
+          step_operations << { action: :remove, name: name }
+        end
+
+        def steps
+          build_steps
+        end
+
+        def step_operations
+          @step_operations ||= []
+        end
+
+        # ========== Outputs DSL ==========
+
+        def output(name, opts = {})
+          own_outputs[name] = Settings::Field.new(name, self, opts.merge(field_type: :output))
+        end
+
+        def remove_output(name)
+          own_outputs.delete(name)
+        end
+
+        def outputs
+          inherited = superclass.respond_to?(:outputs) ? superclass.outputs.dup : {}
+          inherited.merge(own_outputs)
+        end
+
+        def own_outputs
+          @own_outputs ||= {}
+        end
+
+        private
+
+        def validate_step_opts!(name, opts)
+          return unless opts[:before] && opts[:after]
+
+          raise Light::Services::Error, "You cannot specify `before` and `after` " \
+                                        "for step `#{name}` in service #{self} at the same time"
+        end
+
+        def build_steps
+          # Start with inherited steps
+          result = superclass.respond_to?(:steps) ? superclass.steps.dup : {}
+
+          # Apply operations in order
+          step_operations.each do |op|
+            case op[:action]
+            when :add
+              result[op[:name]] = op[:step]
+            when :remove
+              result.delete(op[:name])
+            when :insert
+              target = op[:before] || op[:after]
+              index = result.keys.index(target)
+              next unless index
+
+              index += 1 if op[:after]
+              result = result.to_a.insert(index, [op[:name], op[:step]]).to_h
+            end
+          end
+
+          result
         end
       end
 

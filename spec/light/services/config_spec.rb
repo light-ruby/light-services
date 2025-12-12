@@ -6,30 +6,8 @@ RSpec.describe Light::Services::Config do
   describe "#initialize" do
     it "sets all defaults" do
       described_class::DEFAULTS.each do |key, value|
-        expect(config.get(key)).to eq(value)
+        expect(config.public_send(key)).to eq(value)
       end
-    end
-  end
-
-  describe "#set" do
-    it "sets a config value" do
-      config.set(:break_on_error, false)
-      expect(config.break_on_error).to be(false)
-    end
-
-    it "sets custom keys" do
-      config.set(:custom_key, "custom_value")
-      expect(config.get(:custom_key)).to eq("custom_value")
-    end
-  end
-
-  describe "#get" do
-    it "gets a config value" do
-      expect(config.get(:break_on_error)).to be(true)
-    end
-
-    it "returns nil for unset keys" do
-      expect(config.get(:nonexistent_key)).to be_nil
     end
   end
 

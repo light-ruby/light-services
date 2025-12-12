@@ -4,6 +4,11 @@
 module Light
   module Services
     class Messages
+      extend Forwardable
+
+      def_delegators :@messages, :[], :any?, :empty?, :size, :keys, :values, :each, :each_with_index, :key?
+      alias has_key? key?
+
       def initialize(config)
         @break = false
         @config = config
@@ -69,18 +74,6 @@ module Light
 
       def to_h
         @messages.to_h.transform_values { |value| value.map(&:to_s) }
-      end
-
-      def method_missing(method, *args, &block)
-        if @messages.respond_to?(method)
-          @messages.public_send(method, *args, &block)
-        else
-          super
-        end
-      end
-
-      def respond_to_missing?(method, include_private = false)
-        @messages.respond_to?(method, include_private) || super
       end
 
       private

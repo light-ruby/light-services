@@ -119,8 +119,8 @@ RSpec.describe Light::Services::Settings::Step do
   end
 end
 
-RSpec.describe Light::Services::ClassBasedCollection::Base do
-  describe "#find_index" do
+RSpec.describe "Steps collection" do
+  describe "step indexing" do
     it "returns index of existing item" do
       steps = WithConditions.steps
       # WithConditions has steps: letter_a, letter_b, letter_c, letter_d, add_error, replace_word
@@ -129,7 +129,7 @@ RSpec.describe Light::Services::ClassBasedCollection::Base do
     end
   end
 
-  describe "#all" do
+  describe "steps retrieval" do
     it "returns all steps for class" do
       steps = WithConditions.steps
       expect(steps).to be_a(Hash)
@@ -140,7 +140,7 @@ RSpec.describe Light::Services::ClassBasedCollection::Base do
   describe "inheritance" do
     it "inherits steps from parent class" do
       # CreateService has steps, Product::Create inherits from CreateService
-      expect(Product::Create.steps.keys).to include(:initialize_entity, :save)
+      expect(Product::Create.steps.keys).to include(:initialize_entity, :assign_attributes, :save)
     end
 
     it "allows child to modify inherited steps" do

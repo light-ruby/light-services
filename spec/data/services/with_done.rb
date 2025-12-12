@@ -2,9 +2,9 @@
 
 class WithDone < ApplicationService
   # Arguments
-  arg :add_c, type: :boolean, default: false
-  arg :do_not_add_d, type: :boolean, default: true
-  arg :fake_error, type: :boolean, default: false
+  arg :add_c, type: [TrueClass, FalseClass], default: false
+  arg :do_not_add_d, type: [TrueClass, FalseClass], default: true
+  arg :fake_error, type: [TrueClass, FalseClass], default: false
 
   # Outputs
   output :word, default: ""

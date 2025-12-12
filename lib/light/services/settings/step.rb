@@ -17,8 +17,8 @@ module Light
           @always = opts[:always]
 
           if @if && @unless
-            raise Light::Services::TwoConditions, "#{service_class} `if` and `unless` cannot be specified " \
-                                                  "for the step `#{name}` at the same time"
+            raise Light::Services::Error, "#{service_class} `if` and `unless` cannot be specified " \
+                                          "for the step `#{name}` at the same time"
           end
         end
 
@@ -26,8 +26,7 @@ module Light
           return false unless run?(instance)
 
           unless instance.respond_to?(name, true)
-            raise Light::Services::NoStepError,
-                  "Cannot find step `#{name}` in service `#{@service_class}`"
+            raise Light::Services::Error, "Cannot find step `#{name}` in service `#{@service_class}`"
           end
 
           execute_with_callbacks(instance)

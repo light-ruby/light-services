@@ -3,7 +3,7 @@
 class WithTypedOutputs < ApplicationService
   # Arguments
   arg :user_name, type: String, optional: true
-  arg :return_wrong_type, type: :boolean, default: false
+  arg :return_wrong_type, type: [TrueClass, FalseClass], default: false
 
   # Steps
   step :create_user, if: :user_name?
@@ -14,7 +14,7 @@ class WithTypedOutputs < ApplicationService
   output :user, type: User, optional: true
   output :message, type: String
   output :count, type: Integer, default: 0
-  output :data, type: :hash, optional: true
+  output :data, type: Hash, optional: true
 
   private
 

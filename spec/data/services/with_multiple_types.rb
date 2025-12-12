@@ -3,8 +3,8 @@
 class WithMultipleTypes < ApplicationService
   # Arguments with multiple types
   arg :value, type: [String, Integer]
-  arg :flag, type: :boolean, optional: true
-  arg :data, type: :hash, optional: true
+  arg :flag, type: [TrueClass, FalseClass], optional: true
+  arg :data, type: Hash, optional: true
 
   # Steps
   step :process

@@ -2,7 +2,7 @@
 
 RSpec.describe Light::Services::Settings::Argument do
   describe "type validation" do
-    describe "with :boolean type" do
+    describe "with boolean type" do
       it "accepts true" do
         service = WithMultipleTypes.run(value: "test", flag: true)
         expect(service.flag).to be(true)
@@ -13,26 +13,26 @@ RSpec.describe Light::Services::Settings::Argument do
         expect(service.flag).to be(false)
       end
 
-      it "rejects string when type is :boolean" do
+      it "rejects string when type is boolean" do
         expect { WithMultipleTypes.run(value: "test", flag: "true") }
-          .to raise_error(Light::Services::ArgTypeError, /must be a boolean/)
+          .to raise_error(Light::Services::ArgTypeError, /must be a TrueClass, FalseClass/)
       end
 
-      it "rejects integer when type is :boolean" do
+      it "rejects integer when type is boolean" do
         expect { WithMultipleTypes.run(value: "test", flag: 1) }
-          .to raise_error(Light::Services::ArgTypeError, /must be a boolean/)
+          .to raise_error(Light::Services::ArgTypeError, /must be a TrueClass, FalseClass/)
       end
     end
 
-    describe "with Symbol type" do
-      it "accepts matching symbol type" do
+    describe "with Hash type" do
+      it "accepts matching type" do
         service = WithMultipleTypes.run(value: "test", data: { key: "value" })
         expect(service.data).to eq({ key: "value" })
       end
 
-      it "rejects non-matching symbol type" do
+      it "rejects non-matching type" do
         expect { WithMultipleTypes.run(value: "test", data: "not a hash") }
-          .to raise_error(Light::Services::ArgTypeError, /must be a hash/)
+          .to raise_error(Light::Services::ArgTypeError, /must be a Hash/)
       end
     end
 

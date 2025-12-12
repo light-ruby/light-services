@@ -2,7 +2,7 @@
 
 class SendNotification < ApplicationService
   # Arguments
-  arg :text, type: :string
+  arg :text, type: String
 
   # Steps
   step :validate_text

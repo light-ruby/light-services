@@ -13,7 +13,6 @@ module Light
     end
 
     class Config
-      # Constants
       DEFAULTS = {
         use_transactions: true,
 
@@ -28,31 +27,18 @@ module Light
         rollback_on_warning: false,
       }.freeze
 
-      # Getters / Setters
-      attr_accessor :use_transactions,
-                    :load_errors, :break_on_error, :raise_on_error, :rollback_on_error,
-                    :load_warnings, :break_on_warning, :raise_on_warning, :rollback_on_warning
+      attr_accessor(*DEFAULTS.keys)
 
       def initialize
         reset_to_defaults!
       end
 
-      def set(key, value)
-        instance_variable_set(:"@#{key}", value)
-      end
-
-      def get(key)
-        instance_variable_get(:"@#{key}")
-      end
-
       def reset_to_defaults!
-        DEFAULTS.each do |key, value|
-          set(key, value)
-        end
+        DEFAULTS.each { |key, value| public_send(:"#{key}=", value) }
       end
 
       def to_h
-        DEFAULTS.keys.to_h { |key| [key, get(key)] }
+        DEFAULTS.keys.to_h { |key| [key, public_send(key)] }
       end
 
       def merge(config)
