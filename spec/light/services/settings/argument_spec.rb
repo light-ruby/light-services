@@ -145,5 +145,4 @@ RSpec.describe Light::Services::Settings::Argument do
       expect(service.order).to be_persisted
     end
   end
-
 end

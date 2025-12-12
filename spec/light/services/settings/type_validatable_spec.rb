@@ -21,4 +21,3 @@ RSpec.describe Light::Services::Settings::TypeValidatable do
     end
   end
 end
-

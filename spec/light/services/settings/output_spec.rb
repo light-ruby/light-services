@@ -80,4 +80,3 @@ RSpec.describe Light::Services::Settings::Output do
     end
   end
 end
-

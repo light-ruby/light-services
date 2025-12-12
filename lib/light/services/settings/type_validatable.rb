@@ -50,4 +50,3 @@ module Light
     end
   end
 end
-
