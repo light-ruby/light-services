@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "benchmark"
-
 require "light/services/message"
 require "light/services/messages"
 require "light/services/base_with_context"
@@ -28,11 +26,6 @@ module Light
       mount_class_based_collection :arguments, item_class: Settings::Argument, shortcut: :arg,    allow_redefine: true
       mount_class_based_collection :steps,     item_class: Settings::Step,     shortcut: :step
       mount_class_based_collection :outputs,   item_class: Settings::Output,   shortcut: :output, allow_redefine: true
-
-      # Arguments
-      arg :verbose, default: false
-      arg :benchmark, default: false
-      arg :deepness, default: 0, context: true
 
       # Getters
       attr_reader :outputs, :arguments, :errors, :warnings
@@ -77,21 +70,13 @@ module Light
 
       def call
         load_defaults_and_validate
-        log_header if benchmark? || verbose?
 
-        time = Benchmark.ms do
-          run_steps
-          run_steps_with_always
-          @outputs.validate! if success?
+        run_steps
+        run_steps_with_always
+        @outputs.validate! if success?
 
-          copy_warnings_to_parent_service
-          copy_errors_to_parent_service
-        end
-
-        return unless benchmark
-
-        log "🟢 Finished #{self.class} in #{time}ms"
-        puts
+        copy_warnings_to_parent_service
+        copy_errors_to_parent_service
       rescue StandardError => e
         run_steps_with_always
         raise e
@@ -120,11 +105,6 @@ module Light
         end
       end
 
-      # TODO: Add possibility to specify logger
-      def log(message)
-        puts "#{'  ' * deepness}→ #{message}"
-      end
-
       private
 
       def initialize_errors
@@ -146,7 +126,7 @@ module Light
       def run_steps
         within_transaction do
           self.class.steps.each do |name, step|
-            @launched_steps << name if step.run(self, benchmark: benchmark)
+            @launched_steps << name if step.run(self)
 
             break if @errors.break? || @warnings.break?
           end
@@ -186,10 +166,6 @@ module Light
         @outputs.load_defaults
         @arguments.load_defaults
         @arguments.validate!
-      end
-
-      def log_header
-        log "🏎 Run service #{self.class}"
       end
 
       def within_transaction(&block)

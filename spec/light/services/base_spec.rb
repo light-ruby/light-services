@@ -142,22 +142,6 @@ RSpec.describe Light::Services::Base do
     end
   end
 
-  describe "#log" do
-    let(:service) { WithConditions.new(deepness: 0) }
-
-    it "outputs formatted message" do
-      expect { service.log("test message") }.to output(/→ test message/).to_stdout
-    end
-
-    context "with deepness" do
-      let(:service) { WithConditions.new(deepness: 2) }
-
-      it "indents based on deepness" do
-        expect { service.log("test") }.to output(/    → test/).to_stdout
-      end
-    end
-  end
-
   describe "outputs" do
     let(:service) { WithConditions.run }
 
@@ -194,19 +178,6 @@ RSpec.describe Light::Services::Base do
     it "allows setting via collection" do
       service.arguments[:quantity] = 10
       expect(service.arguments[:quantity]).to eq(10)
-    end
-  end
-
-  describe "default arguments" do
-    it "uses default values when not provided" do
-      service = WithConditions.run
-      expect(service.verbose).to be(false)
-      expect(service.benchmark).to be(false)
-    end
-
-    it "overrides defaults when provided" do
-      service = WithConditions.run(verbose: true)
-      expect(service.verbose).to be(true)
     end
   end
 

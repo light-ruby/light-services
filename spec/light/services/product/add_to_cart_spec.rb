@@ -41,22 +41,6 @@ RSpec.describe Product::AddToCart do
     it { expect { service }.to raise_error(Light::Services::ArgTypeError) }
   end
 
-  context "when benchmark is enabled" do
-    let(:service) { described_class.run(current_user: current_user, product: product, benchmark: true) }
-    let(:current_user) { User.create!(name: "Andrew Emelianenko") }
-    let(:product) { Product.create!(name: "Tesla Model X", price: 100_000) }
-
-    it { expect { service }.to output(/Finished Product::AddToCart in/).to_stdout }
-  end
-
-  context "when verbose is enabled" do
-    let(:service) { described_class.run(current_user: current_user, product: product, verbose: true) }
-    let(:current_user) { User.create!(name: "Andrew Emelianenko") }
-    let(:product) { Product.create!(name: "Tesla Model X", price: 100_000) }
-
-    it { expect { service }.to output(/Run service Product::AddToCart/).to_stdout }
-  end
-
   context "when copying errors to hash" do
     let(:service) { described_class.run(current_user: current_user, product: product, notify: true) }
     let(:current_user) { User.create!(name: "Andrew Emelianenko") }

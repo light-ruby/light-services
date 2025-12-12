@@ -103,16 +103,6 @@ RSpec.describe Light::Services::Settings::Step do
     end
   end
 
-  describe "benchmark timing" do
-    let(:user) { User.create!(name: "Test") }
-    let(:product) { Product.create!(name: "Test", price: 100) }
-
-    it "outputs timing when benchmark is true" do
-      expect { Product::AddToCart.run(current_user: user, product: product, benchmark: true) }
-        .to output(/Step .* took/).to_stdout
-    end
-  end
-
   describe "#run" do
     let(:step) { described_class.new(:test_step, TestStepService) }
 
