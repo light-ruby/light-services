@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-RSpec.describe WithRedefinitionBase do
+RSpec.describe WithRedefinitionBase do # rubocop:disable RSpec/SpecFilePathFormat
   describe "argument type redefinition" do
     it "parent rejects Symbol when type is String" do
-      expect { WithRedefinitionBase.run(name: :symbol_name) }
+      expect { described_class.run(name: :symbol_name) }
         .to raise_error(Light::Services::ArgTypeError, /must be a String/)
     end
 
     it "parent accepts String" do
-      service = WithRedefinitionBase.run(name: "string_name")
+      service = described_class.run(name: "string_name")
       expect(service).to be_success
       expect(service.result).to eq("Base: string_name")
     end
@@ -33,7 +33,7 @@ RSpec.describe WithRedefinitionBase do
 
   describe "argument optional redefinition" do
     it "parent allows nil for optional argument" do
-      service = WithRedefinitionBase.run(name: "test")
+      service = described_class.run(name: "test")
       expect(service).to be_success
       expect(service.arguments[:options]).to be_nil
     end
@@ -52,7 +52,7 @@ RSpec.describe WithRedefinitionBase do
 
   describe "argument default redefinition" do
     it "parent uses default 10" do
-      service = WithRedefinitionBase.run(name: "test")
+      service = described_class.run(name: "test")
       expect(service.data[:count]).to eq(10)
     end
 
@@ -74,7 +74,7 @@ RSpec.describe WithRedefinitionBase do
 
   describe "output type redefinition" do
     it "parent validates String type" do
-      service = WithRedefinitionBase.run(name: "test")
+      service = described_class.run(name: "test")
       expect(service.result).to eq("Base: test")
       expect(service.result).to be_a(String)
     end
@@ -89,7 +89,7 @@ RSpec.describe WithRedefinitionBase do
 
   describe "output optional redefinition" do
     it "parent has default for data output" do
-      setting = WithRedefinitionBase.outputs[:data]
+      setting = described_class.outputs[:data]
       expect(setting.default).to eq({})
     end
 
@@ -107,7 +107,7 @@ RSpec.describe WithRedefinitionBase do
 
   describe "output default redefinition" do
     it "parent uses empty hash default" do
-      setting = WithRedefinitionBase.outputs[:data]
+      setting = described_class.outputs[:data]
       expect(setting.default).to eq({})
     end
 
@@ -157,7 +157,7 @@ RSpec.describe WithRedefinitionBase do
 
   describe "settings reflection" do
     it "child class has its own argument settings" do
-      parent_count = WithRedefinitionBase.arguments[:count]
+      parent_count = described_class.arguments[:count]
       child_count = WithRedefinedArgTypes.arguments[:count]
 
       expect(parent_count.default).to eq(10)
@@ -168,7 +168,7 @@ RSpec.describe WithRedefinitionBase do
     end
 
     it "child class has its own output settings" do
-      parent_data = WithRedefinitionBase.outputs[:data]
+      parent_data = described_class.outputs[:data]
       child_data = WithRedefinedOutputTypes.outputs[:data]
 
       expect(parent_data.default).to eq({})
@@ -179,15 +179,15 @@ RSpec.describe WithRedefinitionBase do
     it "redefinition in child does not affect parent" do
       WithRedefinedArgTypes.run(name: :symbol, options: {})
 
-      expect { WithRedefinitionBase.run(name: :symbol) }
+      expect { described_class.run(name: :symbol) }
         .to raise_error(Light::Services::ArgTypeError, /must be a String/)
     end
 
     it "each class maintains independent settings" do
-      expect(WithRedefinitionBase.arguments.object_id)
+      expect(described_class.arguments.object_id)
         .not_to eq(WithRedefinedArgTypes.arguments.object_id)
 
-      expect(WithRedefinitionBase.outputs.object_id)
+      expect(described_class.outputs.object_id)
         .not_to eq(WithRedefinedOutputTypes.outputs.object_id)
     end
   end

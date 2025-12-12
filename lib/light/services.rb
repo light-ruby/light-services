@@ -3,6 +3,7 @@
 require "light/services/config"
 require "light/services/version"
 require "light/services/exceptions"
+require "light/services/utils"
 require "light/services/base"
 
 module Light
