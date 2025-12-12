@@ -15,6 +15,7 @@
 # Ignore IDE files
 /.idea
 *.iml
+.vscode/settings.json
 
 # Ignore gem files
 *.gem
