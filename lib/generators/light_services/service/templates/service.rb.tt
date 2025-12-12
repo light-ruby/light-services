@@ -1,0 +1,48 @@
+# frozen_string_literal: true
+
+class <%= class_name %> < <%= parent_class %>
+<% if arguments.any? -%>
+  # Arguments
+<% arguments.each do |arg| -%>
+  arg :<%= arg %>
+<% end -%>
+
+<% end -%>
+<% if steps.any? -%>
+  # Steps
+<% steps.each do |step| -%>
+  step :<%= step %>
+<% end -%>
+
+<% end -%>
+<% if outputs.any? -%>
+  # Outputs
+<% outputs.each do |output| -%>
+  output :<%= output %>
+<% end -%>
+
+<% end -%>
+<% if steps.empty? -%>
+  # step :step_a
+  # step :step_b
+
+<% end -%>
+  private
+
+<% if steps.any? -%>
+<% steps.each_with_index do |step, index| -%>
+  def <%= step %>
+    # TODO: Implement <%= step %>
+  end
+<%= "\n" unless index == steps.length - 1 -%>
+<% end -%>
+<% else -%>
+  # def step_a
+  #   # TODO: Implement service logic
+  # end
+
+  # def step_b
+  #   # TODO: Implement service logic
+  # end
+<% end -%>
+end

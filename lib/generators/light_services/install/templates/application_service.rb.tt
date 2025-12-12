@@ -1,0 +1,8 @@
+# frozen_string_literal: true
+
+class ApplicationService < Light::Services::Base
+  # Add common arguments, callbacks, or helpers shared across all services.
+  #
+  # Example: Add a context argument for the current user
+  # arg :current_user, type: User, optional: true, context: true
+end

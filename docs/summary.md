@@ -11,6 +11,7 @@
 * [Callbacks](callbacks.md)
 * [Configuration](configuration.md)
 * [Testing](testing.md)
+* [Rails Generators](generators.md)
 * [Best Practices](best-practices.md)
 * [Recipes](recipes.md)
   * [CRUD](crud.md)

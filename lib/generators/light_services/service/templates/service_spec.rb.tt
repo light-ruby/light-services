@@ -1,0 +1,40 @@
+# frozen_string_literal: true
+
+require "rails_helper"
+
+# TODO: Add test implementation
+RSpec.describe <%= class_name %>, type: :service do
+<% if arguments.any? -%>
+  describe "arguments" do
+<% arguments.each do |arg| -%>
+    it { is_expected.to define_argument(:<%= arg %>) }
+<% end -%>
+  end
+
+<% end -%>
+<% if steps.any? -%>
+  describe "steps" do
+<% steps.each do |step| -%>
+    it { is_expected.to define_step(:<%= step %>) }
+<% end -%>
+  end
+
+<% end -%>
+<% if outputs.any? -%>
+  describe "outputs" do
+<% outputs.each do |output| -%>
+    it { is_expected.to define_output(:<%= output %>) }
+<% end -%>
+  end
+
+<% end -%>
+  describe "#run" do
+    subject(:service) { described_class.run(args) }
+
+    let(:args) { {} }
+
+    it "succeeds" do
+      expect(service).to be_success
+    end
+  end
+end

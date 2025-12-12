@@ -22,6 +22,18 @@ bundle add light-services --version "~> 3.0"
 This step is optional but recommended. Creating a base class for your services can help organize your code. This base class will act as the parent for all your services, where you can include common logic such as helpers, logging, error handling, etc.
 {% endhint %}
 
+### For Rails Applications
+
+If you're using Rails, you can use the install generator to set up Light Services automatically:
+
+```bash
+bin/rails generate light_services:install
+```
+
+This will create the `ApplicationService` base class, an initializer, and a spec file (if RSpec is detected). See [Rails Generators](generators.md) for more details.
+
+### For Non-Rails Applications
+
 First, create a folder for your services. The path will depend on the framework you are using. For Rails, you can create a folder in `app/services`.
 
 ```bash
@@ -33,13 +45,24 @@ Next, create your base class. You can name it as you wish, but we recommend `App
 ```ruby
 # app/services/application_service.rb
 class ApplicationService < Light::Services::Base
-  # Nothing to put here yet
+  # Add common arguments, callbacks, or helpers shared across all services.
+  #
+  # Example: Add a context argument for the current user
+  # arg :current_user, type: User, optional: true, context: true
 end
 ```
 
 ## Create Your First Service
 
 Now let's create our first service. We'll make a simple service that returns a greeting message.
+
+{% hint style="info" %}
+**Rails users:** You can use the service generator to create services quickly:
+```bash
+bin/rails generate light_services:service GreetService --args=name --steps=greet --outputs=greeted
+```
+See [Rails Generators](generators.md) for more information.
+{% endhint %}
 
 ```ruby
 # app/services/greet_service.rb

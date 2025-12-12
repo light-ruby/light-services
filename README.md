@@ -21,6 +21,16 @@ Light Services is a simple yet powerful way to organize business logic in Ruby a
 - ✅ **100% Test Coverage**: Thoroughly tested and reliable
 - ⚔️ **Battle-Tested**: In production use since 2017
 
+## Installation
+
+```ruby
+gem "light-services", "~> 3.0"
+```
+
+```bash
+rails generate light_services:install
+```
+
 ## Simple Example
 
 ```ruby
@@ -101,6 +111,53 @@ end
 ```
 
 [Get started with Light Services](https://light-services.kodkod.me/quickstart)
+
+## Rails Generators
+
+Light Services includes Rails generators to help you quickly set up and create services in your Rails application.
+
+### Install Generator
+
+Set up Light Services in your Rails application:
+
+```bash
+bin/rails generate light_services:install
+```
+
+This creates:
+- `app/services/application_service.rb` - Base service class for your application
+- `config/initializers/light_services.rb` - Configuration file
+- `spec/services/application_service_spec.rb` - RSpec test file (if RSpec is detected)
+
+**Options:**
+- `--skip-initializer` - Skip creating the initializer file
+- `--skip-spec` - Skip creating the spec file
+
+### Service Generator
+
+Create a new service class:
+
+```bash
+# Basic service
+bin/rails generate light_services:service user/create
+
+# Service with predefined structure
+bin/rails generate light_services:service CreateOrder \
+  --args=user product \
+  --steps=validate process \
+  --outputs=order
+```
+
+This creates:
+- `app/services/user/create.rb` - Service class file
+- `spec/services/user/create_spec.rb` - RSpec test file (if RSpec is detected)
+
+**Options:**
+- `--args` - List of arguments for the service (e.g., `--args=user product`)
+- `--steps` - List of steps for the service (e.g., `--steps=validate process`)
+- `--outputs` - List of outputs for the service (e.g., `--outputs=result`)
+- `--skip-spec` - Skip creating the spec file
+- `--parent` - Parent class (default: ApplicationService)
 
 ## Documentation
 

@@ -1,0 +1,7 @@
+# frozen_string_literal: true
+
+require "rails_helper"
+
+RSpec.describe ApplicationService, type: :service do
+  # Add specs for shared behavior defined in ApplicationService
+end
