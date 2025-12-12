@@ -197,7 +197,7 @@ class WithCallbacksStepException < ApplicationService
   before_step_run :log_before_step
   after_step_run :log_after_step
   on_step_success :log_step_success
-  on_step_failure :log_step_failure
+  on_step_crash :log_step_crash
 
   step :raise_error
 
@@ -219,7 +219,41 @@ class WithCallbacksStepException < ApplicationService
     callback_log << [:on_step_success, step_name]
   end
 
-  def log_step_failure(_service, step_name, _exception)
+  def log_step_crash(_service, step_name, _exception)
+    callback_log << [:on_step_crash, step_name]
+  end
+end
+
+# Service with step that adds errors (for on_step_failure)
+class WithCallbacksStepError < ApplicationService
+  output :callback_log, default: -> { [] }
+
+  before_step_run :log_before_step
+  after_step_run :log_after_step
+  on_step_success :log_step_success
+  on_step_failure :log_step_failure
+
+  step :add_error
+
+  private
+
+  def add_error
+    errors.add(:base, "Step produced an error")
+  end
+
+  def log_before_step(_service, step_name)
+    callback_log << [:before_step_run, step_name]
+  end
+
+  def log_after_step(_service, step_name)
+    callback_log << [:after_step_run, step_name]
+  end
+
+  def log_step_success(_service, step_name)
+    callback_log << [:on_step_success, step_name]
+  end
+
+  def log_step_failure(_service, step_name)
     callback_log << [:on_step_failure, step_name]
   end
 end

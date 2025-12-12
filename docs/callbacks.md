@@ -62,8 +62,17 @@ end
 | `before_step_run` | Before each step executes | `(service, step_name)` |
 | `after_step_run` | After each step completes (success or failure) | `(service, step_name)` |
 | `around_step_run` | Wraps each step execution | `(service, step_name, &block)` |
-| `on_step_success` | After step completes without exception | `(service, step_name)` |
-| `on_step_failure` | When step raises an exception | `(service, step_name, exception)` |
+| `on_step_success` | After step completes without errors | `(service, step_name)` |
+| `on_step_failure` | When step produces errors | `(service, step_name)` |
+| `on_step_crash` | When step raises an exception | `(service, step_name, exception)` |
+
+{% hint style="info" %}
+Note the difference between `on_step_failure` and `on_step_crash`:
+- `on_step_failure` is called when a step adds errors (similar to `on_service_failure`)
+- `on_step_crash` is called when a step raises an exception
+
+When a step crashes (raises an exception), `after_step_run` is NOT called.
+{% endhint %}
 
 ## Defining Callbacks
 
@@ -106,7 +115,11 @@ class Order::Process < ApplicationService
     Rails.logger.info "Completed with #{service.errors.count} errors"
   end
 
-  on_step_failure do |service, step_name, exception|
+  on_step_failure do |service, step_name|
+    Rails.logger.warn "Step #{step_name} produced errors"
+  end
+
+  on_step_crash do |service, step_name, exception|
     Bugsnag.notify(exception, step: step_name)
   end
 
@@ -298,13 +311,23 @@ on_service_success OR on_service_failure
 
 ### Step Callbacks Order (for each step)
 
+**Normal execution (no exception):**
 ```
 before_step_run
   └── around_step_run (before yield)
         └── [step executes]
       around_step_run (after yield)
 after_step_run
-on_step_success OR on_step_failure
+on_step_success OR on_step_failure (if errors were added)
+```
+
+**Exception during step:**
+```
+before_step_run
+  └── around_step_run (before yield)
+        └── [step raises exception]
+on_step_crash
+[exception propagates]
 ```
 
 ## Use Cases
@@ -362,6 +385,7 @@ end
 class ApplicationService < Light::Services::Base
   on_service_failure :track_failure
   on_step_failure :track_step_error
+  on_step_crash :track_step_crash
 
   private
 
@@ -375,7 +399,11 @@ class ApplicationService < Light::Services::Base
     end
   end
 
-  def track_step_error(service, step_name, exception)
+  def track_step_error(service, step_name)
+    Rails.logger.warn "Step :#{step_name} produced errors in #{service.class.name}"
+  end
+
+  def track_step_crash(service, step_name, exception)
     Bugsnag.notify(exception) do |report|
       report.add_metadata(:service, {
         class: service.class.name,

@@ -15,6 +15,11 @@ module Light
         @messages = {}
       end
 
+      # Returns total count of all messages across all keys
+      def count
+        @messages.values.sum(&:size)
+      end
+
       def add(key, texts, opts = {})
         raise Light::Services::Error, "Error text can't be blank" if !texts || texts.blank?
 

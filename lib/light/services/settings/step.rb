@@ -39,6 +39,8 @@ module Light
         private
 
         def execute_with_callbacks(instance)
+          errors_count_before = instance.errors.count
+
           instance.run_callbacks(:before_step_run, instance, name)
 
           instance.run_callbacks(:around_step_run, instance, name) do
@@ -46,10 +48,14 @@ module Light
           end
 
           instance.run_callbacks(:after_step_run, instance, name)
-          instance.run_callbacks(:on_step_success, instance, name)
+
+          if instance.errors.count > errors_count_before
+            instance.run_callbacks(:on_step_failure, instance, name)
+          else
+            instance.run_callbacks(:on_step_success, instance, name)
+          end
         rescue StandardError => e
-          instance.run_callbacks(:after_step_run, instance, name)
-          instance.run_callbacks(:on_step_failure, instance, name, e)
+          instance.run_callbacks(:on_step_crash, instance, name, e)
           raise e
         end
 

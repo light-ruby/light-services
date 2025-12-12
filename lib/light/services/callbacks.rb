@@ -9,6 +9,7 @@ module Light
         :around_step_run,
         :on_step_success,
         :on_step_failure,
+        :on_step_crash,
         :before_service_run,
         :after_service_run,
         :around_service_run,

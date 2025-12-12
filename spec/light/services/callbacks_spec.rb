@@ -132,17 +132,36 @@ RSpec.describe Light::Services::Callbacks do
     end
 
     describe "on_step_failure" do
+      context "when step adds errors" do
+        it "is called when step produces errors" do
+          service = WithCallbacksStepError.with(use_transactions: false).run
+          expect(service.callback_log).to include([:on_step_failure, :add_error])
+        end
+
+        it "still calls after_step_run" do
+          service = WithCallbacksStepError.with(use_transactions: false).run
+          expect(service.callback_log).to include([:after_step_run, :add_error])
+        end
+
+        it "does not call on_step_success" do
+          service = WithCallbacksStepError.with(use_transactions: false).run
+          expect(service.callback_log).not_to include([:on_step_success, :add_error])
+        end
+      end
+    end
+
+    describe "on_step_crash" do
       context "when step raises an exception" do
         it "is called with the exception" do
           service = WithCallbacksStepException.new
           expect { service.call }.to raise_error(StandardError, "Step exploded!")
-          expect(service.callback_log).to include([:on_step_failure, :raise_error])
+          expect(service.callback_log).to include([:on_step_crash, :raise_error])
         end
 
-        it "still calls after_step_run" do
+        it "does not call after_step_run" do
           service = WithCallbacksStepException.new
           expect { service.call }.to raise_error(StandardError)
-          expect(service.callback_log).to include([:after_step_run, :raise_error])
+          expect(service.callback_log).not_to include([:after_step_run, :raise_error])
         end
 
         it "does not call on_step_success" do
