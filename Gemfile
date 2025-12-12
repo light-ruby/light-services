@@ -5,12 +5,13 @@ source "https://rubygems.org"
 gemspec
 
 group :test do
-  gem "activerecord"
-  gem "database_cleaner-active_record"
-  gem "sqlite3"
-
   # Optional type system support
   gem "dry-types", "~> 1.0"
+
+  gem "activerecord"
+  gem "connection_pool", "< 3"
+  gem "database_cleaner-active_record"
+  gem "sqlite3"
 
   gem "codecov"
   gem "rake"
