@@ -69,6 +69,9 @@ Style/WordArray:
 Style/SymbolArray:
   EnforcedStyle: brackets
 
+Naming/PredicatePrefix:
+  Enabled: false
+
 Style/TrailingCommaInArrayLiteral:
   EnforcedStyleForMultiline: consistent_comma
 

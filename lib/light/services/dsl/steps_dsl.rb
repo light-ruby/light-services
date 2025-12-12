@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require_relative "../constants"
+require_relative "validation"
+
 module Light
   module Services
     module Dsl
@@ -37,6 +40,8 @@ module Light
           # @example Define a step with proc condition
           #   step :premium_feature, if: -> { user.premium? && feature_enabled? }
           def step(name, opts = {})
+            Validation.validate_reserved_name!(name, :step, self)
+            Validation.validate_name_conflicts!(name, :step, self)
             validate_step_opts!(name, opts)
 
             # Build current steps to check for duplicates and find insertion targets

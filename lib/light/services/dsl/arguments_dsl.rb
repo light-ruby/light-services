@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "../constants"
+require_relative "validation"
 
 module Light
   module Services
@@ -37,6 +38,9 @@ module Light
           # @example Define a context argument passed to child services
           #   arg :current_user, type: User, context: true
           def arg(name, opts = {})
+            Validation.validate_reserved_name!(name, :argument, self)
+            Validation.validate_name_conflicts!(name, :argument, self)
+
             own_arguments[name] = Settings::Field.new(name, self, opts.merge(field_type: FieldTypes::ARGUMENT))
             @arguments = nil # Clear memoized arguments since we're modifying them
           end

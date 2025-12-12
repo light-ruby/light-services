@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "../constants"
+require_relative "validation"
 
 module Light
   module Services
@@ -33,6 +34,9 @@ module Light
           # @example Define an output with proc default
           #   output :metadata, type: Hash, default: -> { {} }
           def output(name, opts = {})
+            Validation.validate_reserved_name!(name, :output, self)
+            Validation.validate_name_conflicts!(name, :output, self)
+
             own_outputs[name] = Settings::Field.new(name, self, opts.merge(field_type: FieldTypes::OUTPUT))
             @outputs = nil # Clear memoized outputs since we're modifying them
           end
