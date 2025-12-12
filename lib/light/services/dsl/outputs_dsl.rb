@@ -34,6 +34,7 @@ module Light
           # @example Define an output with proc default
           #   output :metadata, type: Hash, default: -> { {} }
           def output(name, opts = {})
+            Validation.validate_symbol_name!(name, :output, self)
             Validation.validate_reserved_name!(name, :output, self)
             Validation.validate_name_conflicts!(name, :output, self)
 

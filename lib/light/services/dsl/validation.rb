@@ -7,6 +7,18 @@ module Light
     module Dsl
       # Shared validation logic for DSL modules
       module Validation
+        # Validate that the name is a symbol
+        #
+        # @param name [Object] the name to validate
+        # @param field_type [Symbol] the type of field (:argument, :output, :step)
+        # @param service_class [Class] the service class for error messages
+        def self.validate_symbol_name!(name, field_type, service_class)
+          return if name.is_a?(Symbol)
+
+          raise Light::Services::InvalidNameError,
+                "#{field_type.to_s.capitalize} name must be a Symbol, got #{name.class} (#{name.inspect}) in #{service_class}"
+        end
+
         # Validate that the name is not a reserved word
         #
         # @param name [Symbol] the name to validate

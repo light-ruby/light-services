@@ -38,6 +38,7 @@ module Light
           # @example Define a context argument passed to child services
           #   arg :current_user, type: User, context: true
           def arg(name, opts = {})
+            Validation.validate_symbol_name!(name, :argument, self)
             Validation.validate_reserved_name!(name, :argument, self)
             Validation.validate_name_conflicts!(name, :argument, self)
 
