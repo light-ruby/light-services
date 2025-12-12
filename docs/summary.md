@@ -1,0 +1,17 @@
+# Table of contents
+
+* [Light Services](README.md)
+* [Quickstart](quickstart.md)
+* [Configuration](configuration.md)
+* [Concepts](concepts.md)
+  * [Arguments](arguments.md)
+  * [Steps](steps.md)
+  * [Outputs](outputs.md)
+  * [Context](context.md)
+  * [Errors](errors.md)
+* [Testing](testing.md)
+* [Best Practices](best-practices.md)
+* [Recipes](recipes.md)
+  * [CRUD](crud.md)
+  * [Service Rendering](service-rendering.md)
+  * [Pundit Authorization](pundit-authorization.md)
