@@ -29,12 +29,33 @@ RSpec.describe Light::Services::Config do
     it "returns hash with all config values" do
       hash = config.to_h
       expect(hash).to be_a(Hash)
-      expect(hash.keys).to match_array(described_class::DEFAULTS.keys + [:ruby_lsp_type_mappings])
+      expect(hash.keys).to match_array(described_class::DEFAULTS.keys)
     end
 
     it "reflects current config values" do
       config.break_on_error = false
       expect(config.to_h[:break_on_error]).to be(false)
+    end
+
+    it "memoizes the result" do
+      first_call = config.to_h
+      second_call = config.to_h
+      expect(first_call).to be(second_call)
+    end
+
+    it "invalidates cache when attribute changes" do
+      first_call = config.to_h
+      config.break_on_error = false
+      second_call = config.to_h
+      expect(first_call).not_to be(second_call)
+      expect(second_call[:break_on_error]).to be(false)
+    end
+
+    it "invalidates cache on reset_to_defaults!" do
+      first_call = config.to_h
+      config.reset_to_defaults!
+      second_call = config.to_h
+      expect(first_call).not_to be(second_call)
     end
   end
 
@@ -112,6 +133,7 @@ RSpec.describe Light::Services::Config do
         raise_on_warning: false,
         rollback_on_warning: false,
         require_type: true,
+        ruby_lsp_type_mappings: {}.freeze,
       })
     end
   end
