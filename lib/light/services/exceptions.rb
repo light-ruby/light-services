@@ -2,19 +2,32 @@
 
 module Light
   module Services
+    # Base exception class for all Light::Services errors.
     class Error < StandardError; end
+
+    # Raised when an argument or output value doesn't match the expected type.
     class ArgTypeError < Error; end
+
+    # Raised when using a reserved name for an argument, output, or step.
     class ReservedNameError < Error; end
+
+    # Raised when a name is invalid (e.g., not a Symbol).
     class InvalidNameError < Error; end
+
+    # Raised when a service has no steps defined and no run method.
     class NoStepsError < Error; end
+
+    # Raised when type is required but not specified for an argument or output.
     class MissingTypeError < Error; end
 
     # Control flow exception for stop_immediately!
-    # Not an error - used to halt execution gracefully
+    # Not an error - used to halt execution gracefully.
     class StopExecution < StandardError; end
 
-    # Backwards compatibility aliases (deprecated)
+    # @deprecated Use {Error} instead
     NoStepError = Error
+
+    # @deprecated Use {Error} instead
     TwoConditions = Error
   end
 end

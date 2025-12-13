@@ -1,13 +1,26 @@
 # frozen_string_literal: true
 
-# This class defines settings for step
 module Light
   module Services
     module Settings
+      # Stores configuration for a single service step.
+      # Created automatically when using the `step` DSL method.
       class Step
-        # Getters
-        attr_reader :name, :always
+        # @return [Symbol] the step name (method to call)
+        attr_reader :name
 
+        # @return [Boolean, nil] true if step runs even after errors/warnings
+        attr_reader :always
+
+        # Initialize a new step definition.
+        #
+        # @param name [Symbol] the step name (must match a method)
+        # @param service_class [Class] the service class this step belongs to
+        # @param opts [Hash] step options
+        # @option opts [Symbol, Proc] :if condition to run the step
+        # @option opts [Symbol, Proc] :unless condition to skip the step
+        # @option opts [Boolean] :always run even after errors/warnings
+        # @raise [Error] if both :if and :unless are specified
         def initialize(name, service_class, opts = {})
           @name = name
           @service_class = service_class
@@ -22,6 +35,11 @@ module Light
           end
         end
 
+        # Execute the step on the given service instance.
+        #
+        # @param instance [Base] the service instance
+        # @return [Boolean] true if the step was executed, false if skipped
+        # @raise [Error] if the step method is not defined
         def run(instance) # rubocop:disable Naming/PredicateMethod
           return false unless run?(instance)
 

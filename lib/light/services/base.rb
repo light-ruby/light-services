@@ -21,6 +21,27 @@ require "light/services/concerns/parent_service"
 # Base class for all service objects
 module Light
   module Services
+    # Base class for building service objects with arguments, outputs, and steps.
+    #
+    # @example Basic service
+    #   class CreateUser < Light::Services::Base
+    #     arg :name, type: String
+    #     arg :email, type: String
+    #
+    #     output :user, type: User
+    #
+    #     step :create_user
+    #
+    #     private
+    #
+    #     def create_user
+    #       self.user = User.create!(name: name, email: email)
+    #     end
+    #   end
+    #
+    #   result = CreateUser.run(name: "John", email: "john@example.com")
+    #   result.success? # => true
+    #   result.user     # => #<User id: 1, name: "John">
     class Base
       include Callbacks
       include Dsl::ArgumentsDsl
@@ -30,9 +51,23 @@ module Light
       include Concerns::StateManagement
       include Concerns::ParentService
 
-      # Getters
-      attr_reader :outputs, :arguments, :errors, :warnings
+      # @return [Collection::Base] collection of output values
+      attr_reader :outputs
 
+      # @return [Collection::Base] collection of argument values
+      attr_reader :arguments
+
+      # @return [Messages] collection of error messages
+      attr_reader :errors
+
+      # @return [Messages] collection of warning messages
+      attr_reader :warnings
+
+      # Initialize a new service instance.
+      #
+      # @param args [Hash] arguments to pass to the service
+      # @param config [Hash] runtime configuration overrides
+      # @param parent_service [Base, nil] parent service for nested calls
       def initialize(args = {}, config = {}, parent_service = nil)
         @config = Light::Services.config.merge(self.class.class_config || {}).merge(config)
         @parent_service = parent_service
@@ -47,37 +82,63 @@ module Light
         initialize_warnings
       end
 
+      # Check if the service completed without errors.
+      #
+      # @return [Boolean] true if no errors were added
       def success?
         !errors?
       end
 
+      # Check if the service completed with errors.
+      #
+      # @return [Boolean] true if any errors were added
       def failed?
         errors?
       end
 
+      # Check if the service has any errors.
+      #
+      # @return [Boolean] true if errors collection is not empty
       def errors?
         @errors.any?
       end
 
+      # Check if the service has any warnings.
+      #
+      # @return [Boolean] true if warnings collection is not empty
       def warnings?
         @warnings.any?
       end
 
+      # Stop executing remaining steps after the current step completes.
+      #
+      # @return [Boolean] true
       def stop!
         @stopped = true
       end
       alias done! stop!
 
+      # Check if the service has been stopped.
+      #
+      # @return [Boolean] true if stop! was called
       def stopped?
         @stopped
       end
       alias done? stopped?
 
+      # Stop execution immediately, skipping any remaining code in the current step.
+      #
+      # @raise [StopExecution] always raises to halt execution
+      # @return [void]
       def stop_immediately!
         @stopped = true
         raise Light::Services::StopExecution
       end
 
+      # Execute the service steps.
+      #
+      # @return [void]
+      # @raise [StandardError] re-raises any exception after running always steps
       def call
         load_defaults_and_validate
 
@@ -94,20 +155,54 @@ module Light
       end
 
       class << self
+        # @return [Hash, nil] class-level configuration options
         attr_accessor :class_config
 
+        # Set class-level configuration for this service.
+        #
+        # @param config [Hash] configuration options
+        # @return [Hash] the configuration hash
         def config(config = {})
           self.class_config = config
         end
 
+        # Run the service and return the result.
+        #
+        # @param args [Hash] arguments to pass to the service
+        # @param config [Hash] runtime configuration overrides
+        # @return [Base] the executed service instance
+        #
+        # @example
+        #   result = MyService.run(name: "test")
+        #   result.success? # => true
         def run(args = {}, config = {})
           new(args, config).tap(&:call)
         end
 
+        # Run the service and raise an error if it fails.
+        #
+        # @param args [Hash] arguments to pass to the service
+        # @param config [Hash] runtime configuration overrides
+        # @return [Base] the executed service instance
+        # @raise [Error] if the service fails
+        #
+        # @example
+        #   MyService.run!(name: "test") # raises if service fails
         def run!(args = {}, config = {})
           run(args, config.merge(raise_on_error: true))
         end
 
+        # Create a context for running the service with a parent service or config.
+        #
+        # @param service_or_config [Base, Hash] parent service or configuration hash
+        # @param config [Hash] configuration hash (when first param is a service)
+        # @return [BaseWithContext] context wrapper for running the service
+        #
+        # @example With parent service
+        #   ChildService.with(self).run(data: value)
+        #
+        # @example With configuration
+        #   MyService.with(use_transactions: false).run(name: "test")
         def with(service_or_config = {}, config = {})
           service = service_or_config.is_a?(Hash) ? nil : service_or_config
           config = service_or_config unless service

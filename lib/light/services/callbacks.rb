@@ -2,7 +2,38 @@
 
 module Light
   module Services
+    # Provides callback hooks for service and step lifecycle events.
+    #
+    # @example Service-level callbacks
+    #   class MyService < Light::Services::Base
+    #     before_service_run :log_start
+    #     after_service_run { |service| Rails.logger.info("Done!") }
+    #     on_service_success :send_notification
+    #     on_service_failure :log_error
+    #   end
+    #
+    # @example Step-level callbacks
+    #   class MyService < Light::Services::Base
+    #     before_step_run :log_step_start
+    #     after_step_run { |service, step_name| puts "Finished #{step_name}" }
+    #     on_step_failure :handle_step_error
+    #   end
+    #
+    # @example Around callbacks
+    #   class MyService < Light::Services::Base
+    #     around_service_run :with_timing
+    #
+    #     private
+    #
+    #     def with_timing(service)
+    #       start = Time.now
+    #       yield
+    #       puts "Took #{Time.now - start}s"
+    #     end
+    #   end
     module Callbacks
+      # Available callback events.
+      # @return [Array<Symbol>] list of callback event names
       EVENTS = [
         :before_step_run,
         :after_step_run,
@@ -21,6 +52,20 @@ module Light
         base.extend(ClassMethods)
       end
 
+      # Class methods for registering callbacks.
+      #
+      # Each callback event has a corresponding class method:
+      # - {before_step_run} - before each step executes
+      # - {after_step_run} - after each step executes
+      # - {around_step_run} - wraps step execution (must yield)
+      # - {on_step_success} - when a step completes without adding errors
+      # - {on_step_failure} - when a step adds errors
+      # - {on_step_crash} - when a step raises an exception
+      # - {before_service_run} - before the service starts
+      # - {after_service_run} - after the service completes
+      # - {around_service_run} - wraps service execution (must yield)
+      # - {on_service_success} - when service completes without errors
+      # - {on_service_failure} - when service completes with errors
       module ClassMethods
         # Define DSL methods for each callback event
         EVENTS.each do |event|
@@ -37,13 +82,19 @@ module Light
           end
         end
 
-        # Get all callbacks for a specific event (including inherited ones)
+        # Get callbacks defined in this class for a specific event.
+        #
+        # @param event [Symbol] the callback event name
+        # @return [Array<Symbol, Proc>] callbacks for this event
         def callbacks_for(event)
           @callbacks ||= {}
           @callbacks[event] ||= []
         end
 
-        # Get all callbacks including inherited ones
+        # Get all callbacks for an event including inherited ones.
+        #
+        # @param event [Symbol] the callback event name
+        # @return [Array<Symbol, Proc>] all callbacks for this event
         def all_callbacks_for(event)
           if superclass.respond_to?(:all_callbacks_for)
             inherited = superclass.all_callbacks_for(event)
@@ -55,9 +106,12 @@ module Light
         end
       end
 
-      # Run callbacks for a given event
-      # For around callbacks, yields to the block
-      # For other callbacks, just executes them in order
+      # Run all callbacks for a given event.
+      #
+      # @param event [Symbol] the callback event name
+      # @param args [Array] arguments to pass to callbacks
+      # @yield for around callbacks, the block to wrap
+      # @return [void]
       def run_callbacks(event, *args, &block)
         callbacks = self.class.all_callbacks_for(event)
 

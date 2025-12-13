@@ -3,15 +3,35 @@
 module Light
   module Services
     class << self
+      # Configure Light::Services with a block.
+      #
+      # @yield [Config] the configuration object
+      # @return [void]
+      #
+      # @example
+      #   Light::Services.configure do |config|
+      #     config.require_type = true
+      #     config.use_transactions = false
+      #   end
       def configure
         yield config
       end
 
+      # Get the global configuration object.
+      #
+      # @return [Config] the configuration instance
       def config
         @config ||= Config.new
       end
     end
 
+    # Configuration class for Light::Services global settings.
+    #
+    # @example Accessing configuration
+    #   Light::Services.config.require_type # => true
+    #
+    # @example Modifying configuration
+    #   Light::Services.config.use_transactions = false
     class Config
       # @return [Boolean] whether arguments and outputs must have a type specified
       attr_reader :require_type
@@ -72,10 +92,14 @@ module Light
         end
       end
 
+      # Initialize configuration with default values.
       def initialize
         reset_to_defaults!
       end
 
+      # Reset all configuration options to their default values.
+      #
+      # @return [void]
       def reset_to_defaults!
         DEFAULTS.each do |key, value|
           instance_variable_set(:"@#{key}", value)
@@ -84,12 +108,19 @@ module Light
         @to_h = nil # Invalidate memoized hash
       end
 
+      # Convert configuration to a hash.
+      #
+      # @return [Hash{Symbol => Object}] all configuration options as a hash
       def to_h
         @to_h ||= DEFAULTS.keys.to_h do |key|
           [key, public_send(key)]
         end
       end
 
+      # Merge configuration with additional options.
+      #
+      # @param config [Hash] options to merge
+      # @return [Hash] merged configuration hash
       def merge(config)
         to_h.merge(config)
       end

@@ -1,12 +1,36 @@
 # frozen_string_literal: true
 
-# Unified settings class for arguments and outputs
 module Light
   module Services
     module Settings
+      # Stores configuration for a single argument or output field.
+      # Created automatically when using the `arg` or `output` DSL methods.
       class Field
-        attr_reader :name, :default_exists, :default, :context, :optional
+        # @return [Symbol] the field name
+        attr_reader :name
 
+        # @return [Boolean] true if a default value was specified
+        attr_reader :default_exists
+
+        # @return [Object, Proc, nil] the default value or proc
+        attr_reader :default
+
+        # @return [Boolean, nil] true if this is a context argument
+        attr_reader :context
+
+        # @return [Boolean, nil] true if nil values are allowed
+        attr_reader :optional
+
+        # Initialize a new field definition.
+        #
+        # @param name [Symbol] the field name
+        # @param service_class [Class] the service class this field belongs to
+        # @param opts [Hash] field options
+        # @option opts [Class, Array<Class>] :type type(s) to validate against
+        # @option opts [Boolean] :optional whether nil is allowed
+        # @option opts [Object, Proc] :default default value or proc
+        # @option opts [Boolean] :context whether to pass to child services
+        # @option opts [Symbol] :field_type :argument or :output
         def initialize(name, service_class, opts = {})
           @name = name
           @service_class = service_class
@@ -21,8 +45,12 @@ module Light
           define_methods
         end
 
-        # Validate and optionally coerce the value
-        # Returns the (possibly coerced) value
+        # Validate a value against the field's type definition.
+        # Supports both Ruby class types and dry-types.
+        #
+        # @param value [Object] the value to validate
+        # @return [Object] the value (possibly coerced by dry-types)
+        # @raise [ArgTypeError] if the value doesn't match the expected type
         def validate_type!(value)
           return value unless @type
 
