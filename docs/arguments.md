@@ -47,6 +47,10 @@ class HappyBirthdayService < ApplicationService
 end
 ```
 
+{% hint style="info" %}
+You can enforce type definitions for all arguments by enabling `require_type` in your configuration. See [Configuration](configuration.md#enforcing-type-definitions) for details.
+{% endhint %}
+
 You can specify multiple allowed types using an array.
 
 ```ruby

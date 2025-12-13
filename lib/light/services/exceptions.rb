@@ -7,6 +7,7 @@ module Light
     class ReservedNameError < Error; end
     class InvalidNameError < Error; end
     class NoStepsError < Error; end
+    class MissingTypeError < Error; end
 
     # Backwards compatibility aliases (deprecated)
     NoStepError = Error

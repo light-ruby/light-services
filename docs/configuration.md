@@ -22,6 +22,9 @@ Light::Services.configure do |config|
   config.break_on_warning = false       # Stop step execution when a warning is added
   config.raise_on_warning = false       # Raise an exception when a warning is added
   config.rollback_on_warning = false    # Rollback transaction when a warning is added
+
+  # Type enforcement
+  config.require_type = true            # Require type option for all arguments and outputs
 end
 ```
 
@@ -38,6 +41,7 @@ end
 | `break_on_warning` | `false` | Stops executing remaining steps when a warning is added |
 | `raise_on_warning` | `false` | Raises `Light::Services::Error` when a warning is added |
 | `rollback_on_warning` | `false` | Rolls back the transaction when a warning is added |
+| `require_type` | `true` | Raises `Light::Services::MissingTypeError` when arguments or outputs are defined without a `type` option |
 
 ## Per-Service Configuration
 
@@ -158,6 +162,36 @@ end
 
 {% hint style="info" %}
 When `use_transactions` is `true`, Light Services uses `ActiveRecord::Base.transaction(requires_new: true)` to create savepoints, allowing nested services to rollback independently.
+{% endhint %}
+
+## Enforcing Type Definitions
+
+By default, `require_type` is enabled to ensure all arguments and outputs have explicit type definitions. This helps catch missing types early and improves code quality.
+
+Defining an argument or output without a type will raise `Light::Services::MissingTypeError`:
+
+```ruby
+class MyService < ApplicationService
+  arg :name              # Raises MissingTypeError!
+  arg :name, type: String # OK
+
+  output :result              # Raises MissingTypeError!
+  output :result, type: Hash  # OK
+end
+```
+
+### Disabling Type Enforcement
+
+For legacy projects or gradual migration, you can disable type enforcement:
+
+```ruby
+Light::Services.configure do |config|
+  config.require_type = false
+end
+```
+
+{% hint style="warning" %}
+Disabling `require_type` is not recommended. Explicit types improve code quality and catch errors early.
 {% endhint %}
 
 ## What's Next?
