@@ -1,8 +1,13 @@
 # Table of contents
 
-* [Light Services](README.md)
+## Introduction
+
+* [Light Services](index.md)
 * [Quickstart](quickstart.md)
 * [Concepts](concepts.md)
+
+## Deep Dive
+
 * [Arguments](arguments.md)
 * [Steps](steps.md)
 * [Outputs](outputs.md)
@@ -14,6 +19,9 @@
 * [Rails Generators](generators.md)
 * [RuboCop Integration](rubocop.md)
 * [Ruby LSP Integration](ruby-lsp.md)
+
+## Examples
+
 * [Best Practices](best-practices.md)
 * [Recipes](recipes.md)
   * [CRUD](crud.md)
