@@ -78,6 +78,27 @@ class AI::Chat < ApplicationService
 end
 ```
 
+### Enforcing Type Definitions
+
+You can require all outputs to have a type by enabling `require_type` in your configuration. When enabled, defining an output without a `type` option will raise `Light::Services::MissingTypeError`.
+
+```ruby
+# Enable globally
+Light::Services.configure do |config|
+  config.require_type = true
+end
+
+# Or per-service
+class StrictService < ApplicationService
+  config require_type: true
+  
+  output :result, type: Hash  # ✓ Valid
+  output :data                # ✗ Raises MissingTypeError
+end
+```
+
+See the [Configuration documentation](configuration.md) for more details.
+
 ### dry-types Support
 
 Outputs also support [dry-types](https://dry-rb.org/gems/dry-types) for advanced type validation and coercion.

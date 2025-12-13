@@ -22,6 +22,9 @@ Light::Services.configure do |config|
   config.break_on_warning = false       # Stop step execution when a warning is added
   config.raise_on_warning = false       # Raise an exception when a warning is added
   config.rollback_on_warning = false    # Rollback transaction when a warning is added
+
+  # Type enforcement
+  config.require_type = false           # Require type option for all arguments and outputs
 end
 ```
 
@@ -38,6 +41,7 @@ end
 | `break_on_warning` | `false` | Stops executing remaining steps when a warning is added |
 | `raise_on_warning` | `false` | Raises `Light::Services::Error` when a warning is added |
 | `rollback_on_warning` | `false` | Rolls back the transaction when a warning is added |
+| `require_type` | `false` | Raises `Light::Services::MissingTypeError` when defining arguments or outputs without a `type` option |
 
 ## Per-Service Configuration
 
@@ -135,6 +139,34 @@ end
 class BackgroundTaskService < ApplicationService
   # Background jobs typically handle their own transactions
   config use_transactions: false
+end
+```
+
+### Enforcing Type Definitions
+
+```ruby
+# Enable globally to require type definitions for all arguments and outputs
+Light::Services.configure do |config|
+  config.require_type = true
+end
+
+# Now all arguments and outputs must have a type
+class User::Create < ApplicationService
+  arg :name, type: String        # ✓ Valid
+  arg :email                     # ✗ Raises MissingTypeError
+  output :user, type: User       # ✓ Valid
+  output :token                  # ✗ Raises MissingTypeError
+end
+```
+
+Or enable for specific services:
+
+```ruby
+class StrictService < ApplicationService
+  config require_type: true
+  
+  arg :data, type: Hash          # ✓ Required when require_type is enabled
+  output :result, type: String   # ✓ Required when require_type is enabled
 end
 ```
 

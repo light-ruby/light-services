@@ -55,6 +55,27 @@ class HappyBirthdayService < ApplicationService
 end
 ```
 
+### Enforcing Type Definitions
+
+You can require all arguments to have a type by enabling `require_type` in your configuration. When enabled, defining an argument without a `type` option will raise `Light::Services::MissingTypeError`.
+
+```ruby
+# Enable globally
+Light::Services.configure do |config|
+  config.require_type = true
+end
+
+# Or per-service
+class StrictService < ApplicationService
+  config require_type: true
+  
+  arg :name, type: String  # ✓ Valid
+  arg :age                 # ✗ Raises MissingTypeError
+end
+```
+
+See the [Configuration documentation](configuration.md) for more details.
+
 ### dry-types Support
 
 Light Services supports [dry-types](https://dry-rb.org/gems/dry-types) for advanced type validation and coercion. When using dry-types, values are automatically coerced to the expected type.

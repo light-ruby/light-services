@@ -201,10 +201,44 @@ Light Services defines several exception classes for different error scenarios:
 | Exception | Description |
 |-----------|-------------|
 | `Light::Services::Error` | Base exception class for all Light Services errors |
-| `Light::Services::ArgTypeError` | Raised when an argument type validation fails |
+| `Light::Services::ArgTypeError` | Raised when an argument or output type validation fails |
 | `Light::Services::ReservedNameError` | Raised when using a reserved name for arguments, outputs, or steps |
 | `Light::Services::InvalidNameError` | Raised when using an invalid name format |
 | `Light::Services::NoStepsError` | Raised when a service has no steps defined and no `run` method |
+| `Light::Services::MissingTypeError` | Raised when defining an argument or output without a `type` option when `require_type` is enabled |
+
+### MissingTypeError
+
+This exception is raised when you define an argument or output without a `type` option and `require_type` is enabled:
+
+```ruby
+Light::Services.configure do |config|
+  config.require_type = true
+end
+
+class MyService < ApplicationService
+  arg :name  # => raises Light::Services::MissingTypeError
+end
+```
+
+To fix this, add a `type` option to all arguments and outputs:
+
+```ruby
+class MyService < ApplicationService
+  arg :name, type: String
+  output :result, type: Hash
+end
+```
+
+You can also enable `require_type` per-service using the `config` method:
+
+```ruby
+class StrictService < ApplicationService
+  config require_type: true
+  
+  arg :data, type: Hash
+end
+```
 
 ### NoStepsError
 
