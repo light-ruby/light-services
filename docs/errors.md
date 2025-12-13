@@ -209,13 +209,9 @@ Light Services defines several exception classes for different error scenarios:
 
 ### MissingTypeError
 
-This exception is raised when you define an argument or output without a `type` option and `require_type` is enabled:
+This exception is raised when you define an argument or output without a `type` option. Since `require_type` is enabled by default, all arguments and outputs must have a type.
 
 ```ruby
-Light::Services.configure do |config|
-  config.require_type = true
-end
-
 class MyService < ApplicationService
   arg :name  # => raises Light::Services::MissingTypeError
 end
@@ -230,13 +226,13 @@ class MyService < ApplicationService
 end
 ```
 
-You can also enable `require_type` per-service using the `config` method:
+If you need to disable type enforcement for legacy services, you can use the `config` method:
 
 ```ruby
-class StrictService < ApplicationService
-  config require_type: true
+class LegacyService < ApplicationService
+  config require_type: false
   
-  arg :data, type: Hash
+  arg :data              # Allowed when require_type is disabled
 end
 ```
 

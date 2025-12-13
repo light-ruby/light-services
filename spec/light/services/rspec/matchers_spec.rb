@@ -368,7 +368,7 @@ RSpec.describe Light::Services::RSpec::Matchers do
 
       it "returns empty string when all checks pass (defensive)" do
         simple_service = Class.new(Light::Services::Base) do
-          output :foo
+          output :foo, type: String
 
           step :process
 

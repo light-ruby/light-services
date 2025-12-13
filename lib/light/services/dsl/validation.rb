@@ -144,9 +144,15 @@ module Light
 
         # Check if require_type is enabled for the service class
         def self.require_type_enabled?(service_class)
-          # Check class-level config first, then fall back to global config
-          class_config = service_class.class_config if service_class.respond_to?(:class_config)
-          return class_config[:require_type] if class_config&.key?(:require_type)
+          # Check class-level config in the inheritance chain, then fall back to global config
+          klass = service_class
+          while klass.respond_to?(:class_config)
+            class_config = klass.class_config
+
+            return class_config[:require_type] if class_config&.key?(:require_type)
+
+            klass = klass.superclass
+          end
 
           Light::Services.config.require_type
         end

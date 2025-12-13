@@ -74,7 +74,7 @@ class GreetService < ApplicationService
   step :greet
 
   # Outputs
-  output :greeted, default: false
+  output :greeted, type: [TrueClass, FalseClass], default: false
 
   private
 

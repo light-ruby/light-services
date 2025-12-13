@@ -23,8 +23,8 @@ Light::Services.configure do |config|
   config.raise_on_warning = false       # Raise an exception when a warning is added
   config.rollback_on_warning = false    # Rollback transaction when a warning is added
 
-  # Type enforcement
-  config.require_type = false           # Require type option for all arguments and outputs
+  # Type enforcement (enabled by default)
+  config.require_type = true            # Require type option for all arguments and outputs
 end
 ```
 
@@ -41,7 +41,7 @@ end
 | `break_on_warning` | `false` | Stops executing remaining steps when a warning is added |
 | `raise_on_warning` | `false` | Raises `Light::Services::Error` when a warning is added |
 | `rollback_on_warning` | `false` | Rolls back the transaction when a warning is added |
-| `require_type` | `false` | Raises `Light::Services::MissingTypeError` when defining arguments or outputs without a `type` option |
+| `require_type` | `true` | Raises `Light::Services::MissingTypeError` when defining arguments or outputs without a `type` option |
 
 ## Per-Service Configuration
 
@@ -142,15 +142,11 @@ class BackgroundTaskService < ApplicationService
 end
 ```
 
-### Enforcing Type Definitions
+### Type Enforcement (Enabled by Default)
+
+By default, all arguments and outputs must have a `type` option. This helps catch type-related bugs early and makes your services self-documenting.
 
 ```ruby
-# Enable globally to require type definitions for all arguments and outputs
-Light::Services.configure do |config|
-  config.require_type = true
-end
-
-# Now all arguments and outputs must have a type
 class User::Create < ApplicationService
   arg :name, type: String        # ✓ Valid
   arg :email                     # ✗ Raises MissingTypeError
@@ -159,14 +155,22 @@ class User::Create < ApplicationService
 end
 ```
 
-Or enable for specific services:
+To disable type enforcement globally (not recommended):
 
 ```ruby
-class StrictService < ApplicationService
-  config require_type: true
+Light::Services.configure do |config|
+  config.require_type = false
+end
+```
+
+Or disable for specific services:
+
+```ruby
+class LegacyService < ApplicationService
+  config require_type: false
   
-  arg :data, type: Hash          # ✓ Required when require_type is enabled
-  output :result, type: String   # ✓ Required when require_type is enabled
+  arg :data              # Allowed when require_type is disabled
+  output :result         # Allowed when require_type is disabled
 end
 ```
 

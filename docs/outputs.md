@@ -78,22 +78,24 @@ class AI::Chat < ApplicationService
 end
 ```
 
-### Enforcing Type Definitions
+### Type Enforcement (Enabled by Default)
 
-You can require all outputs to have a type by enabling `require_type` in your configuration. When enabled, defining an output without a `type` option will raise `Light::Services::MissingTypeError`.
+By default, all outputs must have a `type` option. This helps catch type-related bugs early and makes your services self-documenting.
 
 ```ruby
-# Enable globally
-Light::Services.configure do |config|
-  config.require_type = true
-end
-
-# Or per-service
-class StrictService < ApplicationService
-  config require_type: true
-  
+class MyService < ApplicationService
   output :result, type: Hash  # ✓ Valid
   output :data                # ✗ Raises MissingTypeError
+end
+```
+
+To disable type enforcement for a specific service:
+
+```ruby
+class LegacyService < ApplicationService
+  config require_type: false
+  
+  output :data             # Allowed when require_type is disabled
 end
 ```
 

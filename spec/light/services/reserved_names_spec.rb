@@ -170,8 +170,8 @@ RSpec.describe "Reserved Names Validation" do # rubocop:disable RSpec/DescribeCl
       it "raises ReservedNameError when argument name conflicts with output" do
         expect do
           Class.new(Light::Services::Base) do
-            output :data
-            arg :data
+            output :data, type: Hash
+            arg :data, type: Hash
           end
         end.to raise_error(
           Light::Services::ReservedNameError,
@@ -196,8 +196,8 @@ RSpec.describe "Reserved Names Validation" do # rubocop:disable RSpec/DescribeCl
       it "raises ReservedNameError when output name conflicts with argument" do
         expect do
           Class.new(Light::Services::Base) do
-            arg :result
-            output :result
+            arg :result, type: Hash
+            output :result, type: Hash
           end
         end.to raise_error(
           Light::Services::ReservedNameError,
@@ -222,7 +222,7 @@ RSpec.describe "Reserved Names Validation" do # rubocop:disable RSpec/DescribeCl
       it "raises ReservedNameError when step name conflicts with argument" do
         expect do
           Class.new(Light::Services::Base) do
-            arg :validate
+            arg :validate, type: String
             step :validate
           end
         end.to raise_error(
@@ -234,7 +234,7 @@ RSpec.describe "Reserved Names Validation" do # rubocop:disable RSpec/DescribeCl
       it "raises ReservedNameError when step name conflicts with output" do
         expect do
           Class.new(Light::Services::Base) do
-            output :transform
+            output :transform, type: String
             step :transform
           end
         end.to raise_error(

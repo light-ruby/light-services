@@ -36,15 +36,15 @@ rails generate light_services:install
 ```ruby
 class GreetService < Light::Services::Base
   # Arguments
-  arg :name
-  arg :age
+  arg :name, type: String
+  arg :age, type: Integer
 
   # Steps
   step :build_message
   step :send_message
 
   # Outputs
-  output :message
+  output :message, type: String
 
   private
 
@@ -58,14 +58,20 @@ class GreetService < Light::Services::Base
 end
 ```
 
-## Advanced Example
+## Advanced Example (with dry-types)
 
 ```ruby
+require "dry-types"
+
+module Types
+  include Dry.Types()
+end
+
 class User::ResetPassword < Light::Services::Base
-  # Arguments
-  arg :user, type: User, optional: true
-  arg :email, type: String, optional: true
-  arg :send_email, type: [TrueClass, FalseClass], default: true
+  # Arguments with dry-types for advanced validation and coercion
+  arg :user, type: Types.Instance(User).optional, optional: true
+  arg :email, type: Types::Coercible::String.optional, optional: true
+  arg :send_email, type: Types::Params::Bool, default: true
 
   # Steps
   step :validate
@@ -74,9 +80,9 @@ class User::ResetPassword < Light::Services::Base
   step :save_reset_token
   step :send_reset_email, if: :send_email?
 
-  # Outputs
-  output :user, type: User
-  output :reset_token, type: String
+  # Outputs with dry-types
+  output :user, type: Types.Instance(User)
+  output :reset_token, type: Types::Strict::String
 
   private
 

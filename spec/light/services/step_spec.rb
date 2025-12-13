@@ -154,7 +154,7 @@ RSpec.describe "Steps collection" do # rubocop:disable RSpec/DescribeClass
     context "when service has no steps but has a run method" do
       let(:service_class) do
         Class.new(Light::Services::Base) do
-          output :result
+          output :result, type: String
 
           private
 
@@ -178,7 +178,7 @@ RSpec.describe "Steps collection" do # rubocop:disable RSpec/DescribeClass
     context "when service has no steps and no run method" do
       let(:service_class) do
         Class.new(Light::Services::Base) do
-          output :result
+          output :result, type: String
         end
       end
 
@@ -193,7 +193,7 @@ RSpec.describe "Steps collection" do # rubocop:disable RSpec/DescribeClass
     context "when parent service has steps" do
       let(:parent_class) do
         Class.new(Light::Services::Base) do
-          output :result
+          output :result, type: String
 
           step :set_result
 
@@ -223,7 +223,7 @@ RSpec.describe "Steps collection" do # rubocop:disable RSpec/DescribeClass
     context "when child removes all parent steps but has run method" do
       let(:parent_class) do
         Class.new(Light::Services::Base) do
-          output :result
+          output :result, type: String
 
           step :parent_step
 
@@ -261,7 +261,7 @@ RSpec.describe "Steps collection" do # rubocop:disable RSpec/DescribeClass
     context "when child removes all parent steps and has no run method" do
       let(:parent_class) do
         Class.new(Light::Services::Base) do
-          output :result
+          output :result, type: String
 
           step :parent_step
 
@@ -290,7 +290,7 @@ RSpec.describe "Steps collection" do # rubocop:disable RSpec/DescribeClass
     context "with deep inheritance (grandparent -> parent -> child)" do
       let(:grandparent_class) do
         Class.new(Light::Services::Base) do
-          output :result
+          output :result, type: String
 
           private
 

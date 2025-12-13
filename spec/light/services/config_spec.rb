@@ -111,19 +111,19 @@ RSpec.describe Light::Services::Config do
         break_on_warning: false,
         raise_on_warning: false,
         rollback_on_warning: false,
-        require_type: false,
+        require_type: true,
       })
     end
   end
 
   describe "require_type" do
     it "has accessor for require_type" do
-      config.require_type = true
-      expect(config.require_type).to be(true)
+      config.require_type = false
+      expect(config.require_type).to be(false)
     end
 
-    it "defaults to false" do
-      expect(config.require_type).to be(false)
+    it "defaults to true" do
+      expect(config.require_type).to be(true)
     end
   end
 
@@ -180,7 +180,11 @@ RSpec.describe Light::Services::Config do
         end
       end
 
-      context "when require_type is disabled globally (default)" do
+      context "when require_type is disabled globally" do
+        before do
+          Light::Services.config.require_type = false
+        end
+
         it "does not raise for argument without type" do
           expect do
             Class.new(Light::Services::Base) do
