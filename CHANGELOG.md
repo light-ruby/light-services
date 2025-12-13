@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.1.0 (2025-12-13)
 
 ### Breaking changes
 
@@ -11,6 +11,9 @@
 - `stop!` and `stopped?` methods for early exit (renamed from `done!` and `done?`)
 - `stop_immediately!` method for immediate execution halt within the current step
 - `done!` and `done?` remain available as aliases for backward compatibility
+- Ruby LSP support with step navigation and indexing
+- Rubocop cops `StepMethodExists`, `ConditionMethodExists`, `DslOrder`, `MissingPrivateKeyword`, `NoDirectInstantiation`, `ArgumentTypeRequired`, `OutputTypeRequired`
+- Comprehensive YARD documentation
 
 ## 3.0.0 (2025-12-12)
 
