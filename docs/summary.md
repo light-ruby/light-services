@@ -12,6 +12,8 @@
 * [Configuration](configuration.md)
 * [Testing](testing.md)
 * [Rails Generators](generators.md)
+* [RuboCop Integration](rubocop.md)
+* [Ruby LSP Integration](ruby-lsp.md)
 * [Best Practices](best-practices.md)
 * [Recipes](recipes.md)
   * [CRUD](crud.md)

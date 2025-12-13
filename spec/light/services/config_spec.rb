@@ -29,7 +29,7 @@ RSpec.describe Light::Services::Config do
     it "returns hash with all config values" do
       hash = config.to_h
       expect(hash).to be_a(Hash)
-      expect(hash.keys).to match_array(described_class::DEFAULTS.keys)
+      expect(hash.keys).to match_array(described_class::DEFAULTS.keys + [:ruby_lsp_type_mappings])
     end
 
     it "reflects current config values" do
@@ -124,6 +124,28 @@ RSpec.describe Light::Services::Config do
 
     it "defaults to true" do
       expect(config.require_type).to be(true)
+    end
+  end
+
+  describe "ruby_lsp_type_mappings" do
+    it "has accessor for ruby_lsp_type_mappings" do
+      config.ruby_lsp_type_mappings = { "Types::UUID" => "String" }
+      expect(config.ruby_lsp_type_mappings).to eq({ "Types::UUID" => "String" })
+    end
+
+    it "defaults to empty hash" do
+      expect(config.ruby_lsp_type_mappings).to eq({})
+    end
+
+    it "resets to empty hash on reset_to_defaults!" do
+      config.ruby_lsp_type_mappings = { "CustomType" => "String" }
+      config.reset_to_defaults!
+      expect(config.ruby_lsp_type_mappings).to eq({})
+    end
+
+    it "is included in to_h" do
+      config.ruby_lsp_type_mappings = { "Types::Money" => "BigDecimal" }
+      expect(config.to_h[:ruby_lsp_type_mappings]).to eq({ "Types::Money" => "BigDecimal" })
     end
   end
 

@@ -31,16 +31,24 @@ module Light
 
       attr_accessor(*DEFAULTS.keys)
 
+      # Custom type mappings for Ruby LSP addon
+      # Maps dry-types or custom types to Ruby types for hover/completion
+      # Example: { "Types::UUID" => "String", "CustomTypes::Money" => "BigDecimal" }
+      attr_accessor :ruby_lsp_type_mappings
+
       def initialize
         reset_to_defaults!
       end
 
       def reset_to_defaults!
         DEFAULTS.each { |key, value| public_send(:"#{key}=", value) }
+        @ruby_lsp_type_mappings = {}
       end
 
       def to_h
-        DEFAULTS.keys.to_h { |key| [key, public_send(key)] }
+        DEFAULTS.keys.to_h { |key| [key, public_send(key)] }.merge(
+          ruby_lsp_type_mappings: ruby_lsp_type_mappings,
+        )
       end
 
       def merge(config)
