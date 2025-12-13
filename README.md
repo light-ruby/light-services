@@ -58,19 +58,13 @@ class GreetService < Light::Services::Base
 end
 ```
 
-## Advanced Example (with dry-types)
+## Advanced Example (with dry-types and conditions)
 
 ```ruby
-require "dry-types"
-
-module Types
-  include Dry.Types()
-end
-
 class User::ResetPassword < Light::Services::Base
   # Arguments with dry-types for advanced validation and coercion
-  arg :user, type: Types.Instance(User).optional, optional: true
-  arg :email, type: Types::Coercible::String.optional, optional: true
+  arg :user, type: Types.Instance(User), optional: true
+  arg :email, type: Types::Coercible::String, optional: true
   arg :send_email, type: Types::Params::Bool, default: true
 
   # Steps

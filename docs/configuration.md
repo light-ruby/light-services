@@ -8,6 +8,9 @@ Configure Light Services globally using an initializer. For Rails applications, 
 
 ```ruby
 Light::Services.configure do |config|
+# Type enforcement
+  config.require_type = true            # Require type option for all arguments and outputs
+
   # Transaction settings
   config.use_transactions = true        # Wrap each service in a database transaction
 
@@ -22,9 +25,6 @@ Light::Services.configure do |config|
   config.break_on_warning = false       # Stop step execution when a warning is added
   config.raise_on_warning = false       # Raise an exception when a warning is added
   config.rollback_on_warning = false    # Rollback transaction when a warning is added
-
-  # Type enforcement (enabled by default)
-  config.require_type = true            # Require type option for all arguments and outputs
 end
 ```
 
@@ -32,6 +32,7 @@ end
 
 | Option | Default | Description |
 |--------|---------|-------------|
+| `require_type` | `true` | Raises `Light::Services::MissingTypeError` when defining arguments or outputs without a `type` option |
 | `use_transactions` | `true` | Wraps service execution in `ActiveRecord::Base.transaction` |
 | `load_errors` | `true` | Propagates errors to parent service when using `.with(self)` |
 | `break_on_error` | `true` | Stops executing remaining steps when an error is added |
@@ -41,7 +42,6 @@ end
 | `break_on_warning` | `false` | Stops executing remaining steps when a warning is added |
 | `raise_on_warning` | `false` | Raises `Light::Services::Error` when a warning is added |
 | `rollback_on_warning` | `false` | Rolls back the transaction when a warning is added |
-| `require_type` | `true` | Raises `Light::Services::MissingTypeError` when defining arguments or outputs without a `type` option |
 
 ## Per-Service Configuration
 

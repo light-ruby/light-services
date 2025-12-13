@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Breaking changes
+
+- Enforce arguments and output types by default. Add `config.require_type = false` to your config to disable this behavior.
+
 ## 3.0.0 (2025-12-12)
 
 ### Breaking changes
