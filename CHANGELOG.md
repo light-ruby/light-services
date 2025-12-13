@@ -6,6 +6,12 @@
 
 - Enforce arguments and output types by default. Add `config.require_type = false` to your config to disable this behavior.
 
+### Added
+
+- `stop!` and `stopped?` methods for early exit (renamed from `done!` and `done?`)
+- `stop_immediately!` method for immediate execution halt within the current step
+- `done!` and `done?` remain available as aliases for backward compatibility
+
 ## 3.0.0 (2025-12-12)
 
 ### Breaking changes

@@ -6,6 +6,7 @@ RSpec.describe "Reserved Names Validation" do # rubocop:disable RSpec/DescribeCl
       expect(Light::Services::ReservedNames::BASE_METHODS).to include(
         :outputs, :arguments, :errors, :warnings,
         :success?, :failed?, :errors?, :warnings?,
+        :stop!, :stopped?, :stop_immediately!,
         :done!, :done?, :call,
       )
     end

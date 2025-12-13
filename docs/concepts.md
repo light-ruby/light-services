@@ -23,14 +23,14 @@ When you call `MyService.run(args)`, the following happens:
 │     │     - Run after_step_run / on_step_success          │ │
 │     │     - Skip if condition (if:/unless:) not met       │ │
 │     │     - Stop if errors.break? is true                 │ │
-│     │     - Stop if done! was called                      │ │
+│     │     - Stop if stop! was called                      │ │
 │     ├─────────────────────────────────────────────────────┤ │
 │     │  7. On error → Rollback transaction                 │ │
 │     │     On success → Commit transaction                 │ │
 │     └─────────────────────────────────────────────────────┘ │
 │  8. End around_service_run callback                          │
 ├─────────────────────────────────────────────────────────────┤
-│  9. Run steps marked with always: true (unless done! called) │
+│  9. Run steps marked with always: true (unless stop! called) │
 │ 10. Validate output types (if success)                       │
 │ 11. Copy errors/warnings to parent service (if in context)   │
 │ 12. Run after_service_run callback                           │

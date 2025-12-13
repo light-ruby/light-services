@@ -60,7 +60,7 @@ module Light
         end
 
         def run?(instance)
-          return false if instance.done?
+          return false if instance.stopped?
 
           if @if
             check_condition(@if, instance)

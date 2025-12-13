@@ -93,7 +93,7 @@ class ExampleService < Light::Services::Base
   end
 
   def cleanup
-    # Runs regardless of errors/warnings, unless done! was called
+    # Runs regardless of errors/warnings, unless stop! was called
   end
 
   def should_process?

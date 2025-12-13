@@ -57,19 +57,122 @@ RSpec.describe Light::Services::Base do
     end
   end
 
-  describe "#done!" do
+  describe "#stop!" do
     let(:service) { WithDone.run(add_c: true) }
 
     it "stops execution of subsequent steps" do
       expect(service.word).to eq("ab")
     end
+
+    it "is aliased as done! for backward compatibility" do
+      expect(service).to respond_to(:done!)
+    end
   end
 
-  describe "#done?" do
+  describe "#stopped?" do
     let(:service) { WithDone.run }
 
-    it "returns true after done! is called" do
+    it "returns true after stop! is called" do
+      expect(service.stopped?).to be(true)
+    end
+
+    it "is aliased as done? for backward compatibility" do
       expect(service.done?).to be(true)
+    end
+  end
+
+  describe "#stop_immediately!" do
+    let(:service_class) do
+      Class.new(Light::Services::Base) do
+        output :word, type: String, default: ""
+        output :after_stop_ran, type: [TrueClass, FalseClass], default: false
+
+        step :letter_a
+        step :letter_b
+        step :letter_c
+        step :cleanup, always: true
+
+        private
+
+        def letter_a
+          self.word += "a"
+        end
+
+        def letter_b
+          self.word += "b"
+          stop_immediately!
+          self.word += "!" # This should NOT run
+        end
+
+        def letter_c
+          self.word += "c" # This should NOT run
+        end
+
+        def cleanup
+          self.after_stop_ran = true
+        end
+      end
+    end
+
+    it "stops execution immediately within the current step" do
+      service = service_class.run
+      expect(service.word).to eq("ab")
+    end
+
+    it "sets stopped? to true" do
+      service = service_class.run
+      expect(service.stopped?).to be(true)
+    end
+
+    it "skips remaining steps" do
+      service = service_class.run
+      expect(service.word).not_to include("c")
+    end
+
+    it "does not run always steps when stop_immediately! is called" do
+      service = service_class.run
+      expect(service.after_stop_ran).to be(false)
+    end
+
+    it "maintains success state (no errors)" do
+      service = service_class.run
+      expect(service.success?).to be(true)
+    end
+
+    context "with database transaction" do
+      let(:service_with_db) do
+        Class.new(Light::Services::Base) do
+          config use_transactions: true
+
+          arg :name, type: String
+
+          step :create_user
+          step :stop_early
+          step :should_not_run
+
+          private
+
+          def create_user
+            User.create!(name: name)
+          end
+
+          def stop_early
+            stop_immediately!
+          end
+
+          def should_not_run
+            raise "This should never execute"
+          end
+        end
+      end
+
+      it "does not rollback database changes" do
+        expect do
+          service_with_db.run(name: "stop_immediately_test_user")
+        end.to change(User, :count).by(1)
+
+        expect(User.exists?(name: "stop_immediately_test_user")).to be(true)
+      end
     end
   end
 

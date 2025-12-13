@@ -40,7 +40,7 @@ module Light
         @outputs = Collection::Base.new(self, CollectionTypes::OUTPUTS)
         @arguments = Collection::Base.new(self, CollectionTypes::ARGUMENTS, args.dup)
 
-        @done = false
+        @stopped = false
         @launched_steps = []
 
         initialize_errors
@@ -63,12 +63,19 @@ module Light
         @warnings.any?
       end
 
-      def done!
-        @done = true
+      def stop!
+        @stopped = true
       end
+      alias done! stop!
 
-      def done?
-        @done
+      def stopped?
+        @stopped
+      end
+      alias done? stopped?
+
+      def stop_immediately!
+        @stopped = true
+        raise Light::Services::StopExecution
       end
 
       def call

@@ -9,6 +9,10 @@ module Light
     class NoStepsError < Error; end
     class MissingTypeError < Error; end
 
+    # Control flow exception for stop_immediately!
+    # Not an error - used to halt execution gracefully
+    class StopExecution < StandardError; end
+
     # Backwards compatibility aliases (deprecated)
     NoStepError = Error
     TwoConditions = Error

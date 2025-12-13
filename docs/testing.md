@@ -175,7 +175,7 @@ RSpec.describe User::Register do
 end
 ```
 
-## Testing Early Exit with done!
+## Testing Early Exit with stop!
 
 ```ruby
 RSpec.describe User::FindOrCreate do

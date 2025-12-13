@@ -187,9 +187,9 @@ class ParsePage < ApplicationService
 end
 ```
 
-## Early Exit with `done!`
+## Early Exit with `stop!`
 
-Use `done!` to stop executing remaining steps without adding an error. This is useful when you've completed the service's goal early and don't need to run subsequent steps.
+Use `stop!` to stop executing remaining steps without adding an error. This is useful when you've completed the service's goal early and don't need to run subsequent steps.
 
 ```ruby
 class User::FindOrCreate < ApplicationService
@@ -205,7 +205,7 @@ class User::FindOrCreate < ApplicationService
 
   def find_existing_user
     self.user = User.find_by(email:)
-    done! if user # Skip remaining steps if user already exists
+    stop! if user # Skip remaining steps if user already exists
   end
 
   def create_user
@@ -219,23 +219,77 @@ class User::FindOrCreate < ApplicationService
 end
 ```
 
-You can check if `done!` was called using `done?`:
+You can check if `stop!` was called using `stopped?`:
 
 ```ruby
 def some_step
-  done!
+  stop!
   
   # This code still runs within the same step
-  puts "Done? #{done?}" # => "Done? true"
+  puts "Stopped? #{stopped?}" # => "Stopped? true"
 end
 
 def next_step
-  # This step will NOT run because done! was called
+  # This step will NOT run because stop! was called
 end
 ```
 
 {% hint style="info" %}
-`done!` stops subsequent steps from running, including steps marked with `always: true`. Code after `done!` within the same step method will still execute.
+`stop!` stops subsequent steps from running, including steps marked with `always: true`. Code after `stop!` within the same step method will still execute.
+{% endhint %}
+
+{% hint style="success" %}
+**Database Transactions:** Calling `stop!` does NOT rollback database transactions. All database changes made before `stop!` was called will be committed.
+{% endhint %}
+
+{% hint style="info" %}
+**Backward Compatibility:** `done!` and `done?` are still available as aliases for `stop!` and `stopped?`.
+{% endhint %}
+
+## Immediate Exit with `stop_immediately!`
+
+Use `stop_immediately!` when you need to halt execution immediately, even within the current step. Unlike `stop!`, code after `stop_immediately!` in the same step method will NOT execute.
+
+```ruby
+class Payment::Process < ApplicationService
+  arg :amount, type: Integer
+  arg :card_token, type: String
+
+  step :validate_card
+  step :charge_card
+  step :send_receipt
+
+  output :transaction_id, type: String
+
+  private
+
+  def validate_card
+    unless valid_card?(card_token)
+      errors.add(:card, "is invalid")
+      stop_immediately! # Exit immediately - don't run any more code
+    end
+    
+    # This code won't run if card is invalid
+    log_validation_success
+  end
+
+  def charge_card
+    # This step won't run if stop_immediately! was called
+    self.transaction_id = PaymentGateway.charge(amount, card_token)
+  end
+
+  def send_receipt
+    Mailer.receipt(transaction_id).deliver_later
+  end
+end
+```
+
+{% hint style="warning" %}
+`stop_immediately!` raises an internal exception to halt execution. Steps marked with `always: true` will NOT run when `stop_immediately!` is called.
+{% endhint %}
+
+{% hint style="success" %}
+**Database Transactions:** Calling `stop_immediately!` does NOT rollback database transactions. All database changes made before `stop_immediately!` was called will be committed.
 {% endhint %}
 
 ## Removing Inherited Steps

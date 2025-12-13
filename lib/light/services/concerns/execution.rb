@@ -40,6 +40,9 @@ module Light
 
               break if @errors.break? || @warnings.break?
             end
+          rescue Light::Services::StopExecution
+            # Gracefully handle stop_immediately! inside transaction to prevent rollback
+            @stopped = true
           end
         end
 
