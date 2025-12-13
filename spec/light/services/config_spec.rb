@@ -111,7 +111,15 @@ RSpec.describe Light::Services::Config do
         break_on_warning: false,
         raise_on_warning: false,
         rollback_on_warning: false,
+        require_type: false,
       })
+    end
+  end
+
+  describe "require_type accessor" do
+    it "has accessor for require_type" do
+      config.require_type = true
+      expect(config.require_type).to be(true)
     end
   end
 end
