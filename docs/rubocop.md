@@ -195,6 +195,43 @@ LightServices/NoDirectInstantiation:
   ServicePattern: 'Service$'  # default: matches classes ending with "Service"
 ```
 
+### LightServices/DeprecatedMethods
+
+Detects deprecated `done!` and `done?` method calls and suggests using `stop!` and `stopped?` instead. Includes autocorrection.
+
+```ruby
+# bad
+class MyService < ApplicationService
+  step :process
+
+  private
+
+  def process
+    done! if condition_met?
+    return if done?
+  end
+end
+
+# good
+class MyService < ApplicationService
+  step :process
+
+  private
+
+  def process
+    stop! if condition_met?
+    return if stopped?
+  end
+end
+```
+
+**Configuration:** Customize the pattern for service class detection:
+
+```yaml
+LightServices/DeprecatedMethods:
+  ServicePattern: 'Service$'  # default: matches classes ending with "Service"
+```
+
 ## Configuration
 
 Full configuration example:
@@ -224,6 +261,10 @@ LightServices/MissingPrivateKeyword:
   Enabled: true
 
 LightServices/NoDirectInstantiation:
+  Enabled: true
+  ServicePattern: 'Service$'
+
+LightServices/DeprecatedMethods:
   Enabled: true
   ServicePattern: 'Service$'
 ```
