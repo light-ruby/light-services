@@ -102,3 +102,6 @@ Style/TrailingCommaInHashLiteral:
 
 Style/WordArray:
   EnforcedStyle: brackets
+
+Style/NumericPredicate:
+  Enabled: false
