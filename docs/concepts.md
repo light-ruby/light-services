@@ -7,39 +7,39 @@ This section covers the core concepts of Light Services: **Arguments**, **Steps*
 When you call `MyService.run(args)`, the following happens:
 
 ```
-┌─────────────────────────────────────────────────────────────┐
+┌──────────────────────────────────────────────────────────────┐
 │                      Service.run(args)                       │
-├─────────────────────────────────────────────────────────────┤
+├──────────────────────────────────────────────────────────────┤
 │  1. Load default values for arguments and outputs            │
 │  2. Validate argument types                                  │
 │  3. Run before_service_run callbacks                         │
-├─────────────────────────────────────────────────────────────┤
+├──────────────────────────────────────────────────────────────┤
 │  4. Begin around_service_run callback                        │
 │  5. Begin database transaction (if use_transactions: true)   │
-│     ┌─────────────────────────────────────────────────────┐ │
-│     │  6. Execute steps in order                          │ │
-│     │     - Run before_step_run / around_step_run         │ │
-│     │     - Execute step method                           │ │
-│     │     - Run after_step_run / on_step_success          │ │
-│     │     - Skip if condition (if:/unless:) not met       │ │
-│     │     - Stop if errors.break? is true                 │ │
-│     │     - Stop if stop! was called                      │ │
-│     ├─────────────────────────────────────────────────────┤ │
-│     │  7. On error → Rollback transaction                 │ │
-│     │     On success → Commit transaction                 │ │
-│     └─────────────────────────────────────────────────────┘ │
+│     ┌─────────────────────────────────────────────────────┐  │
+│     │  6. Execute steps in order                          │  │
+│     │     - Run before_step_run / around_step_run         │  │
+│     │     - Execute step method                           │  │
+│     │     - Run after_step_run / on_step_success          │  │
+│     │     - Skip if condition (if:/unless:) not met       │  │
+│     │     - Stop if errors.break? is true                 │  │
+│     │     - Stop if stop! was called                      │  │
+│     ├─────────────────────────────────────────────────────┤  │
+│     │  7. On error → Rollback transaction                 │  │
+│     │     On success → Commit transaction                 │  │
+│     └─────────────────────────────────────────────────────┘  │
 │  8. End around_service_run callback                          │
-├─────────────────────────────────────────────────────────────┤
+├──────────────────────────────────────────────────────────────┤
 │  9. Run steps marked with always: true (unless stop! called) │
 │ 10. Validate output types (if success)                       │
 │ 11. Copy errors/warnings to parent service (if in context)   │
 │ 12. Run after_service_run callback                           │
 │ 13. Run on_service_success or on_service_failure callback    │
-├─────────────────────────────────────────────────────────────┤
+├──────────────────────────────────────────────────────────────┤
 │ 14. Return service instance                                  │
 │     - service.success? / service.failed?                     │
 │     - service.outputs / service.errors                       │
-└─────────────────────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ## Arguments
