@@ -111,7 +111,7 @@ RSpec.describe Light::Services::Config do
         break_on_warning: false,
         raise_on_warning: false,
         rollback_on_warning: false,
-        require_type: false,
+        require_type: true,
       })
     end
   end

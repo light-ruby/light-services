@@ -24,7 +24,7 @@ Light::Services.configure do |config|
   config.rollback_on_warning = false    # Rollback transaction when a warning is added
 
   # Type enforcement
-  config.require_type = false           # Require type option for all arguments and outputs
+  config.require_type = true            # Require type option for all arguments and outputs
 end
 ```
 
@@ -41,7 +41,7 @@ end
 | `break_on_warning` | `false` | Stops executing remaining steps when a warning is added |
 | `raise_on_warning` | `false` | Raises `Light::Services::Error` when a warning is added |
 | `rollback_on_warning` | `false` | Rolls back the transaction when a warning is added |
-| `require_type` | `false` | Raises `Light::Services::MissingTypeError` when arguments or outputs are defined without a `type` option |
+| `require_type` | `true` | Raises `Light::Services::MissingTypeError` when arguments or outputs are defined without a `type` option |
 
 ## Per-Service Configuration
 
@@ -166,15 +166,9 @@ When `use_transactions` is `true`, Light Services uses `ActiveRecord::Base.trans
 
 ## Enforcing Type Definitions
 
-Enable `require_type` to ensure all arguments and outputs have explicit type definitions. This helps catch missing types early and improves code quality.
+By default, `require_type` is enabled to ensure all arguments and outputs have explicit type definitions. This helps catch missing types early and improves code quality.
 
-```ruby
-Light::Services.configure do |config|
-  config.require_type = true
-end
-```
-
-With `require_type` enabled, defining an argument or output without a type will raise `Light::Services::MissingTypeError`:
+Defining an argument or output without a type will raise `Light::Services::MissingTypeError`:
 
 ```ruby
 class MyService < ApplicationService
@@ -186,8 +180,18 @@ class MyService < ApplicationService
 end
 ```
 
+### Disabling Type Enforcement
+
+For legacy projects or gradual migration, you can disable type enforcement:
+
+```ruby
+Light::Services.configure do |config|
+  config.require_type = false
+end
+```
+
 {% hint style="warning" %}
-Enable `require_type` in new projects from the start. For existing projects, audit your services before enabling to avoid runtime errors during class loading.
+Disabling `require_type` is not recommended. Explicit types improve code quality and catch errors early.
 {% endhint %}
 
 ## What's Next?

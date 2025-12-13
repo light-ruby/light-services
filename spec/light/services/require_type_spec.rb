@@ -7,7 +7,7 @@ RSpec.describe "require_type configuration" do # rubocop:disable RSpec/DescribeC
     Light::Services.config.require_type = original_value
   end
 
-  describe "when require_type is disabled (default)" do
+  describe "when require_type is disabled" do
     before do
       Light::Services.config.require_type = false
     end
@@ -45,7 +45,7 @@ RSpec.describe "require_type configuration" do # rubocop:disable RSpec/DescribeC
     end
   end
 
-  describe "when require_type is enabled" do
+  describe "when require_type is enabled (default)" do
     before do
       Light::Services.config.require_type = true
     end

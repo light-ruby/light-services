@@ -26,7 +26,7 @@ module Light
         raise_on_warning: false,
         rollback_on_warning: false,
 
-        require_type: false,
+        require_type: true,
       }.freeze
 
       attr_accessor(*DEFAULTS.keys)
