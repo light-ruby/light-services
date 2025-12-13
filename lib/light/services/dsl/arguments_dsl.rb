@@ -41,6 +41,7 @@ module Light
             Validation.validate_symbol_name!(name, :argument, self)
             Validation.validate_reserved_name!(name, :argument, self)
             Validation.validate_name_conflicts!(name, :argument, self)
+            Validation.validate_type_required!(name, :argument, self, opts)
 
             own_arguments[name] = Settings::Field.new(name, self, opts.merge(field_type: FieldTypes::ARGUMENT))
             @arguments = nil # Clear memoized arguments since we're modifying them

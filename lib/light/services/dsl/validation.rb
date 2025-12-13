@@ -126,6 +126,30 @@ module Light
             # Check inherited steps
             (service_class.superclass.respond_to?(:steps) && service_class.superclass.steps.key?(name_sym))
         end
+
+        # Validate that the type option is provided when require_type is enabled
+        #
+        # @param name [Symbol] the field name
+        # @param field_type [Symbol] the type of field (:argument, :output)
+        # @param service_class [Class] the service class for error messages
+        # @param opts [Hash] the options hash to check for type
+        def self.validate_type_required!(name, field_type, service_class, opts)
+          return if opts.key?(:type)
+          return unless require_type_enabled?(service_class)
+
+          raise Light::Services::MissingTypeError,
+                "#{field_type.to_s.capitalize} `#{name}` in #{service_class} must have a type specified " \
+                "(require_type is enabled)"
+        end
+
+        # Check if require_type is enabled for the service class
+        def self.require_type_enabled?(service_class)
+          # Check class-level config first, then fall back to global config
+          class_config = service_class.class_config if service_class.respond_to?(:class_config)
+          return class_config[:require_type] if class_config&.key?(:require_type)
+
+          Light::Services.config.require_type
+        end
       end
     end
   end

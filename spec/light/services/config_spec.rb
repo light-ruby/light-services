@@ -111,7 +111,178 @@ RSpec.describe Light::Services::Config do
         break_on_warning: false,
         raise_on_warning: false,
         rollback_on_warning: false,
+        require_type: false,
       })
+    end
+  end
+
+  describe "require_type" do
+    it "has accessor for require_type" do
+      config.require_type = true
+      expect(config.require_type).to be(true)
+    end
+
+    it "defaults to false" do
+      expect(config.require_type).to be(false)
+    end
+  end
+
+  describe "require_type validation" do
+    after do
+      Light::Services.config.reset_to_defaults!
+    end
+
+    describe "global configuration" do
+      context "when require_type is enabled globally" do
+        before do
+          Light::Services.config.require_type = true
+        end
+
+        it "raises MissingTypeError for argument without type" do
+          expect do
+            Class.new(Light::Services::Base) do
+              arg :name
+            end
+          end.to raise_error(Light::Services::MissingTypeError, /Argument `name`.*must have a type specified/)
+        end
+
+        it "raises MissingTypeError for output without type" do
+          expect do
+            Class.new(Light::Services::Base) do
+              output :result
+            end
+          end.to raise_error(Light::Services::MissingTypeError, /Output `result`.*must have a type specified/)
+        end
+
+        it "does not raise for argument with type" do
+          expect do
+            Class.new(Light::Services::Base) do
+              arg :name, type: String
+            end
+          end.not_to raise_error
+        end
+
+        it "does not raise for output with type" do
+          expect do
+            Class.new(Light::Services::Base) do
+              output :result, type: Hash
+            end
+          end.not_to raise_error
+        end
+
+        it "includes service class name in error message" do
+          stub_const("TestServiceWithMissingType", Class.new(Light::Services::Base))
+          expect do
+            TestServiceWithMissingType.class_eval do
+              arg :name
+            end
+          end.to raise_error(Light::Services::MissingTypeError, /TestServiceWithMissingType/)
+        end
+      end
+
+      context "when require_type is disabled globally (default)" do
+        it "does not raise for argument without type" do
+          expect do
+            Class.new(Light::Services::Base) do
+              arg :name
+            end
+          end.not_to raise_error
+        end
+
+        it "does not raise for output without type" do
+          expect do
+            Class.new(Light::Services::Base) do
+              output :result
+            end
+          end.not_to raise_error
+        end
+      end
+    end
+
+    describe "class-level configuration" do
+      context "when require_type is enabled at class level" do
+        it "raises MissingTypeError for argument without type" do
+          expect do
+            Class.new(Light::Services::Base) do
+              config require_type: true
+              arg :name
+            end
+          end.to raise_error(Light::Services::MissingTypeError, /Argument `name`.*must have a type specified/)
+        end
+
+        it "raises MissingTypeError for output without type" do
+          expect do
+            Class.new(Light::Services::Base) do
+              config require_type: true
+              output :result
+            end
+          end.to raise_error(Light::Services::MissingTypeError, /Output `result`.*must have a type specified/)
+        end
+
+        it "does not raise for argument with type" do
+          expect do
+            Class.new(Light::Services::Base) do
+              config require_type: true
+              arg :name, type: String
+            end
+          end.not_to raise_error
+        end
+
+        it "does not raise for output with type" do
+          expect do
+            Class.new(Light::Services::Base) do
+              config require_type: true
+              output :result, type: Hash
+            end
+          end.not_to raise_error
+        end
+      end
+
+      context "when require_type is disabled at class level but enabled globally" do
+        before do
+          Light::Services.config.require_type = true
+        end
+
+        it "class-level config overrides global config" do
+          expect do
+            Class.new(Light::Services::Base) do
+              config require_type: false
+              arg :name
+            end
+          end.not_to raise_error
+        end
+      end
+    end
+
+    describe "with different type formats" do
+      before do
+        Light::Services.config.require_type = true
+      end
+
+      it "accepts single type" do
+        expect do
+          Class.new(Light::Services::Base) do
+            arg :name, type: String
+          end
+        end.not_to raise_error
+      end
+
+      it "accepts array of types" do
+        expect do
+          Class.new(Light::Services::Base) do
+            arg :id, type: [String, Integer]
+          end
+        end.not_to raise_error
+      end
+
+      it "accepts custom class types" do
+        custom_class = Class.new
+        expect do
+          Class.new(Light::Services::Base) do
+            arg :data, type: custom_class
+          end
+        end.not_to raise_error
+      end
     end
   end
 end

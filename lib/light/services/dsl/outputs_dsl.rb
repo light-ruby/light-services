@@ -37,6 +37,7 @@ module Light
             Validation.validate_symbol_name!(name, :output, self)
             Validation.validate_reserved_name!(name, :output, self)
             Validation.validate_name_conflicts!(name, :output, self)
+            Validation.validate_type_required!(name, :output, self, opts)
 
             own_outputs[name] = Settings::Field.new(name, self, opts.merge(field_type: FieldTypes::OUTPUT))
             @outputs = nil # Clear memoized outputs since we're modifying them
