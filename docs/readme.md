@@ -13,6 +13,7 @@ Light Services is a simple yet powerful way to organize business logic in Ruby a
 - ⚠️ **Error Handling**: Collect errors from steps and handle them your way
 - 🔗 **Context**: Run multiple services sequentially within the same context
 - 🧪 **RSpec Matchers**: Built-in RSpec matchers for expressive service tests
+- 🔍 **RuboCop Integration**: Custom cops to enforce best practices at lint time
 - 🌐 **Framework Agnostic**: Compatible with Rails, Hanami, or any Ruby framework
 - 🧩 **Modularity**: Isolate and test your services with ease
 - ✅ **100% Test Coverage**: Thoroughly tested and reliable
