@@ -185,11 +185,14 @@ module RubyLsp
       # Custom mappings take precedence over defaults
       def effective_type_mappings
         return DEFAULT_TYPE_MAPPINGS unless defined?(Light::Services)
+        return DEFAULT_TYPE_MAPPINGS unless Light::Services.respond_to?(:config)
 
-        custom_mappings = Light::Services.config.ruby_lsp_type_mappings
+        custom_mappings = Light::Services.config&.ruby_lsp_type_mappings
         return DEFAULT_TYPE_MAPPINGS if custom_mappings.nil? || custom_mappings.empty?
 
         DEFAULT_TYPE_MAPPINGS.merge(custom_mappings)
+      rescue NoMethodError
+        DEFAULT_TYPE_MAPPINGS
       end
 
       # ─────────────────────────────────────────────────────────────────────────

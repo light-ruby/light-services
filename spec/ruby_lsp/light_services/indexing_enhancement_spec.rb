@@ -417,4 +417,24 @@ RSpec.describe RubyLsp::LightServices::IndexingEnhancement do
       end
     end
   end
+
+  describe "error handling in type mappings" do
+    def extract_type_for(source)
+      node = Prism.parse(source).value.statements.body.first
+      enhancement.send(:extract_ruby_type, node)
+    end
+
+    context "when config.ruby_lsp_type_mappings raises NoMethodError" do
+      let(:mock_config) { instance_double(Light::Services::Config) }
+
+      before do
+        allow(Light::Services).to receive(:config).and_return(mock_config)
+        allow(mock_config).to receive(:ruby_lsp_type_mappings).and_raise(NoMethodError)
+      end
+
+      it "falls back to default type mappings" do
+        expect(extract_type_for("arg :name, type: Types::Strict::String")).to eq("String")
+      end
+    end
+  end
 end
