@@ -43,6 +43,7 @@ module Light
     #   result.success? # => true
     #   result.user     # => #<User id: 1, name: "John">
     class Base
+      extend CallbackDsl
       include Callbacks
       include Dsl::ArgumentsDsl
       include Dsl::OutputsDsl
