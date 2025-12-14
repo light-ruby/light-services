@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.1 (2025-12-13)
+
+### Added
+
+- Better IDE support for callbacks DSL
+
 ## 3.1.0 (2025-12-13)
 
 ### Breaking changes
