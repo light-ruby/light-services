@@ -205,11 +205,11 @@ Light Services defines several exception classes for different error scenarios:
 | `Light::Services::ReservedNameError` | Raised when using a reserved name for arguments, outputs, or steps |
 | `Light::Services::InvalidNameError` | Raised when using an invalid name format |
 | `Light::Services::NoStepsError` | Raised when a service has no steps defined and no `run` method |
-| `Light::Services::MissingTypeError` | Raised when defining an argument or output without a `type` option when `require_type` is enabled |
+| `Light::Services::MissingTypeError` | Raised when defining an argument or output without a `type` option when `require_arg_type` or `require_output_type` is enabled |
 
 ### MissingTypeError
 
-This exception is raised when you define an argument or output without a `type` option. Since `require_type` is enabled by default, all arguments and outputs must have a type.
+This exception is raised when you define an argument or output without a `type` option. Since `require_arg_type` and `require_output_type` are enabled by default, all arguments and outputs must have a type.
 
 ```ruby
 class MyService < ApplicationService
@@ -230,9 +230,10 @@ If you need to disable type enforcement for legacy services, you can use the `co
 
 ```ruby
 class LegacyService < ApplicationService
-  config require_type: false
+  config require_arg_type: false, require_output_type: false
   
-  arg :data              # Allowed when require_type is disabled
+  arg :data              # Allowed when require_arg_type is disabled
+  output :result         # Allowed when require_output_type is disabled
 end
 ```
 

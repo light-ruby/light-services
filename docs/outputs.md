@@ -89,13 +89,13 @@ class MyService < ApplicationService
 end
 ```
 
-To disable type enforcement for a specific service:
+To disable type enforcement for outputs in a specific service:
 
 ```ruby
 class LegacyService < ApplicationService
-  config require_type: false
+  config require_output_type: false
   
-  output :data             # Allowed when require_type is disabled
+  output :data             # Allowed when require_output_type is disabled
 end
 ```
 

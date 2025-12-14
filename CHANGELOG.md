@@ -10,7 +10,7 @@
 
 ### Breaking changes
 
-- Enforce arguments and output types by default. Add `config.require_type = false` to your config to disable this behavior.
+- Enforce arguments and output types by default. Use `config.require_arg_type = false` and `config.require_output_type = false` to disable this behavior. The convenience setter `config.require_type = false` sets both options at once for backward compatibility.
 
 ### Added
 

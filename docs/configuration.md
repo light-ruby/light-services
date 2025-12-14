@@ -8,8 +8,9 @@ Configure Light Services globally using an initializer. For Rails applications, 
 
 ```ruby
 Light::Services.configure do |config|
-# Type enforcement
-  config.require_type = true            # Require type option for all arguments and outputs
+  # Type enforcement
+  config.require_arg_type = true        # Require type option for all arguments
+  config.require_output_type = true     # Require type option for all outputs
 
   # Transaction settings
   config.use_transactions = true        # Wrap each service in a database transaction
@@ -32,7 +33,8 @@ end
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `require_type` | `true` | Raises `Light::Services::MissingTypeError` when defining arguments or outputs without a `type` option |
+| `require_arg_type` | `true` | Raises `Light::Services::MissingTypeError` when defining arguments without a `type` option |
+| `require_output_type` | `true` | Raises `Light::Services::MissingTypeError` when defining outputs without a `type` option |
 | `use_transactions` | `true` | Wraps service execution in `ActiveRecord::Base.transaction` |
 | `load_errors` | `true` | Propagates errors to parent service when using `.with(self)` |
 | `break_on_error` | `true` | Stops executing remaining steps when an error is added |
@@ -159,7 +161,8 @@ To disable type enforcement globally (not recommended):
 
 ```ruby
 Light::Services.configure do |config|
-  config.require_type = false
+  config.require_arg_type = false     # Disable for arguments
+  config.require_output_type = false  # Disable for outputs
 end
 ```
 
@@ -167,10 +170,22 @@ Or disable for specific services:
 
 ```ruby
 class LegacyService < ApplicationService
-  config require_type: false
+  config require_arg_type: false, require_output_type: false
   
-  arg :data              # Allowed when require_type is disabled
-  output :result         # Allowed when require_type is disabled
+  arg :data              # Allowed when require_arg_type is disabled
+  output :result         # Allowed when require_output_type is disabled
+end
+```
+
+You can also control them independently:
+
+```ruby
+class StrictInputService < ApplicationService
+  # Require types for arguments but not outputs
+  config require_arg_type: true, require_output_type: false
+  
+  arg :data, type: Hash  # Type required
+  output :result         # Type not required
 end
 ```
 

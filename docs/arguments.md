@@ -66,13 +66,13 @@ class MyService < ApplicationService
 end
 ```
 
-To disable type enforcement for a specific service:
+To disable type enforcement for arguments in a specific service:
 
 ```ruby
 class LegacyService < ApplicationService
-  config require_type: false
+  config require_arg_type: false
   
-  arg :name              # Allowed when require_type is disabled
+  arg :name              # Allowed when require_arg_type is disabled
 end
 ```
 

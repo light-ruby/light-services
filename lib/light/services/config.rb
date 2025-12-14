@@ -10,7 +10,8 @@ module Light
       #
       # @example
       #   Light::Services.configure do |config|
-      #     config.require_type = true
+      #     config.require_arg_type = true
+      #     config.require_output_type = true
       #     config.use_transactions = false
       #   end
       def configure
@@ -28,13 +29,16 @@ module Light
     # Configuration class for Light::Services global settings.
     #
     # @example Accessing configuration
-    #   Light::Services.config.require_type # => true
+    #   Light::Services.config.require_arg_type # => true
     #
     # @example Modifying configuration
     #   Light::Services.config.use_transactions = false
     class Config
-      # @return [Boolean] whether arguments and outputs must have a type specified
-      attr_reader :require_type
+      # @return [Boolean] whether arguments must have a type specified
+      attr_reader :require_arg_type
+
+      # @return [Boolean] whether outputs must have a type specified
+      attr_reader :require_output_type
 
       # @return [Boolean] whether to wrap service execution in a database transaction
       attr_reader :use_transactions
@@ -69,7 +73,8 @@ module Light
       attr_reader :ruby_lsp_type_mappings
 
       DEFAULTS = {
-        require_type: true,
+        require_arg_type: true,
+        require_output_type: true,
         use_transactions: true,
 
         load_errors: true,
@@ -90,6 +95,16 @@ module Light
           instance_variable_set(:"@#{name}", value)
           @to_h = nil # Invalidate memoized hash
         end
+      end
+
+      # Convenience setter for backward compatibility.
+      # Sets both require_arg_type and require_output_type.
+      #
+      # @param value [Boolean] whether to require types for arguments and outputs
+      # @return [void]
+      def require_type=(value)
+        self.require_arg_type = value
+        self.require_output_type = value
       end
 
       # Initialize configuration with default values.

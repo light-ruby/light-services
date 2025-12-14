@@ -135,26 +135,37 @@ module Light
         # @param opts [Hash] the options hash to check for type
         def self.validate_type_required!(name, field_type, service_class, opts)
           return if opts.key?(:type)
-          return unless require_type_enabled?(service_class)
+          return unless require_type_enabled_for?(field_type, service_class)
 
+          config_name = field_type == :argument ? "require_arg_type" : "require_output_type"
           raise Light::Services::MissingTypeError,
                 "#{field_type.to_s.capitalize} `#{name}` in #{service_class} must have a type specified " \
-                "(require_type is enabled)"
+                "(#{config_name} is enabled)"
         end
 
-        # Check if require_type is enabled for the service class
-        def self.require_type_enabled?(service_class)
+        # Check if require_type is enabled for the given field type and service class
+        #
+        # @param field_type [Symbol] the type of field (:argument, :output)
+        # @param service_class [Class] the service class to check
+        # @return [Boolean] whether type is required for the field type
+        def self.require_type_enabled_for?(field_type, service_class)
+          config_key = field_type == :argument ? :require_arg_type : :require_output_type
+
           # Check class-level config in the inheritance chain, then fall back to global config
           klass = service_class
           while klass.respond_to?(:class_config)
             class_config = klass.class_config
 
+            # Check specific config first (require_arg_type or require_output_type)
+            return class_config[config_key] if class_config&.key?(config_key)
+
+            # Check convenience config (require_type) for backward compatibility
             return class_config[:require_type] if class_config&.key?(:require_type)
 
             klass = klass.superclass
           end
 
-          Light::Services.config.require_type
+          Light::Services.config.public_send(config_key)
         end
       end
     end
