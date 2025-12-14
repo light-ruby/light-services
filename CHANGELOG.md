@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.1.2 (2025-12-13)
+
+### Added
+
+- Add `fail!` and `fail_immediately!` helpers
+
+### Changed
+
+- Split `config.require_type` into `config.require_arg_type` and `config.require_output_type`
+
 ## 3.1.1 (2025-12-13)
 
 ### Added
