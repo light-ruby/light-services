@@ -44,6 +44,10 @@ module Light
             # Gracefully handle stop_immediately! inside transaction to prevent rollback
             @stopped = true
           end
+        rescue Light::Services::FailExecution
+          # FailExecution bubbles out of transaction (causing rollback) but is caught here
+          # @stopped is already set by fail_immediately!
+          nil
         end
 
         # Run steps with parameter `always` if they weren't launched because of errors/warnings

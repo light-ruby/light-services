@@ -24,6 +24,10 @@ module Light
     # Not an error - used to halt execution gracefully.
     class StopExecution < StandardError; end
 
+    # Control flow exception for fail_immediately!
+    # Unlike StopExecution, this exception causes transaction rollback.
+    class FailExecution < StandardError; end
+
     # @deprecated Use {Error} instead
     NoStepError = Error
 

@@ -292,6 +292,58 @@ end
 **Database Transactions:** Calling `stop_immediately!` does NOT rollback database transactions. All database changes made before `stop_immediately!` was called will be committed.
 {% endhint %}
 
+## Immediate Failure with `fail_immediately!`
+
+Use `fail_immediately!` when you need to halt execution immediately AND rollback any database transactions. Unlike `stop_immediately!`, this method adds an error and causes transaction rollback.
+
+```ruby
+class Payment::Process < ApplicationService
+  arg :amount, type: Integer
+  arg :card_token, type: String
+
+  step :validate_card
+  step :charge_card
+  step :send_receipt
+
+  output :transaction_id, type: String
+
+  private
+
+  def validate_card
+    unless valid_card?(card_token)
+      fail_immediately!("Card validation failed")
+    end
+    
+    # This code won't run if card is invalid
+    log_validation_success
+  end
+
+  def charge_card
+    # This step won't run if fail_immediately! was called
+    self.transaction_id = PaymentGateway.charge(amount, card_token)
+  end
+end
+```
+
+{% hint style="warning" %}
+`fail_immediately!` raises an internal exception to halt execution. Steps marked with `always: true` will NOT run when `fail_immediately!` is called.
+{% endhint %}
+
+{% hint style="danger" %}
+**Database Transactions:** Calling `fail_immediately!` DOES rollback database transactions. All database changes made before `fail_immediately!` was called will be rolled back.
+{% endhint %}
+
+### Comparison Table
+
+| Method | Adds Error | Stops Execution | Transaction Rollback |
+|--------|------------|-----------------|---------------------|
+| `stop!` | No | After current step | No |
+| `stop_immediately!` | No | Immediately | No |
+| `fail!(msg)` | Yes (:base) | After current step* | No |
+| `fail_immediately!(msg)` | Yes (:base) | Immediately | Yes |
+
+*By default, adding an error stops subsequent steps from running due to `break_on_add` configuration.
+
 ## Removing Inherited Steps
 
 When inheriting from a parent service, you can remove steps using `remove_step`:

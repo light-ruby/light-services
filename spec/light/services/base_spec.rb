@@ -176,6 +176,150 @@ RSpec.describe Light::Services::Base do
     end
   end
 
+  describe "#fail!" do
+    let(:service_class) do
+      Class.new(Light::Services::Base) do
+        config use_transactions: false
+
+        output :result, type: String, default: ""
+
+        step :step_one
+        step :step_two
+
+        private
+
+        def step_one
+          fail!("Something went wrong")
+          self.result += "a"
+        end
+
+        def step_two
+          self.result += "b"
+        end
+      end
+    end
+
+    it "adds error to :base key" do
+      service = service_class.run
+      expect(service.errors[:base]).to include(have_attributes(text: "Something went wrong"))
+    end
+
+    it "marks service as failed" do
+      service = service_class.run
+      expect(service.failed?).to be(true)
+    end
+
+    it "continues executing code within the same step" do
+      service = service_class.run
+      expect(service.result).to include("a")
+    end
+
+    it "stops subsequent steps by default (break_on_add)" do
+      service = service_class.run
+      expect(service.result).not_to include("b")
+    end
+  end
+
+  describe "#fail_immediately!" do
+    let(:service_class) do
+      Class.new(Light::Services::Base) do
+        output :word, type: String, default: ""
+        output :after_fail_ran, type: [TrueClass, FalseClass], default: false
+
+        step :letter_a
+        step :letter_b
+        step :letter_c
+        step :cleanup, always: true
+
+        private
+
+        def letter_a
+          self.word += "a"
+        end
+
+        def letter_b
+          self.word += "b"
+          fail_immediately!("Critical error")
+          self.word += "!" # This should NOT run
+        end
+
+        def letter_c
+          self.word += "c" # This should NOT run
+        end
+
+        def cleanup
+          self.after_fail_ran = true
+        end
+      end
+    end
+
+    it "adds error to :base key" do
+      service = service_class.run
+      expect(service.errors[:base]).to include(have_attributes(text: "Critical error"))
+    end
+
+    it "marks service as failed" do
+      service = service_class.run
+      expect(service.failed?).to be(true)
+    end
+
+    it "stops execution immediately within the current step" do
+      service = service_class.run
+      expect(service.word).to eq("ab")
+    end
+
+    it "sets stopped? to true" do
+      service = service_class.run
+      expect(service.stopped?).to be(true)
+    end
+
+    it "skips remaining steps" do
+      service = service_class.run
+      expect(service.word).not_to include("c")
+    end
+
+    it "does not run always steps when fail_immediately! is called" do
+      service = service_class.run
+      expect(service.after_fail_ran).to be(false)
+    end
+
+    context "with database transaction" do
+      let(:service_with_db) do
+        Class.new(Light::Services::Base) do
+          config use_transactions: true
+
+          arg :name, type: String
+
+          step :create_user
+          step :fail_step
+          step :should_not_run
+
+          private
+
+          def create_user
+            User.create!(name: name)
+          end
+
+          def fail_step
+            fail_immediately!("Critical failure")
+          end
+
+          def should_not_run
+            raise "This should never execute"
+          end
+        end
+      end
+
+      it "rolls back database changes" do
+        expect do
+          service_with_db.run(name: "fail_immediately_test_user")
+        end.not_to change(User, :count)
+
+        expect(User.exists?(name: "fail_immediately_test_user")).to be(false)
+      end
+    end
+  end
+
   describe "exception handling" do
     context "when a step raises an exception" do
       it "still runs steps with always: true" do

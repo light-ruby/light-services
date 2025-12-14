@@ -136,6 +136,25 @@ module Light
         raise Light::Services::StopExecution
       end
 
+      # Add an error to the :base key.
+      #
+      # @param message [String] the error message
+      # @return [void]
+      def fail!(message)
+        errors.add(:base, message)
+      end
+
+      # Add an error and stop execution immediately, causing transaction rollback.
+      #
+      # @param message [String] the error message
+      # @raise [FailExecution] always raises to halt execution and rollback
+      # @return [void]
+      def fail_immediately!(message)
+        @stopped = true
+        errors.add(:base, message, rollback: false)
+        raise Light::Services::FailExecution
+      end
+
       # Execute the service steps.
       #
       # @return [void]

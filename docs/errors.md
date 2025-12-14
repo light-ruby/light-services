@@ -44,6 +44,24 @@ class ParsePage < ApplicationService
 end
 ```
 
+## Quick Error with `fail!`
+
+The `fail!` method is a shortcut for adding an error to the `:base` key:
+
+```ruby
+class ParsePage < ApplicationService
+  def validate
+    fail!("URL is required") if url.blank?
+  end
+end
+```
+
+This is equivalent to:
+
+```ruby
+errors.add(:base, "URL is required")
+```
+
 ## Reading Errors
 
 To check if a service has errors, you can use the `#failed?` method. You can also use methods like `errors.any?` to inspect errors.
@@ -206,6 +224,8 @@ Light Services defines several exception classes for different error scenarios:
 | `Light::Services::InvalidNameError` | Raised when using an invalid name format |
 | `Light::Services::NoStepsError` | Raised when a service has no steps defined and no `run` method |
 | `Light::Services::MissingTypeError` | Raised when defining an argument or output without a `type` option when `require_arg_type` or `require_output_type` is enabled |
+| `Light::Services::StopExecution` | Control flow exception raised by `stop_immediately!` to halt execution without rollback |
+| `Light::Services::FailExecution` | Control flow exception raised by `fail_immediately!` to halt execution and rollback transactions |
 
 ### MissingTypeError
 
