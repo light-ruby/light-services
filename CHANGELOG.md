@@ -6,6 +6,7 @@
 
 - Add Cursor rules
 - Add `successful?` as an alias for `success?`
+- Add RuboCop cop `PreferFailMethod` to detect `errors.add(:base, "message")` and suggest using `fail!("message")` instead
 
 ### Breaking changes
 

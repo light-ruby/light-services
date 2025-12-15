@@ -232,6 +232,47 @@ LightServices/DeprecatedMethods:
   ServicePattern: 'Service$'  # default: matches classes ending with "Service"
 ```
 
+### LightServices/PreferFailMethod
+
+Detects `errors.add(:base, "message")` calls and suggests using the `fail!("message")` helper instead. Includes autocorrection.
+
+```ruby
+# bad
+class MyService < ApplicationService
+  step :process
+
+  private
+
+  def process
+    errors.add(:base, "user is required")
+    errors.add(:base, "invalid input", rollback: false)
+  end
+end
+
+# good
+class MyService < ApplicationService
+  step :process
+
+  private
+
+  def process
+    fail!("user is required")
+    fail!("invalid input", rollback: false)
+  end
+end
+```
+
+The cop only detects `errors.add(:base, ...)` calls. It does not flag `errors.add(:field_name, ...)` calls for specific fields, as those should not use `fail!`.
+
+**Configuration:** Customize the base service classes to check:
+
+```yaml
+LightServices/PreferFailMethod:
+  BaseServiceClasses:
+    - ApplicationService
+    - BaseCreator
+```
+
 ## Configuration
 
 Full configuration example:
@@ -267,6 +308,11 @@ LightServices/NoDirectInstantiation:
 LightServices/DeprecatedMethods:
   Enabled: true
   ServicePattern: 'Service$'
+
+LightServices/PreferFailMethod:
+  Enabled: true
+  BaseServiceClasses:
+    - ApplicationService
 ```
 
 To disable a cop for specific files:
