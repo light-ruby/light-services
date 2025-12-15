@@ -18,6 +18,7 @@ Light Services is a simple yet powerful way to organize business logic in Ruby a
 - 🧪 **RSpec Matchers**: Built-in RSpec matchers for expressive service tests
 - 🌐 **Framework Agnostic**: Compatible with Rails, Hanami, or any Ruby framework
 - 🧩 **Modularity**: Isolate and test your services with ease
+- 🔷 **Sorbet & Tapioca**: Full support for Sorbet type checking and Tapioca DSL generation
 - ✅ **100% Test Coverage**: Thoroughly tested and reliable
 - ⚔️ **Battle-Tested**: In production use since 2017
 
