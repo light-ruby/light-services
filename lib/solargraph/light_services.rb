@@ -8,3 +8,4 @@ module Solargraph
     Solargraph::Convention.register(Convention)
   end
 end
+

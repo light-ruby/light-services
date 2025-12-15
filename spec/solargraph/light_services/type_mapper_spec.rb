@@ -206,3 +206,4 @@ RSpec.describe Solargraph::LightServices::TypeMapper do
     end
   end
 end
+

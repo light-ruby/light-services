@@ -340,3 +340,4 @@ RSpec.describe RubyLsp::LightServices::Definition do
     end
   end
 end
+

@@ -130,3 +130,4 @@ module RubyLsp
     end
   end
 end
+

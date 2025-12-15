@@ -307,3 +307,4 @@ module Solargraph
     end
   end
 end
+
