@@ -46,7 +46,6 @@ module Light
           end
         rescue Light::Services::FailExecution
           # FailExecution bubbles out of transaction (causing rollback) but is caught here
-          # @stopped is already set by fail_immediately!
           nil
         end
 

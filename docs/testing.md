@@ -30,7 +30,7 @@ RSpec.describe GreetService do
     it "returns a greeting message" do
       service = described_class.run(name: "John")
 
-      expect(service).to be_success
+      expect(service).to be_successful
       expect(service.message).to eq("Hello, John!")
     end
   end
@@ -48,7 +48,7 @@ RSpec.describe User::Create do
       it "creates a user" do
         service = described_class.run(attributes: attributes)
 
-        expect(service).to be_success
+        expect(service).to be_successful
         expect(service.user).to be_persisted
         expect(service.user.email).to eq("test@example.com")
       end
@@ -86,7 +86,7 @@ RSpec.describe Comment::Create do
           text: "Great post!"
         )
 
-        expect(service).to be_success
+        expect(service).to be_successful
         expect(service.comment.user).to eq(current_user)
       end
     end
@@ -122,7 +122,7 @@ RSpec.describe Order::Create do
       items: [{ product_id: product.id, quantity: 2 }]
     )
 
-    expect(service).to be_success
+    expect(service).to be_successful
     expect(service.order.order_items.count).to eq(1)
     expect(service.order.total).to eq(200)
   end
@@ -252,7 +252,7 @@ RSpec.describe DataImport do
   it "completes with warnings for skipped records" do
     service = described_class.run(data: mixed_valid_invalid_data)
 
-    expect(service).to be_success # Warnings don't fail the service
+    expect(service).to be_successful # Warnings don't fail the service
     expect(service.warnings?).to be true
     expect(service.warnings[:skipped]).to include("Row 3: invalid format")
   end
@@ -273,7 +273,7 @@ RSpec.describe Payment::Charge do
   it "processes payment successfully" do
     service = described_class.run(amount: 1000, card_token: "tok_visa")
 
-    expect(service).to be_success
+    expect(service).to be_successful
     expect(service.payment_intent_id).to eq("pi_123")
   end
 
@@ -312,7 +312,7 @@ RSpec.describe MyService do
 
     it "accepts optional arguments as nil" do
       service = described_class.run(name: "John", nickname: nil)
-      expect(service).to be_success
+      expect(service).to be_successful
     end
   end
 end
@@ -353,7 +353,7 @@ Create a helper module for common service testing patterns:
 # spec/support/service_helpers.rb
 module ServiceHelpers
   def expect_service_success(service)
-    expect(service).to be_success, -> { "Expected success but got errors: #{service.errors.to_h}" }
+    expect(service).to be_successful, -> { "Expected success but got errors: #{service.errors.to_h}" }
   end
 
   def expect_service_failure(service, key = nil)

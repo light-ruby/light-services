@@ -16,7 +16,7 @@ RSpec.describe Product::Create do
       }
     end
 
-    it { expect(service).to be_success }
+    it { expect(service).to be_successful }
     it { expect(service.product).to be_a(Product) }
     it { expect(service.product.name).to eq(name) }
     it { expect(service.product.price).to eq(price) }

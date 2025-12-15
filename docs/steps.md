@@ -325,8 +325,8 @@ class Payment::Process < ApplicationService
 end
 ```
 
-{% hint style="warning" %}
-`fail_immediately!` raises an internal exception to halt execution. Steps marked with `always: true` will NOT run when `fail_immediately!` is called.
+{% hint style="info" %}
+`fail_immediately!` raises an internal exception to halt execution. Steps marked with `always: true` will still run when `fail_immediately!` is called, allowing for cleanup operations.
 {% endhint %}
 
 {% hint style="danger" %}

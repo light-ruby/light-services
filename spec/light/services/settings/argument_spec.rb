@@ -141,7 +141,7 @@ RSpec.describe Light::Services::Settings::Argument do
       product = Product.create!(name: "Test", price: 100)
       service = Product::AddToCart.run(current_user: user, product: product)
       # The order is created via Order::Create.with(self) which receives context args
-      expect(service).to be_success
+      expect(service).to be_successful
       expect(service.order).to be_persisted
     end
   end

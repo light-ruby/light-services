@@ -34,7 +34,7 @@ RSpec.describe <%= class_name %>, type: :service do
     let(:args) { {} }
 
     it "succeeds" do
-      expect(service).to be_success
+      expect(service).to be_successful
     end
   end
 end

@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Add Cursor rules
+- Add `successful?` as an alias for `success?`
+
+### Breaking changes
+
+- Service runs steps with `always: true` after `fail_immediately!` was called
+
 ## 3.1.2 (2025-12-13)
 
 ### Added

@@ -7,7 +7,7 @@ RSpec.describe Product::AddToCart do
     let(:current_user) { User.create!(name: "Andrew Emelianenko") }
     let(:product) { Product.create!(name: "Tesla Model X", price: 100_000) }
 
-    it { expect(service).to be_success }
+    it { expect(service).to be_successful }
     it { expect(service.order).to be_a(Order) }
     it { expect(service.order?).to be(true) }
     it { expect(service.order.products).to include(product) }
@@ -21,7 +21,7 @@ RSpec.describe Product::AddToCart do
     let(:current_user) { User.create!(name: "Andrew Emelianenko") }
     let(:product) { Product.create!(name: "Tesla Model X", price: 100_000) }
 
-    it { expect(service).to be_success }
+    it { expect(service).to be_successful }
     it { expect(service.order).to be_a(Order) }
     it { expect(service.order.products).to include(product) }
     it { expect(service.order.total_price).to be(200_000) }

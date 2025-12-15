@@ -268,9 +268,9 @@ RSpec.describe Light::Services::Base do
       expect(service.word).to eq("ab")
     end
 
-    it "sets stopped? to true" do
+    it "sets stopped? to false" do
       service = service_class.run
-      expect(service.stopped?).to be(true)
+      expect(service.stopped?).to be(false)
     end
 
     it "skips remaining steps" do
@@ -278,9 +278,9 @@ RSpec.describe Light::Services::Base do
       expect(service.word).not_to include("c")
     end
 
-    it "does not run always steps when fail_immediately! is called" do
+    it "runs always steps when fail_immediately! is called" do
       service = service_class.run
-      expect(service.after_fail_ran).to be(false)
+      expect(service.after_fail_ran).to be(true)
     end
 
     context "with database transaction" do
@@ -346,7 +346,7 @@ RSpec.describe Light::Services::Base do
     context "when service succeeds" do
       it "returns the service" do
         service = WithConditions.run!
-        expect(service).to be_success
+        expect(service).to be_successful
       end
     end
 
@@ -371,7 +371,7 @@ RSpec.describe Light::Services::Base do
         product = Product.create!(name: "Test Product", price: 100)
         service = Product::AddToCart.run(current_user: user, product: product)
         # current_user is passed to Order::Create via .with(self) which passes context args
-        expect(service).to be_success
+        expect(service).to be_successful
         expect(service.order).to be_persisted
       end
     end

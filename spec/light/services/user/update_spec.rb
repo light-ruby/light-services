@@ -16,7 +16,7 @@ RSpec.describe User::Update do
       }
     end
 
-    it { expect(service).to be_success }
+    it { expect(service).to be_successful }
     it { expect(service.user).to be_a(User) }
     it { expect(service.user.name).to eq(name) }
   end

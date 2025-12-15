@@ -9,19 +9,19 @@ RSpec.describe WithRedefinitionBase do # rubocop:disable RSpec/SpecFilePathForma
 
     it "parent accepts String" do
       service = described_class.run(name: "string_name")
-      expect(service).to be_success
+      expect(service).to be_successful
       expect(service.result).to eq("Base: string_name")
     end
 
     it "child accepts String when redefined to multiple types" do
       service = WithRedefinedArgTypes.run(name: "string_name", options: {})
-      expect(service).to be_success
+      expect(service).to be_successful
       expect(service.result).to eq("Child: string_name")
     end
 
     it "child accepts Symbol when redefined to multiple types" do
       service = WithRedefinedArgTypes.run(name: :symbol_name, options: {})
-      expect(service).to be_success
+      expect(service).to be_successful
       expect(service.result).to eq("Child: symbol_name")
     end
 
@@ -34,7 +34,7 @@ RSpec.describe WithRedefinitionBase do # rubocop:disable RSpec/SpecFilePathForma
   describe "argument optional redefinition" do
     it "parent allows nil for optional argument" do
       service = described_class.run(name: "test")
-      expect(service).to be_success
+      expect(service).to be_successful
       expect(service.arguments[:options]).to be_nil
     end
 
@@ -45,7 +45,7 @@ RSpec.describe WithRedefinitionBase do # rubocop:disable RSpec/SpecFilePathForma
 
     it "child works when required argument provided" do
       service = WithRedefinedArgTypes.run(name: "test", options: { key: "value" })
-      expect(service).to be_success
+      expect(service).to be_successful
       expect(service.data[:options]).to eq({ key: "value" })
     end
   end
@@ -81,7 +81,7 @@ RSpec.describe WithRedefinitionBase do # rubocop:disable RSpec/SpecFilePathForma
 
     it "child can return Symbol when redefined to multiple types" do
       service = WithRedefinedOutputTypes.run(name: "test")
-      expect(service).to be_success
+      expect(service).to be_successful
       expect(service.result).to eq(:child_result)
       expect(service.result).to be_a(Symbol)
     end
@@ -95,7 +95,7 @@ RSpec.describe WithRedefinitionBase do # rubocop:disable RSpec/SpecFilePathForma
 
     it "child allows nil when redefined as optional" do
       service = WithRedefinedOutputTypes.run(name: "test")
-      expect(service).to be_success
+      expect(service).to be_successful
       expect(service.data).to be_nil
     end
 
@@ -140,7 +140,7 @@ RSpec.describe WithRedefinitionBase do # rubocop:disable RSpec/SpecFilePathForma
 
     it "grandchild can add new arguments" do
       service = WithRedefinedGrandchild.run(name: "test", options: {}, extra: "extra_value")
-      expect(service).to be_success
+      expect(service).to be_successful
       expect(service.data[:extra]).to eq("extra_value")
     end
 

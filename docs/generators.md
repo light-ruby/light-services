@@ -216,7 +216,7 @@ RSpec.describe User::Create do
   describe ".run" do
     it "creates a user" do
       service = described_class.run(...)
-      expect(service).to be_success
+      expect(service).to be_successful
     end
   end
 end

@@ -6,7 +6,7 @@ RSpec.describe "Dry Types Support" do # rubocop:disable RSpec/DescribeClass
       context "with valid strict string" do
         subject(:service) { described_class.run(name: "John", age: 25) }
 
-        it { is_expected.to be_success }
+        it { is_expected.to be_successful }
         it { expect(service.greeting).to eq("Hello, John!") }
         it { expect(service.user_age).to eq(25) }
       end
@@ -14,7 +14,7 @@ RSpec.describe "Dry Types Support" do # rubocop:disable RSpec/DescribeClass
       context "with coercible integer (string to integer)" do
         subject(:service) { described_class.run(name: "Jane", age: "30") }
 
-        it { is_expected.to be_success }
+        it { is_expected.to be_successful }
         it { expect(service.user_age).to eq(30) }
       end
 
@@ -35,7 +35,7 @@ RSpec.describe "Dry Types Support" do # rubocop:disable RSpec/DescribeClass
       context "with enum validation" do
         it "accepts valid enum value" do
           service = described_class.run(name: "John", age: 25, status: "active")
-          expect(service).to be_success
+          expect(service).to be_successful
           expect(service.full_data[:status]).to eq("active")
         end
 
@@ -53,7 +53,7 @@ RSpec.describe "Dry Types Support" do # rubocop:disable RSpec/DescribeClass
       context "with constrained string (email format)" do
         it "accepts valid email" do
           service = described_class.run(name: "John", age: 25, email: "john@example.com")
-          expect(service).to be_success
+          expect(service).to be_successful
           expect(service.full_data[:email]).to eq("john@example.com")
         end
 
@@ -66,7 +66,7 @@ RSpec.describe "Dry Types Support" do # rubocop:disable RSpec/DescribeClass
       context "with array of strings" do
         it "accepts valid array of strings" do
           service = described_class.run(name: "John", age: 25, tags: ["ruby", "rails"])
-          expect(service).to be_success
+          expect(service).to be_successful
           expect(service.full_data[:tags]).to eq(["ruby", "rails"])
         end
 
@@ -81,7 +81,7 @@ RSpec.describe "Dry Types Support" do # rubocop:disable RSpec/DescribeClass
       context "with valid outputs" do
         subject(:service) { described_class.run(name: "John", age: 25) }
 
-        it { is_expected.to be_success }
+        it { is_expected.to be_successful }
         it { expect(service.greeting).to be_a(String) }
         it { expect(service.user_age).to be_a(Integer) }
         it { expect(service.full_data).to be_a(Hash) }
@@ -92,7 +92,7 @@ RSpec.describe "Dry Types Support" do # rubocop:disable RSpec/DescribeClass
       context "when optional field is nil" do
         subject(:service) { described_class.run(name: "John", age: 25) }
 
-        it { is_expected.to be_success }
+        it { is_expected.to be_successful }
         it { expect(service.full_data[:email]).to be_nil }
         it { expect(service.full_data[:tags]).to eq([]) }
       end

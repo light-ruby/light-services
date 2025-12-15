@@ -252,7 +252,7 @@ RSpec.describe Post::Update do
         attributes: { title: "New Title" }
       )
 
-      expect(service).to be_success
+      expect(service).to be_successful
       expect(post.reload.title).to eq("New Title")
     end
   end

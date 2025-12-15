@@ -11,7 +11,7 @@ RSpec.describe Light::Services::Settings::Output do
       it "validates nil for optional outputs" do
         service = WithTypedOutputs.run
         expect(service.user).to be_nil
-        expect(service).to be_success
+        expect(service).to be_successful
       end
     end
 
@@ -71,7 +71,7 @@ RSpec.describe Light::Services::Settings::Output do
       service = WithTypedOutputs.run
       expect(service.user).to be_nil
       expect(service.data).to be_nil
-      expect(service).to be_success
+      expect(service).to be_successful
     end
 
     it "validates type when value is present" do

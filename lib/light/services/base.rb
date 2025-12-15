@@ -89,6 +89,7 @@ module Light
       def success?
         !errors?
       end
+      alias successful? success?
 
       # Check if the service completed with errors.
       #
@@ -145,12 +146,12 @@ module Light
       end
 
       # Add an error and stop execution immediately, causing transaction rollback.
+      # Steps marked with `always: true` will still run after this method is called.
       #
       # @param message [String] the error message
       # @raise [FailExecution] always raises to halt execution and rollback
       # @return [void]
       def fail_immediately!(message)
-        @stopped = true
         errors.add(:base, message, rollback: false)
         raise Light::Services::FailExecution
       end
