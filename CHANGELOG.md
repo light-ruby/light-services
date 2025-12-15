@@ -1,6 +1,12 @@
 # Changelog
 
-## 3.2.0 (2025-12-14)
+## 3.2.1 (2025-12-15)
+
+### Added
+
+- Add RuboCop cop `ReservedName`
+
+## 3.2.0 (2025-12-15)
 
 ### Added
 
@@ -12,7 +18,7 @@
 
 - Service runs steps with `always: true` after `fail_immediately!` was called
 
-## 3.1.2 (2025-12-13)
+## 3.1.2 (2025-12-14)
 
 ### Added
 
@@ -22,7 +28,7 @@
 
 - Split `config.require_type` into `config.require_arg_type` and `config.require_output_type`
 
-## 3.1.1 (2025-12-13)
+## 3.1.1 (2025-12-14)
 
 ### Added
 
