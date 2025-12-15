@@ -72,6 +72,11 @@ module Light
       #   @example { "Types::UUID" => "String", "CustomTypes::Money" => "BigDecimal" }
       attr_reader :ruby_lsp_type_mappings
 
+      # @return [Hash{String => String}] custom type mappings for Solargraph plugin.
+      #   Maps dry-types or custom types to Ruby types for hover/completion.
+      #   @example { "Types::UUID" => "String", "CustomTypes::Money" => "BigDecimal" }
+      attr_reader :solargraph_type_mappings
+
       DEFAULTS = {
         require_arg_type: true,
         require_output_type: true,
@@ -88,6 +93,7 @@ module Light
         rollback_on_warning: false,
 
         ruby_lsp_type_mappings: {}.freeze,
+        solargraph_type_mappings: {}.freeze,
       }.freeze
 
       DEFAULTS.each_key do |name|

@@ -19,6 +19,7 @@
 * [Rails Generators](generators.md)
 * [RuboCop Integration](rubocop.md)
 * [Ruby LSP Integration](ruby-lsp.md)
+* [Solargraph Integration](solargraph.md)
 
 ## Examples
 
