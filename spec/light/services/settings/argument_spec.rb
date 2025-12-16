@@ -32,7 +32,7 @@ RSpec.describe Light::Services::Settings::Argument do
 
       it "rejects non-matching type" do
         expect { WithMultipleTypes.run(value: "test", data: "not a hash") }
-          .to raise_error(Light::Services::ArgTypeError, /must be Hash/)
+          .to raise_error(Light::Services::ArgTypeError, /(must be|expected).*(Hash|T::Hash)/)
       end
     end
 
@@ -49,7 +49,7 @@ RSpec.describe Light::Services::Settings::Argument do
 
       it "rejects other types" do
         expect { WithMultipleTypes.run(value: 3.14) }
-          .to raise_error(Light::Services::ArgTypeError, /must be String or Integer/)
+          .to raise_error(Light::Services::ArgTypeError, /(must be|expected) (String or Integer|T\.any)/)
       end
 
       it "rejects nil when not optional" do
@@ -69,7 +69,7 @@ RSpec.describe Light::Services::Settings::Argument do
       it "rejects instances of other classes" do
         product = Product.create!(name: "Test", price: 100)
         expect { Product::AddToCart.run(current_user: "not a user", product: product) }
-          .to raise_error(Light::Services::ArgTypeError, /must be User/)
+          .to raise_error(Light::Services::ArgTypeError, /(must be|expected) User/)
       end
     end
 

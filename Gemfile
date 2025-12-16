@@ -7,6 +7,7 @@ gemspec
 group :test do
   # Optional type system support
   gem "dry-types", "~> 1.0"
+  gem "sorbet-runtime"
 
   gem "activerecord", "< 8"
   gem "connection_pool", "< 3"

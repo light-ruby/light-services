@@ -46,7 +46,7 @@ module Light
         end
 
         # Validate a value against the field's type definition.
-        # Supports both Ruby class types and dry-types.
+        # Supports Ruby class types, dry-types, and Sorbet runtime types.
         #
         # @param value [Object] the value to validate
         # @return [Object] the value (possibly coerced by dry-types)
@@ -56,6 +56,8 @@ module Light
 
           if dry_type?(@type)
             coerce_and_validate_dry_type!(value)
+          elsif sorbet_type?(@type) || (sorbet_available? && plain_class_type?(@type))
+            validate_sorbet_type!(value)
           else
             validate_ruby_type!(value)
             value
@@ -64,11 +66,28 @@ module Light
 
         private
 
+        # Check if sorbet-runtime is available
+        def sorbet_available?
+          defined?(T::Types::Base)
+        end
+
+        # Check if the type is a plain Ruby class (not dry-types or Sorbet type)
+        def plain_class_type?(type)
+          type.is_a?(Class) || type.is_a?(Module)
+        end
+
         # Check if the type is a dry-types type
         def dry_type?(type)
           return false unless defined?(Dry::Types::Type)
 
           type.is_a?(Dry::Types::Type)
+        end
+
+        # Check if the type is a Sorbet runtime type
+        def sorbet_type?(type)
+          return false unless defined?(T::Types::Base)
+
+          type.is_a?(T::Types::Base)
         end
 
         # Validate and coerce value against dry-types
@@ -78,6 +97,20 @@ module Light
         rescue Dry::Types::ConstraintError, Dry::Types::CoercionError => e
           raise Light::Services::ArgTypeError,
                 "#{@service_class} #{@field_type} `#{@name}` #{e.message}"
+        end
+
+        # Validate value against Sorbet runtime types
+        # Note: Sorbet types only validate, they do not coerce values
+        # Automatically coerces plain Ruby classes to Sorbet types when needed
+        # @return [Object] the original value if valid
+        # @raise [ArgTypeError] if the value doesn't match the expected type
+        def validate_sorbet_type!(value)
+          sorbet_type = sorbet_type?(@type) ? @type : T::Utils.coerce(@type)
+          return value if sorbet_type.valid?(value)
+
+          raise Light::Services::ArgTypeError,
+                "#{@service_class} #{@field_type} `#{@name}` expected #{sorbet_type.name}, " \
+                "but got #{value.class} with value: #{value.inspect}"
         end
 
         # Validate value against Ruby class types

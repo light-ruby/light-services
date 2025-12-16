@@ -124,6 +124,38 @@ service = User::Create.run(name: "John", age: "25")
 service.age # => 25 (Integer, not String)
 ```
 
+### Sorbet Runtime Types
+
+Light Services also supports [Sorbet runtime types](https://sorbet.org/docs/runtime) for type validation. Unlike dry-types, Sorbet types **only validate** and do not coerce values.
+
+```ruby
+require "sorbet-runtime"
+
+class User::Create < ApplicationService
+  # Basic types using T::Utils.coerce
+  arg :name, type: T::Utils.coerce(String)
+  arg :age, type: T::Utils.coerce(Integer)
+  
+  # Nilable types
+  arg :email, type: T.nilable(String), optional: true
+  
+  # Union types
+  arg :status, type: T.any(String, Symbol)
+  
+  # Typed arrays
+  arg :tags, type: T::Array[String]
+  
+  # Boolean type
+  arg :active, type: T::Boolean, default: true
+end
+```
+
+{% hint style="warning" %}
+**Sorbet types do NOT coerce values.** If you pass `"25"` where an `Integer` is expected, it will raise an error instead of converting the string to an integer. Use dry-types if you need automatic coercion.
+{% endhint %}
+
+See the [Sorbet Runtime Types documentation](sorbet-runtime.md) for more details.
+
 ## Required Arguments
 
 By default, arguments are required. You can make them optional by setting `optional` to `true`.

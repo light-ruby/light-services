@@ -124,6 +124,22 @@ class AI::Chat < ApplicationService
 end
 ```
 
+### Sorbet Runtime Types
+
+Outputs also support [Sorbet runtime types](https://sorbet.org/docs/runtime) for type validation:
+
+```ruby
+require "sorbet-runtime"
+
+class AI::Chat < ApplicationService
+  output :messages, type: T::Array[Hash]
+  output :total_tokens, type: T::Utils.coerce(Integer)
+  output :metadata, type: T.nilable(Hash), optional: true
+end
+```
+
+See the [Sorbet Runtime Types documentation](sorbet-runtime.md) for more details.
+
 ## Default Values
 
 Set default values for outputs using the `default` option. The default value will be automatically set before the execution of steps.

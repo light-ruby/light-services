@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.1 (2025-12-16)
+
+### Added
+
+- Sorbet runtime type support for `arg` and `output` (validation only, no coercion)
+
 ## 3.3.0 (2025-12-15)
 
 ### Added

@@ -4,7 +4,7 @@ RSpec.describe WithRedefinitionBase do # rubocop:disable RSpec/SpecFilePathForma
   describe "argument type redefinition" do
     it "parent rejects Symbol when type is String" do
       expect { described_class.run(name: :symbol_name) }
-        .to raise_error(Light::Services::ArgTypeError, /must be String/)
+        .to raise_error(Light::Services::ArgTypeError, /(must be|expected) String/)
     end
 
     it "parent accepts String" do
@@ -27,7 +27,7 @@ RSpec.describe WithRedefinitionBase do # rubocop:disable RSpec/SpecFilePathForma
 
     it "child still rejects other types" do
       expect { WithRedefinedArgTypes.run(name: 123, options: {}) }
-        .to raise_error(Light::Services::ArgTypeError, /must be String or Symbol/)
+        .to raise_error(Light::Services::ArgTypeError, /(must be|expected) (String or Symbol|T\.any)/)
     end
   end
 
@@ -40,7 +40,7 @@ RSpec.describe WithRedefinitionBase do # rubocop:disable RSpec/SpecFilePathForma
 
     it "child requires argument when redefined as required" do
       expect { WithRedefinedArgTypes.run(name: "test") }
-        .to raise_error(Light::Services::ArgTypeError, /must be Hash/)
+        .to raise_error(Light::Services::ArgTypeError, /(must be|expected).*(Hash|T::Hash)/)
     end
 
     it "child works when required argument provided" do
@@ -135,7 +135,7 @@ RSpec.describe WithRedefinitionBase do # rubocop:disable RSpec/SpecFilePathForma
 
     it "grandchild can redefine arguments again" do
       expect { WithRedefinedGrandchild.run(name: :symbol, options: {}) }
-        .to raise_error(Light::Services::ArgTypeError, /must be String/)
+        .to raise_error(Light::Services::ArgTypeError, /(must be|expected) String/)
     end
 
     it "grandchild can add new arguments" do
@@ -227,7 +227,7 @@ RSpec.describe WithRedefinitionBase do # rubocop:disable RSpec/SpecFilePathForma
       WithRedefinedArgTypes.run(name: :symbol, options: {})
 
       expect { described_class.run(name: :symbol) }
-        .to raise_error(Light::Services::ArgTypeError, /must be String/)
+        .to raise_error(Light::Services::ArgTypeError, /(must be|expected) String/)
     end
 
     it "each class maintains independent settings" do
