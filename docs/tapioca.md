@@ -143,25 +143,17 @@ arg :nickname, type: String, optional: true
 # Generates: sig { returns(T.nilable(::String)) }
 ```
 
-### Dry-Types
+### Sorbet Runtime Types
 
-If you use [dry-types](https://dry-rb.org/gems/dry-types/), they are mapped to their primitive Ruby types:
+Sorbet runtime types are automatically resolved:
 
-| Dry Type | Sorbet Type |
-|----------|-------------|
-| `Types::String` | `::String` |
-| `Types::Strict::String` | `::String` |
-| `Types::Integer` | `::Integer` |
-| `Types::Bool` | `T::Boolean` |
-| `Types::Array` | `::Array` |
-| `Types::Hash` | `::Hash` |
-| `Types::Date` | `::Date` |
-| `Types::Time` | `::Time` |
-| `Types::DateTime` | `::DateTime` |
-| `Types::Decimal` | `::BigDecimal` |
-| `Types::Any` | `T.untyped` |
-
-Parameterized dry-types (e.g., `Types::Array.of(String)`) are mapped to their base type.
+| Sorbet Type | Generated RBI |
+|-------------|---------------|
+| `T::Boolean` | `T::Boolean` |
+| `T.nilable(String)` | `T.nilable(::String)` |
+| `T::Array[String]` | `T::Array[::String]` |
+| `T::Hash[Symbol, String]` | `T::Hash[::Symbol, ::String]` |
+| `T.any(String, Integer)` | `T.any(::String, ::Integer)` |
 
 ## Generated Methods
 
@@ -188,10 +180,6 @@ Ensure Light Services is properly loaded in your application. The compiler only 
 This happens when:
 - No `type:` option is specified for the argument/output
 - The type cannot be resolved (e.g., undefined constant)
-
-### Custom type mappings
-
-If you need custom dry-types mappings, you can extend the `DRY_TYPE_MAPPINGS` constant in the compiler or open an issue to add common mappings.
 
 ## See Also
 

@@ -21,7 +21,6 @@ require "data/services/with_typed_outputs"
 require "data/services/with_step_insertion"
 require "data/services/with_redefinition"
 require "data/services/with_callbacks"
-require "data/services/with_dry_types"
 # NOTE: with_sorbet_types is loaded separately in the sorbet_types_spec to avoid
 # loading sorbet-runtime globally, which would cause tapioca tests to fail
 require "data/services/send_notification"

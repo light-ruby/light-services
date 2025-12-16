@@ -68,8 +68,8 @@ module Light
       attr_reader :rollback_on_warning
 
       # @return [Hash{String => String}] custom type mappings for Ruby LSP addon.
-      #   Maps dry-types or custom types to Ruby types for hover/completion.
-      #   @example { "Types::UUID" => "String", "CustomTypes::Money" => "BigDecimal" }
+      #   Maps custom types to Ruby types for hover/completion.
+      #   @example { "CustomTypes::UUID" => "String", "CustomTypes::Money" => "BigDecimal" }
       attr_reader :ruby_lsp_type_mappings
 
       DEFAULTS = {

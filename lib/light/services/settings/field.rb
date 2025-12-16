@@ -46,17 +46,15 @@ module Light
         end
 
         # Validate a value against the field's type definition.
-        # Supports Ruby class types, dry-types, and Sorbet runtime types.
+        # Supports Ruby class types and Sorbet runtime types.
         #
         # @param value [Object] the value to validate
-        # @return [Object] the value (possibly coerced by dry-types)
+        # @return [Object] the validated value
         # @raise [ArgTypeError] if the value doesn't match the expected type
         def validate_type!(value)
           return value unless @type
 
-          if dry_type?(@type)
-            coerce_and_validate_dry_type!(value)
-          elsif sorbet_type?(@type) || (sorbet_available? && plain_class_type?(@type))
+          if sorbet_type?(@type) || (sorbet_available? && plain_class_type?(@type))
             validate_sorbet_type!(value)
           else
             validate_ruby_type!(value)
@@ -71,16 +69,9 @@ module Light
           defined?(T::Types::Base)
         end
 
-        # Check if the type is a plain Ruby class (not dry-types or Sorbet type)
+        # Check if the type is a plain Ruby class (not a Sorbet type)
         def plain_class_type?(type)
           type.is_a?(Class) || type.is_a?(Module)
-        end
-
-        # Check if the type is a dry-types type
-        def dry_type?(type)
-          return false unless defined?(Dry::Types::Type)
-
-          type.is_a?(Dry::Types::Type)
         end
 
         # Check if the type is a Sorbet runtime type
@@ -88,15 +79,6 @@ module Light
           return false unless defined?(T::Types::Base)
 
           type.is_a?(T::Types::Base)
-        end
-
-        # Validate and coerce value against dry-types
-        # Returns the coerced value
-        def coerce_and_validate_dry_type!(value)
-          @type[value]
-        rescue Dry::Types::ConstraintError, Dry::Types::CoercionError => e
-          raise Light::Services::ArgTypeError,
-                "#{@service_class} #{@field_type} `#{@name}` #{e.message}"
         end
 
         # Validate value against Sorbet runtime types

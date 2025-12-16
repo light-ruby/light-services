@@ -2,48 +2,9 @@
 
 module RubyLsp
   module LightServices
-    class IndexingEnhancement < RubyIndexer::Enhancement # rubocop:disable Metrics/ClassLength
+    class IndexingEnhancement < RubyIndexer::Enhancement
       # DSL methods that generate getter, predicate, and setter methods
       FIELD_DSL_METHODS = [:arg, :output].freeze
-
-      # Default type mappings for common dry-types to their underlying Ruby types
-      # These can be extended via Light::Services.config.ruby_lsp_type_mappings
-      DEFAULT_TYPE_MAPPINGS = {
-        "Types::String" => "String",
-        "Types::Strict::String" => "String",
-        "Types::Coercible::String" => "String",
-        "Types::Integer" => "Integer",
-        "Types::Strict::Integer" => "Integer",
-        "Types::Coercible::Integer" => "Integer",
-        "Types::Float" => "Float",
-        "Types::Strict::Float" => "Float",
-        "Types::Coercible::Float" => "Float",
-        "Types::Decimal" => "BigDecimal",
-        "Types::Strict::Decimal" => "BigDecimal",
-        "Types::Coercible::Decimal" => "BigDecimal",
-        "Types::Bool" => "TrueClass | FalseClass",
-        "Types::Strict::Bool" => "TrueClass | FalseClass",
-        "Types::True" => "TrueClass",
-        "Types::Strict::True" => "TrueClass",
-        "Types::False" => "FalseClass",
-        "Types::Strict::False" => "FalseClass",
-        "Types::Array" => "Array",
-        "Types::Strict::Array" => "Array",
-        "Types::Hash" => "Hash",
-        "Types::Strict::Hash" => "Hash",
-        "Types::Symbol" => "Symbol",
-        "Types::Strict::Symbol" => "Symbol",
-        "Types::Coercible::Symbol" => "Symbol",
-        "Types::Date" => "Date",
-        "Types::Strict::Date" => "Date",
-        "Types::DateTime" => "DateTime",
-        "Types::Strict::DateTime" => "DateTime",
-        "Types::Time" => "Time",
-        "Types::Strict::Time" => "Time",
-        "Types::Nil" => "NilClass",
-        "Types::Strict::Nil" => "NilClass",
-        "Types::Any" => "Object",
-      }.freeze
 
       # ─────────────────────────────────────────────────────────────────────────
       # Public API - Called by Ruby LSP indexer
@@ -136,7 +97,7 @@ module RubyLsp
       end
 
       # Build a full constant path string from nested ConstantPathNodes
-      # Example: Types::Strict::String
+      # Example: MyApp::Config
       def build_constant_path(node)
         parts = []
         current = node
@@ -151,7 +112,7 @@ module RubyLsp
       end
 
       # Extract the receiver constant from a method call chain
-      # Example: Types::String.constrained(format: /@/) → "Types::String"
+      # Example: SomeClass.method(...) → "SomeClass"
       def extract_receiver_constant(node)
         receiver = node.receiver
         return unless receiver
@@ -169,30 +130,30 @@ module RubyLsp
       # ─────────────────────────────────────────────────────────────────────────
 
       # Map a type string to its corresponding Ruby type
-      # Uses custom mappings from config (if available) merged with defaults
+      # Uses custom mappings from config if available
       def map_to_ruby_type(type_string)
         mappings = effective_type_mappings
+        return nil if mappings.empty?
 
         # Direct mapping lookup (custom mappings take precedence)
         return mappings[type_string] if mappings.key?(type_string)
 
-        # Handle parameterized types: Types::Array.of(...) → Types::Array
+        # Handle parameterized types
         base_type = type_string.split(".").first
         mappings[base_type]
       end
 
-      # Returns the effective type mappings (defaults + custom from config)
-      # Custom mappings take precedence over defaults
+      # Returns the effective type mappings from config
       def effective_type_mappings
-        return DEFAULT_TYPE_MAPPINGS unless defined?(Light::Services)
-        return DEFAULT_TYPE_MAPPINGS unless Light::Services.respond_to?(:config)
+        return {} unless defined?(Light::Services)
+        return {} unless Light::Services.respond_to?(:config)
 
         custom_mappings = Light::Services.config&.ruby_lsp_type_mappings
-        return DEFAULT_TYPE_MAPPINGS if custom_mappings.nil? || custom_mappings.empty?
+        return {} if custom_mappings.nil?
 
-        DEFAULT_TYPE_MAPPINGS.merge(custom_mappings)
+        custom_mappings
       rescue NoMethodError
-        DEFAULT_TYPE_MAPPINGS
+        {}
       end
 
       # ─────────────────────────────────────────────────────────────────────────

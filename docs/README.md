@@ -47,14 +47,16 @@ class GreetService < Light::Services::Base
 end
 ```
 
-## Advanced Example (with dry-types and conditions)
+## Advanced Example (with Sorbet types and conditions)
 
 ```ruby
 class User::ResetPassword < Light::Services::Base
-  # Arguments with dry-types for advanced validation and coercion
-  arg :user, type: Types.Instance(User), optional: true
-  arg :email, type: Types::Coercible::String, optional: true
-  arg :send_email, type: Types::Params::Bool, default: true
+  # Arguments with Sorbet types
+  arg :user, type: User, optional: true
+  arg :email, type: String, optional: true
+  arg :send_email, type: T::Boolean, default: true
+  arg :metadata, type: T::Hash[Symbol, String], default: {}
+  arg :notify_channels, type: T::Array[Symbol], default: [:email]
 
   # Steps
   step :validate
@@ -63,9 +65,10 @@ class User::ResetPassword < Light::Services::Base
   step :save_reset_token
   step :send_reset_email, if: :send_email?
 
-  # Outputs with dry-types
-  output :user, type: Types.Instance(User)
-  output :reset_token, type: Types::Strict::String
+  # Outputs
+  output :user, type: User
+  output :reset_token, type: String
+  output :notifications_sent, type: T::Array[Symbol]
 
   private
 

@@ -74,7 +74,6 @@ RSpec.describe "Sorbet Runtime Types Support" do # rubocop:disable RSpec/Describ
 
         # NOTE: Sorbet's T::Array[String] does NOT validate array elements at runtime.
         # Generic type parameters are erased at runtime - it only checks that the value is an Array.
-        # This is different from Dry Types which validates array elements.
         it "does not validate array elements (Sorbet limitation)" do
           service = described_class.run(name: "John", age: 25, tags: ["ruby", 123])
           expect(service).to be_successful
@@ -128,7 +127,7 @@ RSpec.describe "Sorbet Runtime Types Support" do # rubocop:disable RSpec/Describ
     end
 
     describe "no coercion behavior" do
-      # Unlike dry-types, Sorbet runtime types do NOT coerce values
+      # Sorbet runtime types do NOT coerce values, only validate them
       context "when passing a string where integer is expected" do
         it "raises an error instead of coercing" do
           expect { described_class.run(name: "John", age: "30") }

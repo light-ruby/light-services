@@ -369,26 +369,6 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
     end
   end
 
-  describe "type mapping" do
-    describe "DRY_TYPE_MAPPINGS" do
-      it "maps Types::String to ::String" do
-        expect(described_class::DRY_TYPE_MAPPINGS["Types::String"]).to eq("::String")
-      end
-
-      it "maps Types::Bool to T::Boolean" do
-        expect(described_class::DRY_TYPE_MAPPINGS["Types::Bool"]).to eq("T::Boolean")
-      end
-
-      it "maps Types::Integer to ::Integer" do
-        expect(described_class::DRY_TYPE_MAPPINGS["Types::Integer"]).to eq("::Integer")
-      end
-
-      it "maps Types::Any to T.untyped" do
-        expect(described_class::DRY_TYPE_MAPPINGS["Types::Any"]).to eq("T.untyped")
-      end
-    end
-  end
-
   describe "#resolve_type" do
     let(:service_class) do
       Class.new(Light::Services::Base) do
@@ -420,103 +400,6 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
 
         expect(result).to eq("T.untyped")
       end
-    end
-  end
-
-  describe "dry-types integration" do
-    let(:service_class) { WithDryTypes }
-
-    context "with Types::Strict::String" do
-      it "generates getter with ::String return type" do
-        scope = compiler.decorate
-
-        getter = find_method(scope, "name")
-        expect(getter.return_type).to eq("::String")
-      end
-    end
-
-    context "with Types::Coercible::Integer" do
-      it "generates getter with ::Integer return type" do
-        scope = compiler.decorate
-
-        getter = find_method(scope, "age")
-        expect(getter.return_type).to eq("::Integer")
-      end
-    end
-
-    context "with Types::String.constrained (parameterized)" do
-      it "generates getter with ::String return type (base type)" do
-        scope = compiler.decorate
-
-        getter = find_method(scope, "email")
-        # email is optional, so it's nilable
-        expect(getter.return_type).to eq("T.nilable(::String)")
-      end
-    end
-
-    context "with Types::String.enum (parameterized)" do
-      it "generates getter with ::String return type (base type)" do
-        scope = compiler.decorate
-
-        getter = find_method(scope, "status")
-        expect(getter.return_type).to eq("::String")
-      end
-    end
-
-    context "with Types::Array.of (parameterized)" do
-      it "generates getter with ::Array return type (base type)" do
-        scope = compiler.decorate
-
-        getter = find_method(scope, "tags")
-        # tags is optional
-        expect(getter.return_type).to eq("T.nilable(::Array)")
-      end
-    end
-
-    context "with Types::Hash.schema (parameterized)" do
-      it "generates getter with ::Hash return type (base type)" do
-        scope = compiler.decorate
-
-        getter = find_method(scope, "metadata")
-        # metadata is optional
-        expect(getter.return_type).to eq("T.nilable(::Hash)")
-      end
-    end
-
-    context "with output using Types::Strict::String" do
-      it "generates getter with ::String return type" do
-        scope = compiler.decorate
-
-        getter = find_method(scope, "greeting")
-        expect(getter.return_type).to eq("::String")
-      end
-    end
-
-    context "with output using Types::Strict::Integer" do
-      it "generates getter with ::Integer return type" do
-        scope = compiler.decorate
-
-        getter = find_method(scope, "user_age")
-        expect(getter.return_type).to eq("::Integer")
-      end
-    end
-
-    context "with output using Types::Hash (optional)" do
-      it "generates getter with T.nilable(::Hash) return type" do
-        scope = compiler.decorate
-
-        getter = find_method(scope, "full_data")
-        expect(getter.return_type).to eq("T.nilable(::Hash)")
-      end
-    end
-
-    it "generates all expected methods for dry-types service" do
-      scope = compiler.decorate
-
-      # Arguments: current_user (inherited), name, age, email, status, tags, metadata (7 fields × 3 methods = 21)
-      # Outputs: greeting, user_age, full_data (3 fields × 3 methods = 9)
-      # Total: 30 methods
-      expect(scope.methods.size).to eq(30)
     end
   end
 
@@ -587,101 +470,30 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
     end
 
-    context "when dry-type doesn't respond to :primitive" do
+    context "when type is an unrecognized object" do
       let(:service_class) do
         klass = Class.new(Light::Services::Base) do
           def self.name
-            "DryTypeNoPrimitiveService"
+            "UnrecognizedTypeService"
           end
         end
 
-        # Create a mock dry-type that doesn't respond to :primitive
-        mock_dry_type = Object.new
-        mock_dry_type.define_singleton_method(:to_s) { "CustomType::Unknown" }
-        # Make it pass the dry_type? check
-        stub_const("Dry::Types::Type", Class.new) unless defined?(Dry::Types::Type)
-        mock_dry_type.define_singleton_method(:is_a?) do |klass|
-          klass == Dry::Types::Type || super(klass)
-        end
+        # Create a mock type that doesn't match Class/Module
+        mock_type = Object.new
+        mock_type.define_singleton_method(:to_s) { "CustomType::Unknown" }
 
-        field = Light::Services::Settings::Field.new(:no_primitive, klass, field_type: :argument)
-        field.instance_variable_set(:@type, mock_dry_type)
-        klass.own_arguments[:no_primitive] = field
+        field = Light::Services::Settings::Field.new(:unknown_type, klass, field_type: :argument)
+        field.instance_variable_set(:@type, mock_type)
+        klass.own_arguments[:unknown_type] = field
         klass.instance_variable_set(:@arguments, nil)
 
         klass
       end
 
-      it "returns T.untyped when type doesn't respond to :primitive" do
+      it "returns T.untyped when type is unrecognized" do
         scope = compiler.decorate
 
-        getter = find_method(scope, "no_primitive")
-        expect(getter.return_type).to eq("T.untyped")
-      end
-    end
-
-    context "when dry-type primitive is not a Class or Module" do
-      let(:service_class) do
-        klass = Class.new(Light::Services::Base) do
-          def self.name
-            "DryTypeInvalidPrimitiveService"
-          end
-        end
-
-        # Create a mock dry-type with invalid primitive
-        mock_dry_type = Object.new
-        mock_dry_type.define_singleton_method(:to_s) { "CustomType::InvalidPrimitive" }
-        mock_dry_type.define_singleton_method(:primitive) { "not_a_class" }
-        stub_const("Dry::Types::Type", Class.new) unless defined?(Dry::Types::Type)
-        mock_dry_type.define_singleton_method(:is_a?) do |klass|
-          klass == Dry::Types::Type || super(klass)
-        end
-
-        field = Light::Services::Settings::Field.new(:invalid_primitive, klass, field_type: :argument)
-        field.instance_variable_set(:@type, mock_dry_type)
-        klass.own_arguments[:invalid_primitive] = field
-        klass.instance_variable_set(:@arguments, nil)
-
-        klass
-      end
-
-      it "returns T.untyped when primitive is not a Class or Module" do
-        scope = compiler.decorate
-
-        getter = find_method(scope, "invalid_primitive")
-        expect(getter.return_type).to eq("T.untyped")
-      end
-    end
-
-    context "when dry-type primitive raises an error" do
-      let(:service_class) do
-        klass = Class.new(Light::Services::Base) do
-          def self.name
-            "DryTypeErrorPrimitiveService"
-          end
-        end
-
-        # Create a mock dry-type that raises an error on primitive
-        mock_dry_type = Object.new
-        mock_dry_type.define_singleton_method(:to_s) { "CustomType::ErrorPrimitive" }
-        mock_dry_type.define_singleton_method(:primitive) { raise StandardError, "boom" }
-        stub_const("Dry::Types::Type", Class.new) unless defined?(Dry::Types::Type)
-        mock_dry_type.define_singleton_method(:is_a?) do |klass|
-          klass == Dry::Types::Type || super(klass)
-        end
-
-        field = Light::Services::Settings::Field.new(:error_primitive, klass, field_type: :argument)
-        field.instance_variable_set(:@type, mock_dry_type)
-        klass.own_arguments[:error_primitive] = field
-        klass.instance_variable_set(:@arguments, nil)
-
-        klass
-      end
-
-      it "returns T.untyped when primitive raises an error" do
-        scope = compiler.decorate
-
-        getter = find_method(scope, "error_primitive")
+        getter = find_method(scope, "unknown_type")
         expect(getter.return_type).to eq("T.untyped")
       end
     end
@@ -745,37 +557,18 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
     end
 
-    context "with array containing dry-types" do
+    context "with array containing multiple Ruby classes" do
       let(:service_class) do
         Class.new(Light::Services::Base) do
           def self.name
-            "ArrayWithDryTypeService"
+            "ArrayWithMultipleClassesService"
           end
 
-          arg :value, type: [Types::Strict::String, Types::Strict::Integer]
+          arg :value, type: [String, Integer]
         end
       end
 
-      it "resolves dry-types within array to T.any union" do
-        scope = compiler.decorate
-
-        getter = find_method(scope, "value")
-        expect(getter.return_type).to eq("T.any(::String, ::Integer)")
-      end
-    end
-
-    context "with array containing mixed Ruby classes and dry-types" do
-      let(:service_class) do
-        Class.new(Light::Services::Base) do
-          def self.name
-            "MixedArrayTypeService"
-          end
-
-          arg :value, type: [String, Types::Strict::Integer]
-        end
-      end
-
-      it "resolves both Ruby classes and dry-types" do
+      it "resolves to T.any union" do
         scope = compiler.decorate
 
         getter = find_method(scope, "value")

@@ -71,28 +71,17 @@ arg :payment, type: Stripe::Charge      # → Stripe::Charge
 arg :config, type: MyApp::Configuration # → MyApp::Configuration
 ```
 
-### Dry-Types
+### Sorbet Runtime Types
 
-Common dry-types are mapped to their underlying Ruby types:
+Sorbet runtime types are resolved to their underlying Ruby types:
 
-| Dry-Type | Ruby Type |
-|----------|-----------|
-| `Types::String`, `Types::Strict::String`, `Types::Coercible::String` | `String` |
-| `Types::Integer`, `Types::Strict::Integer`, `Types::Coercible::Integer` | `Integer` |
-| `Types::Float`, `Types::Strict::Float`, `Types::Coercible::Float` | `Float` |
-| `Types::Bool`, `Types::Strict::Bool` | `TrueClass \| FalseClass` |
-| `Types::Array`, `Types::Strict::Array` | `Array` |
-| `Types::Hash`, `Types::Strict::Hash` | `Hash` |
-| `Types::Symbol`, `Types::Strict::Symbol` | `Symbol` |
-| `Types::Date`, `Types::DateTime`, `Types::Time` | `Date`, `DateTime`, `Time` |
-
-Constrained and parameterized types extract their base type:
-
-```ruby
-arg :email, type: Types::String.constrained(format: /@/)  # → String
-arg :tags, type: Types::Array.of(Types::String)           # → Array
-arg :status, type: Types::String.enum("active", "pending") # → String
-```
+| Sorbet Type | Ruby Type |
+|-------------|-----------|
+| `T::Boolean` | `TrueClass \| FalseClass` |
+| `T.nilable(String)` | `String \| NilClass` |
+| `T::Array[String]` | `Array` |
+| `T::Hash[Symbol, String]` | `Hash` |
+| `T.any(String, Integer)` | `String \| Integer` |
 
 ### Custom Type Mappings
 
@@ -111,7 +100,7 @@ Light::Services.configure do |config|
 end
 ```
 
-Custom mappings take precedence over the default dry-types mappings, allowing you to:
+Custom mappings allow you to:
 
 - Add mappings for your own custom types
 - Override default mappings if needed
@@ -122,8 +111,7 @@ Custom mappings take precedence over the default dry-types mappings, allowing yo
 - Only `arg` and `output` declarations with a symbol as the first argument are recognized
 - The add-on cannot detect dynamically computed argument names (e.g., `arg some_variable`)
 - Inherited arguments/outputs from parent classes are not automatically discovered
-- Parameterized dry-types like `Types::Array.of(Types::String)` resolve to the container type (`Array`), not the full generic type
-- Custom dry-type definitions outside the standard `Types::` namespace are not mapped
+- Parameterized types like `T::Array[String]` resolve to the container type (`Array`), not the full generic type
 
 ## What's Next?
 

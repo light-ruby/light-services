@@ -115,8 +115,8 @@ arg :numbers, type: T::Array[Integer]
 arg :users, type: T::Array[User]
 ```
 
-{% hint style="warning" %}
-**Generic Type Erasure:** Sorbet's `T::Array[String]` only validates that the value is an `Array` at runtime. The type parameter (`String`) is **erased** and not checked. For strict array element validation, use dry-types: `Types::Array.of(Types::Strict::String)`.
+{% hint style="info" %}
+**Generic Type Erasure:** Sorbet's `T::Array[String]` only validates that the value is an `Array` at runtime. The type parameter (`String`) is **erased** and not checked at runtime. For strict element validation, implement custom validation in your service steps.
 {% endhint %}
 
 ### Boolean Type
@@ -140,43 +140,43 @@ arg :tags, type: T.nilable(T::Array[String]), optional: true
 arg :identifiers, type: T::Array[T.any(String, Integer)]
 ```
 
-## Key Differences from dry-types
+## Important: Sorbet Types Validate Only
 
 {% hint style="warning" %}
-**Sorbet types do NOT coerce values.** Unlike dry-types which can automatically convert values (e.g., `"123"` → `123`), Sorbet runtime types only validate that values match the expected type.
+**Sorbet types do NOT coerce values.** Sorbet runtime types only validate that values match the expected type. They will not automatically convert values (e.g., `"123"` will not become `123`).
 {% endhint %}
 
-### Coercion Behavior Comparison
-
-**With dry-types (coerces):**
+### Validation Behavior
 
 ```ruby
-# dry-types with coercible integer
-arg :age, type: Types::Coercible::Integer
-
-service = MyService.run(age: "25")
-service.age # => 25 (Integer - coerced from String)
-```
-
-**With Sorbet runtime (validates only):**
-
-```ruby
-# Sorbet runtime type (plain class or T::Utils.coerce)
+# Sorbet runtime type
 arg :age, type: Integer
 
+# Valid - passes validation
+service = MyService.run(age: 25)
+service.age # => 25 (Integer)
+
+# Invalid - raises error
 service = MyService.run(age: "25")
 # => Raises ArgTypeError: expected Integer, got String
 ```
 
-### When to Use Each
+If you need coercion, handle it explicitly in your service:
 
-| Use Case | Recommended |
-|----------|-------------|
-| Strict type validation | Sorbet runtime |
-| Automatic value coercion | dry-types |
-| Static type analysis | Sorbet + Tapioca |
-| Input from external sources (APIs, forms) | dry-types (for coercion) |
-| Internal service-to-service calls | Sorbet runtime |
+```ruby
+class MyService < ApplicationService
+  arg :age, type: Integer
+
+  step :coerce_inputs
+  step :process
+
+  private
+
+  def coerce_inputs
+    self.age = age.to_i if age.is_a?(String)
+  end
+end
+```
 
 ## Combining with Tapioca
 

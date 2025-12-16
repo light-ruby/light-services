@@ -208,7 +208,7 @@ RSpec.describe RubyLsp::LightServices::IndexingEnhancement do
 
   describe "type extraction" do
     # Type extraction resolves the `type:` option to a Ruby type string.
-    # It handles simple Ruby classes, namespaced classes, and dry-types.
+    # It handles simple Ruby classes and namespaced classes.
 
     describe "#extract_ruby_type (private method)" do
       def extract_type_for(source)
@@ -230,47 +230,6 @@ RSpec.describe RubyLsp::LightServices::IndexingEnhancement do
       it "extracts namespaced class types" do
         expect(extract_type_for("arg :payment, type: Stripe::Charge")).to eq("Stripe::Charge")
         expect(extract_type_for("arg :config, type: MyApp::Config")).to eq("MyApp::Config")
-      end
-
-      it "maps dry-types strict types to Ruby types" do
-        expect(extract_type_for("arg :name, type: Types::Strict::String")).to eq("String")
-        expect(extract_type_for("arg :age, type: Types::Strict::Integer")).to eq("Integer")
-        expect(extract_type_for("arg :price, type: Types::Strict::Float")).to eq("Float")
-      end
-
-      it "maps dry-types coercible types to Ruby types" do
-        expect(extract_type_for("arg :name, type: Types::Coercible::String")).to eq("String")
-        expect(extract_type_for("arg :age, type: Types::Coercible::Integer")).to eq("Integer")
-      end
-
-      it "maps dry-types simple types to Ruby types" do
-        expect(extract_type_for("arg :name, type: Types::String")).to eq("String")
-        expect(extract_type_for("arg :count, type: Types::Integer")).to eq("Integer")
-      end
-
-      it "maps dry-types Bool to boolean union" do
-        expect(extract_type_for("arg :active, type: Types::Bool")).to eq("TrueClass | FalseClass")
-        expect(extract_type_for("arg :flag, type: Types::Strict::Bool")).to eq("TrueClass | FalseClass")
-      end
-
-      it "extracts base type from constrained dry-types" do
-        expect(extract_type_for("arg :email, type: Types::String.constrained(format: /@/)")).to eq("String")
-      end
-
-      it "extracts base type from nested method chains" do
-        # Nested call chain: Types::String.constrained(...).optional
-        # The receiver of .optional is a CallNode (.constrained), not a constant
-        expect(extract_type_for("arg :email, type: Types::String.constrained(format: /@/).optional")).to eq("String")
-        expect(extract_type_for("arg :name, type: Types::String.default('').strip")).to eq("String")
-      end
-
-      it "extracts container type from parameterized dry-types" do
-        expect(extract_type_for("arg :tags, type: Types::Array.of(Types::String)")).to eq("Array")
-        expect(extract_type_for("arg :data, type: Types::Hash.schema(name: Types::String)")).to eq("Hash")
-      end
-
-      it "extracts base type from enum dry-types" do
-        expect(extract_type_for('arg :status, type: Types::String.enum("active", "inactive")')).to eq("String")
       end
 
       it "returns nil when no type option is present" do
@@ -325,15 +284,6 @@ RSpec.describe RubyLsp::LightServices::IndexingEnhancement do
       end
     end
 
-    context "with dry-types" do
-      let(:source) { "arg :name, type: Types::Strict::String" }
-      let(:node) { Prism.parse(source).value.statements.body.first }
-
-      it "maps dry-type to Ruby type in comment" do
-        expect(comments_for("name")).to eq("@return [String]")
-      end
-    end
-
     context "without type option" do
       let(:source) { "arg :name" }
       let(:node) { Prism.parse(source).value.statements.body.first }
@@ -365,55 +315,38 @@ RSpec.describe RubyLsp::LightServices::IndexingEnhancement do
     context "with custom type mappings configured" do
       before do
         Light::Services.config.ruby_lsp_type_mappings = {
-          "Types::UUID" => "String",
-          "Types::Money" => "BigDecimal",
+          "CustomTypes::UUID" => "String",
+          "CustomTypes::Money" => "BigDecimal",
           "CustomTypes::Email" => "String",
         }
       end
 
-      it "maps custom Types::UUID to String" do
-        expect(extract_type_for("arg :id, type: Types::UUID")).to eq("String")
+      it "maps custom CustomTypes::UUID to String" do
+        expect(extract_type_for("arg :id, type: CustomTypes::UUID")).to eq("String")
       end
 
-      it "maps custom Types::Money to BigDecimal" do
-        expect(extract_type_for("arg :price, type: Types::Money")).to eq("BigDecimal")
+      it "maps custom CustomTypes::Money to BigDecimal" do
+        expect(extract_type_for("arg :price, type: CustomTypes::Money")).to eq("BigDecimal")
       end
 
       it "maps custom namespaced types" do
         expect(extract_type_for("arg :email, type: CustomTypes::Email")).to eq("String")
       end
 
-      it "still uses default mappings for non-custom types" do
-        expect(extract_type_for("arg :name, type: Types::Strict::String")).to eq("String")
-      end
-    end
-
-    context "when custom mapping overrides default" do
-      before do
-        # Override the default String mapping
-        Light::Services.config.ruby_lsp_type_mappings = {
-          "Types::String" => "CustomString",
-        }
-      end
-
-      it "custom mapping takes precedence over default" do
-        expect(extract_type_for("arg :name, type: Types::String")).to eq("CustomString")
-      end
-
-      it "other defaults still work" do
-        expect(extract_type_for("arg :count, type: Types::Integer")).to eq("Integer")
+      it "returns the original type string when no mapping exists" do
+        expect(extract_type_for("arg :name, type: UnmappedType")).to eq("UnmappedType")
       end
     end
 
     context "with parameterized custom types" do
       before do
         Light::Services.config.ruby_lsp_type_mappings = {
-          "Types::JSON" => "Hash",
+          "CustomTypes::JSON" => "Hash",
         }
       end
 
       it "extracts base type from method chain" do
-        expect(extract_type_for("arg :data, type: Types::JSON.optional")).to eq("Hash")
+        expect(extract_type_for("arg :data, type: CustomTypes::JSON.optional")).to eq("Hash")
       end
     end
   end
@@ -432,8 +365,8 @@ RSpec.describe RubyLsp::LightServices::IndexingEnhancement do
         allow(mock_config).to receive(:ruby_lsp_type_mappings).and_raise(NoMethodError)
       end
 
-      it "falls back to default type mappings" do
-        expect(extract_type_for("arg :name, type: Types::Strict::String")).to eq("String")
+      it "returns original type string when mappings unavailable" do
+        expect(extract_type_for("arg :name, type: SomeType")).to eq("SomeType")
       end
     end
   end

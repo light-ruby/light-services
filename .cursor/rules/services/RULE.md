@@ -199,67 +199,71 @@ after_service_run :log_finish
 on_service_failure :notify_error
 ```
 
-## Using dry-types
+## Using Sorbet Runtime Types
 
-Light Services supports [dry-types](https://dry-rb.org/gems/dry-types) for advanced type validation and coercion.
+Light Services supports [Sorbet runtime types](https://sorbet.org/docs/runtime) for type validation. Sorbet types **only validate** and do not coerce values.
 
-### Arguments with dry-types
+### Arguments with Sorbet Types
 
 ```ruby
+require "sorbet-runtime"
+
 class User::Create < ApplicationService
-  # Strict types - must match exactly
-  arg :name, type: Types::Strict::String
+  # Basic types
+  arg :name, type: String
+  arg :age, type: Integer
   
-  # Coercible types - automatically convert values
-  arg :age, type: Types::Coercible::Integer
+  # Nilable types
+  arg :email, type: T.nilable(String), optional: true
   
-  # Constrained types - add validation rules
-  arg :email, type: Types::String.constrained(format: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i)
+  # Union types
+  arg :status, type: T.any(String, Symbol)
   
-  # Enum types - restrict to specific values
-  arg :status, type: Types::String.enum("active", "inactive", "pending"), default: "pending"
+  # Typed arrays
+  arg :tags, type: T::Array[String], optional: true
   
-  # Array types with element validation
-  arg :tags, type: Types::Array.of(Types::String), optional: true
-  
-  # Hash schemas with key transformation
-  arg :metadata, type: Types::Hash.schema(key: Types::String).with_key_transform(&:to_sym), optional: true
+  # Boolean type
+  arg :active, type: T::Boolean, default: true
 end
 ```
 
-### Outputs with dry-types
+### Outputs with Sorbet Types
 
 ```ruby
 class AI::Chat < ApplicationService
-  # Strict type validation
-  output :messages, type: Types::Strict::Array.of(Types::Hash)
+  # Typed array
+  output :messages, type: T::Array[Hash]
   
-  # Coercible types
-  output :total_tokens, type: Types::Coercible::Integer
+  # Basic type
+  output :total_tokens, type: Integer
   
-  # Constrained types (must be >= 0)
-  output :cost, type: Types::Float.constrained(gteq: 0)
+  # Nilable type
+  output :metadata, type: T.nilable(Hash), optional: true
 end
 ```
 
-### Coercion Behavior
+### Validation Behavior
 
-With coercible types, values are automatically converted:
+Sorbet types do NOT coerce values - they only validate:
 
 ```ruby
-# String "25" is automatically converted to integer 25
+# This will RAISE an error (no coercion)
 service = User::Create.run(name: "John", age: "25")
-service.age # => 25 (Integer, not String)
+# => ArgTypeError: expected Integer, but got String
+
+# This works correctly
+service = User::Create.run(name: "John", age: 25)
+service.age # => 25 (Integer)
 ```
 
-### Common dry-types Patterns
+### Common Sorbet Type Patterns
 
 | Type | Description |
 |------|-------------|
-| `Types::Strict::String` | Must be a String, no coercion |
-| `Types::Coercible::Integer` | Coerces to Integer (e.g., "25" → 25) |
-| `Types::String.optional` | String or nil |
-| `Types::String.enum("a", "b")` | Must be one of the listed values |
-| `Types::Array.of(Types::String)` | Array where all elements are Strings |
-| `Types::Hash.schema(key: Type)` | Hash with typed schema |
-| `Types::Float.constrained(gteq: 0)` | Float >= 0 |
+| `String` | Must be a String |
+| `Integer` | Must be an Integer |
+| `T.nilable(String)` | String or nil |
+| `T.any(String, Symbol)` | String or Symbol |
+| `T::Array[String]` | Array of Strings |
+| `T::Hash[Symbol, String]` | Hash with Symbol keys and String values |
+| `T::Boolean` | TrueClass or FalseClass |

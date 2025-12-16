@@ -63,7 +63,7 @@ bundle exec rake
 
 5. **Collection (`lib/light/services/collection.rb`)**
    - Manages arguments and outputs as collections with validation and defaults
-   - Supports dry-types for advanced type validation and coercion
+   - Supports Sorbet runtime types for type validation
 
 ### Service DSL
 

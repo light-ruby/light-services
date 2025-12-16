@@ -101,32 +101,9 @@ end
 
 See the [Configuration documentation](configuration.md) for more details.
 
-### dry-types Support
-
-Outputs also support [dry-types](https://dry-rb.org/gems/dry-types) for advanced type validation and coercion.
-
-```ruby
-require "dry-types"
-
-module Types
-  include Dry.Types()
-end
-
-class AI::Chat < ApplicationService
-  # Strict type validation
-  output :messages, type: Types::Strict::Array.of(Types::Hash)
-  
-  # Coercible types - values are coerced on output validation
-  output :total_tokens, type: Types::Coercible::Integer
-  
-  # Constrained types
-  output :cost, type: Types::Float.constrained(gteq: 0)
-end
-```
-
 ### Sorbet Runtime Types
 
-Outputs also support [Sorbet runtime types](https://sorbet.org/docs/runtime) for type validation:
+Outputs support [Sorbet runtime types](https://sorbet.org/docs/runtime) for type validation:
 
 ```ruby
 require "sorbet-runtime"

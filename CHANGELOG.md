@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.0.0 (2025-12-16)
+
+### Breaking changes
+
+- Removed dry-types support. Sorbet runtime types are now the recommended type system for advanced type validation. Plain Ruby class types continue to work as before.
+
 ## 3.3.1 (2025-12-16)
 
 ### Added

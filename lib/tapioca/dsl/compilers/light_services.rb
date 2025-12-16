@@ -60,44 +60,6 @@ module Tapioca
       class LightServices < Compiler
         extend T::Sig
 
-        # Default type mappings for common dry-types to their underlying Ruby types
-        DRY_TYPE_MAPPINGS = {
-          "Types::String" => "::String",
-          "Types::Strict::String" => "::String",
-          "Types::Coercible::String" => "::String",
-          "Types::Integer" => "::Integer",
-          "Types::Strict::Integer" => "::Integer",
-          "Types::Coercible::Integer" => "::Integer",
-          "Types::Float" => "::Float",
-          "Types::Strict::Float" => "::Float",
-          "Types::Coercible::Float" => "::Float",
-          "Types::Decimal" => "::BigDecimal",
-          "Types::Strict::Decimal" => "::BigDecimal",
-          "Types::Coercible::Decimal" => "::BigDecimal",
-          "Types::Bool" => "T::Boolean",
-          "Types::Strict::Bool" => "T::Boolean",
-          "Types::True" => "::TrueClass",
-          "Types::Strict::True" => "::TrueClass",
-          "Types::False" => "::FalseClass",
-          "Types::Strict::False" => "::FalseClass",
-          "Types::Array" => "::Array",
-          "Types::Strict::Array" => "::Array",
-          "Types::Hash" => "::Hash",
-          "Types::Strict::Hash" => "::Hash",
-          "Types::Symbol" => "::Symbol",
-          "Types::Strict::Symbol" => "::Symbol",
-          "Types::Coercible::Symbol" => "::Symbol",
-          "Types::Date" => "::Date",
-          "Types::Strict::Date" => "::Date",
-          "Types::DateTime" => "::DateTime",
-          "Types::Strict::DateTime" => "::DateTime",
-          "Types::Time" => "::Time",
-          "Types::Strict::Time" => "::Time",
-          "Types::Nil" => "::NilClass",
-          "Types::Strict::Nil" => "::NilClass",
-          "Types::Any" => "T.untyped",
-        }.freeze
-
         ConstantType = type_member { { fixed: T.class_of(::Light::Services::Base) } }
 
         class << self
@@ -161,8 +123,6 @@ module Tapioca
 
           if type.is_a?(Array)
             resolve_array_type(type)
-          elsif dry_type?(type)
-            resolve_dry_type(type)
           elsif type.is_a?(Class) || type.is_a?(Module)
             ruby_type_for_class(type)
           else
@@ -175,8 +135,6 @@ module Tapioca
           resolved_types = types.map do |t|
             if t.is_a?(Class) || t.is_a?(Module)
               ruby_type_for_class(t)
-            elsif dry_type?(t)
-              resolve_dry_type(t)
             else
               "T.untyped"
             end
@@ -205,40 +163,6 @@ module Tapioca
           else
             "::#{name}"
           end
-        end
-
-        sig { params(type: T.untyped).returns(T::Boolean) }
-        def dry_type?(type)
-          return false unless defined?(Dry::Types::Type)
-
-          type.is_a?(Dry::Types::Type)
-        end
-
-        sig { params(type: T.untyped).returns(String) }
-        def resolve_dry_type(type)
-          type_string = type.to_s
-
-          # Direct mapping lookup
-          return DRY_TYPE_MAPPINGS[type_string] if DRY_TYPE_MAPPINGS.key?(type_string)
-
-          # Handle parameterized types: Types::Array.of(...) → Types::Array
-          base_type = type_string.split(".").first
-          return DRY_TYPE_MAPPINGS[base_type] if DRY_TYPE_MAPPINGS.key?(base_type)
-
-          # Try to infer from primitive
-          infer_from_primitive(type)
-        end
-
-        sig { params(type: T.untyped).returns(String) }
-        def infer_from_primitive(type)
-          return "T.untyped" unless type.respond_to?(:primitive)
-
-          primitive = type.primitive
-          return "T.untyped" unless primitive.is_a?(Class) || primitive.is_a?(Module)
-
-          ruby_type_for_class(primitive)
-        rescue StandardError
-          "T.untyped"
         end
 
         sig { params(type: String).returns(String) }

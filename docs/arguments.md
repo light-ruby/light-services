@@ -78,55 +78,9 @@ end
 
 See the [Configuration documentation](configuration.md) for more details.
 
-### dry-types Support
-
-Light Services supports [dry-types](https://dry-rb.org/gems/dry-types) for advanced type validation and coercion. When using dry-types, values are automatically coerced to the expected type.
-
-First, set up your types module:
-
-```ruby
-require "dry-types"
-
-module Types
-  include Dry.Types()
-end
-```
-
-Then use dry-types in your service arguments:
-
-```ruby
-class User::Create < ApplicationService
-  # Strict types - must match exactly
-  arg :name, type: Types::Strict::String
-  
-  # Coercible types - automatically convert values
-  arg :age, type: Types::Coercible::Integer
-  
-  # Constrained types - add validation rules
-  arg :email, type: Types::String.constrained(format: /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i)
-  
-  # Enum types - restrict to specific values
-  arg :status, type: Types::String.enum("active", "inactive", "pending")
-  
-  # Array types with element validation
-  arg :tags, type: Types::Array.of(Types::String)
-  
-  # Hash schemas
-  arg :metadata, type: Types::Hash.schema(key: Types::String)
-end
-```
-
-**Coercion Example:**
-
-```ruby
-# With coercible types, string "25" is automatically converted to integer 25
-service = User::Create.run(name: "John", age: "25")
-service.age # => 25 (Integer, not String)
-```
-
 ### Sorbet Runtime Types
 
-Light Services also supports [Sorbet runtime types](https://sorbet.org/docs/runtime) for type validation. Unlike dry-types, Sorbet types **only validate** and do not coerce values.
+Light Services supports [Sorbet runtime types](https://sorbet.org/docs/runtime) for type validation. Sorbet types **only validate** and do not coerce values.
 
 ```ruby
 require "sorbet-runtime"
@@ -151,7 +105,7 @@ end
 ```
 
 {% hint style="warning" %}
-**Sorbet types do NOT coerce values.** If you pass `"25"` where an `Integer` is expected, it will raise an error instead of converting the string to an integer. Use dry-types if you need automatic coercion.
+**Sorbet types do NOT coerce values.** If you pass `"25"` where an `Integer` is expected, it will raise an error instead of converting the string to an integer.
 {% endhint %}
 
 See the [Sorbet Runtime Types documentation](sorbet-runtime.md) for more details.
