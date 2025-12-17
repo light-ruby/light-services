@@ -1,18 +1,25 @@
+# typed: strict
 # frozen_string_literal: true
 
 require_relative "../constants"
 require_relative "validation"
+require "sorbet-runtime"
 
 module Light
   module Services
     module Dsl
       # DSL for defining and managing service arguments
       module ArgumentsDsl
+        extend T::Sig
+
+        sig { params(base: T.untyped).void }
         def self.included(base)
           base.extend(ClassMethods)
         end
 
         module ClassMethods
+          extend T::Sig
+
           # Define an argument for the service
           #
           # @param name [Symbol] the argument name
@@ -37,35 +44,41 @@ module Light
           #
           # @example Define a context argument passed to child services
           #   arg :current_user, type: User, context: true
+          sig { params(name: T.untyped, opts: T::Hash[Symbol, T.untyped]).void }
           def arg(name, opts = {})
             Validation.validate_symbol_name!(name, :argument, self)
             Validation.validate_reserved_name!(name, :argument, self)
             Validation.validate_name_conflicts!(name, :argument, self)
             Validation.validate_type_required!(name, :argument, self, opts)
 
-            own_arguments[name] = Settings::Field.new(name, self, opts.merge(field_type: FieldTypes::ARGUMENT))
-            @arguments = nil # Clear memoized arguments since we're modifying them
+            own_arguments[T.cast(name, Symbol)] = Settings::Field.new(name, self, opts.merge(field_type: FieldTypes::ARGUMENT))
+            @arguments = T.let(nil, T.nilable(T::Hash[Symbol, Settings::Field]))
           end
 
           # Remove an argument from the service
           #
           # @param name [Symbol] the argument name to remove
+          sig { params(name: Symbol).void }
           def remove_arg(name)
             own_arguments.delete(name)
-            @arguments = nil # Clear memoized arguments since we're modifying them
+            @arguments = T.let(nil, T.nilable(T::Hash[Symbol, Settings::Field]))
           end
 
           # Get all arguments including inherited ones
           #
           # @return [Hash] all arguments defined for this service
+          sig { returns(T::Hash[Symbol, Settings::Field]) }
           def arguments
+            @arguments = T.let(@arguments, T.nilable(T::Hash[Symbol, Settings::Field]))
             @arguments ||= build_arguments
           end
 
           # Get only arguments defined in this class
           #
           # @return [Hash] arguments defined in this class only
+          sig { returns(T::Hash[Symbol, Settings::Field]) }
           def own_arguments
+            @own_arguments = T.let(@own_arguments, T.nilable(T::Hash[Symbol, Settings::Field]))
             @own_arguments ||= {}
           end
 
@@ -74,9 +87,24 @@ module Light
           # Build arguments by merging inherited arguments with own arguments
           #
           # @return [Hash] merged arguments
+          sig { returns(T::Hash[Symbol, Settings::Field]) }
           def build_arguments
-            inherited = superclass.respond_to?(:arguments) ? superclass.arguments.dup : {}
+            inherited = parent_arguments
             inherited.merge(own_arguments)
+          end
+
+          # Get arguments from parent class if available
+          #
+          # @return [Hash] parent arguments or empty hash
+          sig { returns(T::Hash[Symbol, Settings::Field]) }
+          def parent_arguments
+            # self is actually a Class when this module is extended, so we can call superclass
+            parent = T.unsafe(self).superclass
+            return {} unless parent.respond_to?(:arguments)
+
+            # The parent class responds to arguments, so we can safely call it
+            result = parent.send(:arguments)
+            result.is_a?(Hash) ? result.dup : {}
           end
         end
       end

@@ -23,3 +23,6 @@
 # Ignore mac files
 *.DS_Store
 
+sorbet/cache
+!sorbet/cache/.keep
+

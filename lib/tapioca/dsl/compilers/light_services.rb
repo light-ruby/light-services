@@ -1,6 +1,9 @@
 # frozen_string_literal: true
+# typed: false
 
 return unless defined?(Tapioca::Dsl::Compiler)
+
+require "light/services"
 
 module Tapioca
   module Dsl
@@ -75,8 +78,8 @@ module Tapioca
 
         sig { override.void }
         def decorate
-          arguments = constant.arguments
-          outputs = constant.outputs
+          arguments = T.unsafe(constant).arguments
+          outputs = T.unsafe(constant).outputs
 
           return if arguments.empty? && outputs.empty?
 
@@ -140,7 +143,7 @@ module Tapioca
             end
           end.uniq
 
-          return resolved_types.first if resolved_types.size == 1
+          return T.must(resolved_types.first) if resolved_types.size == 1
 
           # Check if this is a boolean type (TrueClass + FalseClass)
           if resolved_types.sort == ["::FalseClass", "::TrueClass"]

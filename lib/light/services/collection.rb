@@ -1,6 +1,9 @@
 # frozen_string_literal: true
+# typed: true
 
+require "forwardable"
 require_relative "constants"
+require "sorbet-runtime"
 
 module Light
   module Services
@@ -12,6 +15,7 @@ module Light
       #   service.arguments[:name]  # => "John"
       #   service.outputs[:user]    # => #<User id: 1>
       class Base
+        extend T::Sig
         extend Forwardable
 
         # @!method key?(key)
@@ -30,16 +34,18 @@ module Light
         # @param collection_type [String] "arguments" or "outputs"
         # @param storage [Hash] initial values
         # @raise [ArgTypeError] if storage is not a Hash
+        sig { params(instance: T.untyped, collection_type: Symbol, storage: T.untyped).void }
         def initialize(instance, collection_type, storage = {})
           validate_collection_type!(collection_type)
 
-          @instance = instance
-          @collection_type = collection_type
-          @storage = storage
+          @instance = T.let(instance, T.untyped)
+          @collection_type = T.let(collection_type, Symbol)
 
-          return if storage.is_a?(Hash)
+          unless storage.is_a?(Hash)
+            raise Light::Services::ArgTypeError, "#{instance.class} - #{collection_type} must be a Hash"
+          end
 
-          raise Light::Services::ArgTypeError, "#{instance.class} - #{collection_type} must be a Hash"
+          @storage = T.let(storage, T::Hash[Symbol, T.untyped])
         end
 
         # Set a value in the collection.
@@ -47,6 +53,7 @@ module Light
         # @param key [Symbol] the key to set
         # @param value [Object] the value to store
         # @return [Object] the stored value
+        sig { params(key: Symbol, value: T.untyped).returns(T.untyped) }
         def set(key, value)
           @storage[key] = value
         end
@@ -55,6 +62,7 @@ module Light
         #
         # @param key [Symbol] the key to retrieve
         # @return [Object, nil] the stored value or nil
+        sig { params(key: Symbol).returns(T.untyped) }
         def get(key)
           @storage[key]
         end
@@ -63,6 +71,7 @@ module Light
         #
         # @param key [Symbol] the key to retrieve
         # @return [Object, nil] the stored value or nil
+        sig { params(key: Symbol).returns(T.untyped) }
         def [](key)
           get(key)
         end
@@ -72,6 +81,7 @@ module Light
         # @param key [Symbol] the key to set
         # @param value [Object] the value to store
         # @return [Object] the stored value
+        sig { params(key: Symbol, value: T.untyped).returns(T.untyped) }
         def []=(key, value)
           set(key, value)
         end
@@ -79,6 +89,7 @@ module Light
         # Load default values for fields that haven't been set.
         #
         # @return [void]
+        sig { void }
         def load_defaults
           settings_collection.each do |name, settings|
             next if !settings.default_exists || key?(name)
@@ -95,6 +106,7 @@ module Light
         #
         # @return [void]
         # @raise [ArgTypeError] if a value fails type validation
+        sig { void }
         def validate!
           settings_collection.each do |name, field|
             next if field.optional && (!key?(name) || get(name).nil?)
@@ -111,6 +123,7 @@ module Light
         #
         # @param args [Hash] arguments hash to extend
         # @return [Hash] the extended arguments hash
+        sig { params(args: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
         def extend_with_context(args)
           return args unless @collection_type == CollectionTypes::ARGUMENTS
 
@@ -125,6 +138,7 @@ module Light
 
         private
 
+        sig { params(type: Symbol).void }
         def validate_collection_type!(type)
           return if CollectionTypes::ALL.include?(type)
 
@@ -132,6 +146,7 @@ module Light
                 "collection_type must be one of #{CollectionTypes::ALL.join(', ')}, got: #{type.inspect}"
         end
 
+        sig { returns(T::Hash[Symbol, T.untyped]) }
         def settings_collection
           @instance.class.public_send(@collection_type)
         end

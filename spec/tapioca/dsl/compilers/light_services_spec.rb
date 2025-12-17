@@ -36,6 +36,11 @@ module Tapioca
         def all_classes
           ObjectSpace.each_object(Class)
         end
+
+        # Mock gather_constants to be overridden
+        def gather_constants
+          []
+        end
       end
 
       attr_reader :constant, :root
@@ -47,6 +52,11 @@ module Tapioca
 
       def create_param(name, type:)
         MockParam.new(name, type)
+      end
+
+      # Mock decorate method to be overridden
+      def decorate
+        # Override in subclass
       end
     end
   end
@@ -67,10 +77,14 @@ module RBI
   end
 
   class Tree
+    # Store the last scope created for test access
+    # (needed because decorate has void return type in Sorbet)
+    attr_reader :last_scope
+
     def create_path(_constant)
-      scope = Scope.new
-      yield scope
-      scope
+      @last_scope = Scope.new
+      yield @last_scope
+      @last_scope
     end
   end
 
@@ -156,7 +170,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates getter method with correct return type" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         getter = find_method(scope, "name")
         expect(getter).not_to be_nil
@@ -164,7 +179,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates predicate method with T::Boolean return type" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         predicate = find_method(scope, "name?")
         expect(predicate).not_to be_nil
@@ -172,7 +188,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates private setter method" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         setter = find_method(scope, "name=")
         expect(setter).not_to be_nil
@@ -194,14 +211,16 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates getter with nilable return type" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         getter = find_method(scope, "email")
         expect(getter.return_type).to eq("T.nilable(::String)")
       end
 
       it "generates setter with nilable parameter type" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         setter = find_method(scope, "email=")
         expect(setter.parameters.first.type).to eq("T.nilable(::String)")
@@ -220,7 +239,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates getter with T.any union type" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         getter = find_method(scope, "id")
         expect(getter.return_type).to eq("T.any(::String, ::Integer)")
@@ -239,7 +259,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates getter with T::Boolean type" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         getter = find_method(scope, "active")
         expect(getter.return_type).to eq("T::Boolean")
@@ -258,7 +279,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates all three methods for output" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         expect(find_method(scope, "result")).not_to be_nil
         expect(find_method(scope, "result?")).not_to be_nil
@@ -266,7 +288,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates getter with correct return type" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         getter = find_method(scope, "result")
         expect(getter.return_type).to eq("::Hash")
@@ -286,14 +309,16 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates methods for both arguments and outputs" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         expect(find_method(scope, "input")).not_to be_nil
         expect(find_method(scope, "output")).not_to be_nil
       end
 
       it "generates 6 methods total (3 per field)" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         expect(scope.methods.size).to eq(6)
       end
@@ -309,9 +334,9 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "returns nil when there are no arguments or outputs" do
-        result = compiler.decorate
+        compiler.decorate
 
-        expect(result).to be_nil
+        expect(root.last_scope).to be_nil
       end
     end
 
@@ -328,7 +353,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates getter with fully qualified class name" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         user_getter = find_method(scope, "user")
         expect(user_getter.return_type).to eq("::User")
@@ -361,7 +387,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates methods for both parent and child arguments" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         expect(find_method(scope, "parent_arg")).not_to be_nil
         expect(find_method(scope, "child_arg")).not_to be_nil
@@ -423,21 +450,24 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates getter with T.untyped return type" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         getter = find_method(scope, "untyped_arg")
         expect(getter.return_type).to eq("T.untyped")
       end
 
       it "generates setter with T.untyped parameter type" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         setter = find_method(scope, "untyped_arg=")
         expect(setter.parameters.first.type).to eq("T.untyped")
       end
 
       it "still generates predicate with T::Boolean" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         predicate = find_method(scope, "untyped_arg?")
         expect(predicate.return_type).to eq("T::Boolean")
@@ -462,7 +492,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates getter with T.untyped (not nilable-wrapped)" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         getter = find_method(scope, "optional_untyped")
         # T.untyped already includes nil, so no wrapping
@@ -491,7 +522,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "returns T.untyped when type is unrecognized" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         getter = find_method(scope, "unknown_type")
         expect(getter.return_type).to eq("T.untyped")
@@ -512,7 +544,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates getter with module name" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         getter = find_method(scope, "enumerable_thing")
         expect(getter.return_type).to eq("::Enumerable")
@@ -531,7 +564,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "generates getter with single type (not T.any)" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         getter = find_method(scope, "value")
         expect(getter.return_type).to eq("::String")
@@ -550,7 +584,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "deduplicates types" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         getter = find_method(scope, "value")
         expect(getter.return_type).to eq("::String")
@@ -569,7 +604,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "resolves to T.any union" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         getter = find_method(scope, "value")
         expect(getter.return_type).to eq("T.any(::String, ::Integer)")
@@ -594,7 +630,8 @@ RSpec.describe Tapioca::Dsl::Compilers::LightServices do
       end
 
       it "includes T.untyped for unrecognized types in union" do
-        scope = compiler.decorate
+        compiler.decorate
+        scope = root.last_scope
 
         getter = find_method(scope, "mixed_unknown")
         expect(getter.return_type).to eq("T.any(::String, T.untyped, ::Integer)")

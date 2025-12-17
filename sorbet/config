@@ -1,0 +1,8 @@
+--dir
+.
+--ignore=tmp/
+--ignore=vendor/
+--ignore=lib/generators/
+--ignore=lib/ruby_lsp/
+--ignore=spec/
+--cache-dir=sorbet/cache

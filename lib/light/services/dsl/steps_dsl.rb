@@ -1,18 +1,26 @@
+# typed: strict
 # frozen_string_literal: true
 
 require_relative "../constants"
 require_relative "validation"
+require "sorbet-runtime"
 
 module Light
   module Services
     module Dsl
       # DSL for defining and managing service steps
       module StepsDsl
+        extend T::Sig
+
+        sig { params(base: T.untyped).void }
         def self.included(base)
           base.extend(ClassMethods)
         end
 
+        # rubocop:disable Metrics/ModuleLength
         module ClassMethods
+          extend T::Sig
+
           # Define a step for the service
           #
           # @param name [Symbol] the step name (must correspond to a private method)
@@ -39,33 +47,42 @@ module Light
           #
           # @example Define a step with proc condition
           #   step :premium_feature, if: -> { user.premium? && feature_enabled? }
+          sig { params(name: T.untyped, opts: T::Hash[Symbol, T.untyped]).void }
           def step(name, opts = {}) # rubocop:disable Metrics/MethodLength
             Validation.validate_symbol_name!(name, :step, self)
             Validation.validate_reserved_name!(name, :step, self)
             Validation.validate_name_conflicts!(name, :step, self)
             validate_step_opts!(name, opts)
 
+            name_sym = T.cast(name, Symbol)
+
             # Build current steps to check for duplicates and find insertion targets
             current = steps
-            if current.key?(name)
-              raise Light::Services::Error,
-                    "Step `#{name}` is already defined in service #{self}. Each step must have a unique name."
+            if current.key?(name_sym)
+              Kernel.raise Light::Services::Error,
+                           "Step `#{name}` is already defined in service #{self}. Each step must have a unique name."
             end
 
             if (target = opts[:before] || opts[:after]) && !current.key?(target)
               available = current.keys.join(", ")
-              raise Light::Services::Error,
-                    "Cannot find target step `#{target}` in service #{self}. Available steps: [#{available}]"
+              Kernel.raise Light::Services::Error,
+                           "Cannot find target step `#{target}` in service #{self}. Available steps: [#{available}]"
             end
 
-            step_obj = Settings::Step.new(name, self, opts)
+            step_obj = Settings::Step.new(name_sym, self, opts)
 
-            if opts[:before] || opts[:after]
-              step_operations << { action: :insert, name: name, step: step_obj, before: opts[:before],
-                                   after: opts[:after], }
-            else
-              step_operations << { action: :add, name: name, step: step_obj }
-            end
+            operation = if opts[:before] || opts[:after]
+                          Settings::InsertStepOperation.new(
+                            name_sym,
+                            step_obj,
+                            before: opts[:before],
+                            after: opts[:after],
+                          )
+                        else
+                          Settings::AddStepOperation.new(name_sym, step_obj)
+                        end
+
+            step_operations << operation
 
             # Clear memoized steps since we're modifying them
             @steps = nil
@@ -74,24 +91,29 @@ module Light
           # Remove a step from the service
           #
           # @param name [Symbol] the step name to remove
+          sig { params(name: Symbol).void }
           def remove_step(name)
-            step_operations << { action: :remove, name: name }
+            step_operations << Settings::RemoveStepOperation.new(name)
 
             # Clear memoized steps since we're modifying them
-            @steps = nil
+            @steps = T.let(nil, T.nilable(T::Hash[Symbol, Settings::Step]))
           end
 
           # Get all steps including inherited ones
           #
           # @return [Hash] all steps defined for this service
+          sig { returns(T::Hash[Symbol, Settings::Step]) }
           def steps
+            @steps = T.let(@steps, T.nilable(T::Hash[Symbol, Settings::Step]))
             @steps ||= build_steps
           end
 
           # Get the list of step operations to be applied
           #
           # @return [Array] list of operations
+          sig { returns(T::Array[Settings::StepOperation]) }
           def step_operations
+            @step_operations = T.let(@step_operations, T.nilable(T::Array[Settings::StepOperation]))
             @step_operations ||= []
           end
 
@@ -99,11 +121,12 @@ module Light
           # Called before executing the service
           #
           # @raise [NoStepsError] if no steps are defined
+          sig { void }
           def validate_steps!
             return unless steps.empty?
 
-            raise Light::Services::NoStepsError,
-                  "Service #{self} has no steps defined. Define at least one step or implement a `run` method."
+            Kernel.raise Light::Services::NoStepsError,
+                         "Service #{self} has no steps defined. Define at least one step or implement a `run` method."
           end
 
           private
@@ -112,16 +135,18 @@ module Light
           #
           # @param name [Symbol] the step name
           # @param opts [Hash] the step options
+          sig { params(name: Symbol, opts: T::Hash[Symbol, T.untyped]).void }
           def validate_step_opts!(name, opts)
             return unless opts[:before] && opts[:after]
 
-            raise Light::Services::Error, "You cannot specify `before` and `after` " \
-                                          "for step `#{name}` in service #{self} at the same time"
+            Kernel.raise Light::Services::Error, "You cannot specify `before` and `after` " \
+                                                 "for step `#{name}` in service #{self} at the same time"
           end
 
           # Build steps by applying operations to inherited steps
           #
           # @return [Hash] the final steps hash
+          sig { returns(T::Hash[Symbol, Settings::Step]) }
           def build_steps
             # Start with inherited steps
             result = inherit_steps
@@ -140,12 +165,16 @@ module Light
           #
           # @param method_name [Symbol] the method name to check
           # @return [Boolean] true if the method is defined
+          sig { params(method_name: Symbol).returns(T::Boolean) }
           def instance_method_defined?(method_name)
+            # self is actually a Class when this module is extended
+            klass = T.unsafe(self)
+
             # Check if method exists and is not from base service classes
-            return false unless method_defined?(method_name) || private_method_defined?(method_name)
+            return false unless klass.method_defined?(method_name) || klass.private_method_defined?(method_name)
 
             # Get the method owner to ensure it's defined in user's service class
-            owner = instance_method(method_name).owner
+            owner = klass.instance_method(method_name).owner
 
             # Method should be defined in a class that inherits from Base,
             # not in Base itself or its included modules
@@ -155,50 +184,58 @@ module Light
           # Inherit steps from parent class
           #
           # @return [Hash] inherited steps
+          sig { returns(T::Hash[Symbol, Settings::Step]) }
           def inherit_steps
-            superclass.respond_to?(:steps) ? superclass.steps.dup : {}
+            # self is actually a Class when this module is extended
+            parent = T.unsafe(self).superclass
+            parent.respond_to?(:steps) ? parent.steps.dup : {}
           end
 
           # Apply a single step operation to the steps hash
           #
           # @param steps [Hash] the steps hash
-          # @param operation [Hash] the operation to apply
+          # @param operation [StepOperation] the operation to apply
+          sig { params(steps: T::Hash[Symbol, Settings::Step], operation: Settings::StepOperation).void }
           def apply_step_operation(steps, operation)
-            case operation[:action]
-            when :add
-              steps[operation[:name]] = operation[:step]
-            when :remove
-              steps.delete(operation[:name])
-            when :insert
+            case operation
+            when Settings::AddStepOperation
+              steps[operation.name] = operation.step
+            when Settings::RemoveStepOperation
+              steps.delete(operation.name)
+            when Settings::InsertStepOperation
               insert_step(steps, operation)
+            else
+              T.absurd(operation)
             end
           end
 
           # Insert a step before or after a target step
           #
           # @param steps [Hash] the steps hash
-          # @param operation [Hash] the insert operation details
+          # @param operation [InsertStepOperation] the insert operation details
+          sig { params(steps: T::Hash[Symbol, Settings::Step], operation: Settings::InsertStepOperation).void }
           def insert_step(steps, operation)
-            target = operation[:before] || operation[:after]
+            target = operation.target
             keys = steps.keys
             index = keys.index(target)
             return unless index
 
             # More efficient insertion using ordered hash reconstruction
-            new_steps = {}
+            new_steps = T.let({}, T::Hash[Symbol, Settings::Step])
 
             keys.each_with_index do |key, i|
               # Insert before target
-              new_steps[operation[:name]] = operation[:step] if operation[:before] && i == index
-              new_steps[key] = steps[key]
+              new_steps[operation.name] = operation.step if operation.before && i == index
+              new_steps[key] = T.must(steps[key])
 
               # Insert after target
-              new_steps[operation[:name]] = operation[:step] if operation[:after] && i == index
+              new_steps[operation.name] = operation.step if operation.after && i == index
             end
 
             steps.replace(new_steps)
           end
         end
+        # rubocop:enable Metrics/ModuleLength
       end
     end
   end

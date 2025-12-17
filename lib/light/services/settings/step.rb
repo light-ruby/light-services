@@ -1,4 +1,7 @@
+# typed: true
 # frozen_string_literal: true
+
+require "sorbet-runtime"
 
 module Light
   module Services
@@ -6,10 +9,14 @@ module Light
       # Stores configuration for a single service step.
       # Created automatically when using the `step` DSL method.
       class Step
+        extend T::Sig
+
         # @return [Symbol] the step name (method to call)
+        sig { returns(Symbol) }
         attr_reader :name
 
         # @return [Boolean, nil] true if step runs even after errors/warnings
+        sig { returns(T.nilable(T::Boolean)) }
         attr_reader :always
 
         # Initialize a new step definition.
@@ -21,13 +28,14 @@ module Light
         # @option opts [Symbol, Proc] :unless condition to skip the step
         # @option opts [Boolean] :always run even after errors/warnings
         # @raise [Error] if both :if and :unless are specified
+        sig { params(name: Symbol, service_class: T.untyped, opts: T::Hash[Symbol, T.untyped]).void }
         def initialize(name, service_class, opts = {})
-          @name = name
-          @service_class = service_class
+          @name = T.let(name, Symbol)
+          @service_class = T.let(service_class, T.untyped)
 
-          @if     = opts[:if]
-          @unless = opts[:unless]
-          @always = opts[:always]
+          @if     = T.let(opts[:if], T.untyped)
+          @unless = T.let(opts[:unless], T.untyped)
+          @always = T.let(opts[:always], T.nilable(T::Boolean))
 
           if @if && @unless
             raise Light::Services::Error, "#{service_class} `if` and `unless` cannot be specified " \
@@ -40,6 +48,7 @@ module Light
         # @param instance [Base] the service instance
         # @return [Boolean] true if the step was executed, false if skipped
         # @raise [Error] if the step method is not defined
+        sig { params(instance: T.untyped).returns(T::Boolean) }
         def run(instance) # rubocop:disable Naming/PredicateMethod
           return false unless run?(instance)
 
@@ -56,6 +65,7 @@ module Light
 
         private
 
+        sig { params(instance: T.untyped).void }
         def execute_with_callbacks(instance)
           errors_count_before = instance.errors.count
 
@@ -77,6 +87,7 @@ module Light
           raise e
         end
 
+        sig { params(instance: T.untyped).returns(T::Boolean) }
         def run?(instance)
           return false if instance.stopped?
 
@@ -89,6 +100,7 @@ module Light
           end
         end
 
+        sig { params(condition: T.untyped, instance: T.untyped).returns(T.untyped) }
         def check_condition(condition, instance)
           case condition
           when Symbol

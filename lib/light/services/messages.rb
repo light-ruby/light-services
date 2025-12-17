@@ -1,4 +1,8 @@
+# typed: strict
 # frozen_string_literal: true
+
+require "forwardable"
+require "sorbet-runtime"
 
 module Light
   module Services
@@ -10,6 +14,7 @@ module Light
     #   errors[:name]  # => [#<Message key: :name, text: "can't be blank">]
     #   errors.to_h    # => { name: ["can't be blank"], email: ["is invalid"] }
     class Messages
+      extend T::Sig
       extend Forwardable
 
       # @!method [](key)
@@ -46,15 +51,17 @@ module Light
       # @option config [Boolean] :break_on_add stop execution when message added
       # @option config [Boolean] :raise_on_add raise exception when message added
       # @option config [Boolean] :rollback_on_add rollback transaction when message added
+      sig { params(config: T::Hash[Symbol, T.untyped]).void }
       def initialize(config)
-        @break = false
-        @config = config
-        @messages = {}
+        @break = T.let(false, T::Boolean)
+        @config = T.let(config, T::Hash[Symbol, T.untyped])
+        @messages = T.let({}, T::Hash[Symbol, T::Array[Message]])
       end
 
       # Get total count of all messages across all keys.
       #
       # @return [Integer] total number of messages
+      sig { returns(Integer) }
       def count
         @messages.values.sum(&:size)
       end
@@ -74,10 +81,11 @@ module Light
       #
       # @example Add multiple errors
       #   errors.add(:email, ["is invalid", "is already taken"])
+      sig { params(key: Symbol, texts: T.untyped, opts: T::Hash[Symbol, T.untyped]).void }
       def add(key, texts, opts = {})
         raise Light::Services::Error, "Error must be a non-empty string" unless texts
 
-        message = nil
+        message = T.let(nil, T.nilable(Message))
 
         [*texts].each do |text|
           message = text.is_a?(Message) ? text : Message.new(key, text, opts)
@@ -85,17 +93,20 @@ module Light
           raise Light::Services::Error, "Error must be a non-empty string" unless valid_error_text?(message.text)
 
           @messages[key] ||= []
-          @messages[key] << message
+          T.must(@messages[key]) << message
         end
 
-        raise!(message)
-        break!(opts.key?(:break) ? opts[:break] : message.break?)
-        rollback!(opts.key?(:rollback) ? opts[:rollback] : message.rollback?) if !opts.key?(:last) || opts[:last]
+        raise!(T.must(message))
+        break!(opts.key?(:break) ? opts[:break] : T.must(message).break?)
+        if !opts.key?(:last) || opts[:last]
+          rollback!(opts.key?(:rollback) ? opts[:rollback] : T.must(message).rollback?)
+        end
       end
 
       # Check if step execution should stop.
       #
       # @return [Boolean] true if a message triggered a break
+      sig { returns(T::Boolean) }
       def break?
         @break
       end
@@ -112,6 +123,7 @@ module Light
       #
       # @example Copy from another service
       #   errors.copy_from(child_service)
+      sig { params(entity: T.untyped, opts: T::Hash[Symbol, T.untyped]).void }
       def copy_from(entity, opts = {})
         if defined?(ActiveRecord::Base) && entity.is_a?(ActiveRecord::Base)
           copy_from(entity.errors.messages, opts)
@@ -132,30 +144,35 @@ module Light
       # Convert messages to a hash with string values.
       #
       # @return [Hash{Symbol => Array<String>}] messages as hash
+      sig { returns(T::Hash[Symbol, T::Array[String]]) }
       def to_h
-        @messages.to_h.transform_values { |value| value.map(&:to_s) }
+        @messages.transform_values { |value| value.map(&:to_s) }
       end
 
       private
 
+      sig { params(text: T.untyped).returns(T::Boolean) }
       def valid_error_text?(text)
         return false unless text.is_a?(String)
 
         !text.strip.empty?
       end
 
+      sig { params(break_execution: T.untyped).void }
       def break!(break_execution)
         return unless break_execution.nil? ? @config[:break_on_add] : break_execution
 
         @break = true
       end
 
+      sig { params(message: Message).void }
       def raise!(message)
         return unless @config[:raise_on_add]
 
         raise Light::Services::Error, "#{message.key.to_s.capitalize} #{message}"
       end
 
+      sig { params(rollback: T.untyped).void }
       def rollback!(rollback)
         return if !defined?(ActiveRecord::Rollback) || !(rollback.nil? ? @config[:rollback_on_add] : rollback)
 

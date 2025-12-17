@@ -1,9 +1,14 @@
 # frozen_string_literal: true
+# typed: strict
+
+require "sorbet-runtime"
 
 module Light
   module Services
     # Utility module providing helper methods for the Light Services library
     module Utils
+      extend T::Sig
+
       module_function
 
       # Creates a deep copy of an object to prevent mutation of shared references.
@@ -23,6 +28,7 @@ module Light
       #   copy[0] << 5
       #   original[0] # => [1, 2]
       #
+      sig { params(object: T.untyped).returns(T.untyped) }
       def deep_dup(object)
         # Use ActiveSupport's deep_dup if available (preferred for Rails apps)
         return object.deep_dup if object.respond_to?(:deep_dup)

@@ -1,28 +1,37 @@
 # frozen_string_literal: true
+# typed: strict
+
+require "sorbet-runtime"
 
 module Light
   module Services
     # Collection type constants
     module CollectionTypes
-      ARGUMENTS = :arguments
-      OUTPUTS = :outputs
+      extend T::Sig
 
-      ALL = [ARGUMENTS, OUTPUTS].freeze
+      ARGUMENTS = T.let(:arguments, Symbol)
+      OUTPUTS = T.let(:outputs, Symbol)
+
+      ALL = T.let([ARGUMENTS, OUTPUTS].freeze, T::Array[Symbol])
     end
 
     # Field type constants
     module FieldTypes
-      ARGUMENT = :argument
-      OUTPUT = :output
+      extend T::Sig
 
-      ALL = [ARGUMENT, OUTPUT].freeze
+      ARGUMENT = T.let(:argument, Symbol)
+      OUTPUT = T.let(:output, Symbol)
+
+      ALL = T.let([ARGUMENT, OUTPUT].freeze, T::Array[Symbol])
     end
 
     # Reserved names that cannot be used for arguments, outputs, or steps
     # These names would conflict with existing gem methods
     module ReservedNames
+      extend T::Sig
+
       # Instance methods from Base class and concerns
-      BASE_METHODS = [
+      BASE_METHODS = T.let([
         :outputs,
         :arguments,
         :errors,
@@ -38,10 +47,10 @@ module Light
         :done?,
         :call,
         :run_callbacks,
-      ].freeze
+      ].freeze, T::Array[Symbol])
 
       # Class methods that could conflict
-      CLASS_METHODS = [
+      CLASS_METHODS = T.let([
         :config,
         :run,
         :run!,
@@ -55,10 +64,10 @@ module Light
         :steps,
         :outputs,
         :arguments,
-      ].freeze
+      ].freeze, T::Array[Symbol])
 
       # Callback method names
-      CALLBACK_METHODS = [
+      CALLBACK_METHODS = T.let([
         :before_step_run,
         :after_step_run,
         :around_step_run,
@@ -70,10 +79,10 @@ module Light
         :around_service_run,
         :on_service_success,
         :on_service_failure,
-      ].freeze
+      ].freeze, T::Array[Symbol])
 
       # Ruby reserved words and common Object methods
-      RUBY_RESERVED = [
+      RUBY_RESERVED = T.let([
         :initialize,
         :class,
         :object_id,
@@ -91,10 +100,10 @@ module Light
         :new,
         :allocate,
         :superclass,
-      ].freeze
+      ].freeze, T::Array[Symbol])
 
       # All reserved names combined (used for validation)
-      ALL = (BASE_METHODS + CALLBACK_METHODS + RUBY_RESERVED).uniq.freeze
+      ALL = T.let((BASE_METHODS + CALLBACK_METHODS + RUBY_RESERVED).uniq.freeze, T::Array[Symbol])
     end
   end
 end
