@@ -110,6 +110,13 @@ RSpec.describe Operandi::Collection::Base do
       # With **kwargs, Ruby raises ArgumentError for positional arguments
       expect { WithConditions.run("not a hash") }.to raise_error(ArgumentError)
     end
+
+    it "raises ArgTypeError when storage is not a Hash" do
+      service = WithConditions.new
+      expect do
+        described_class.new(service, Operandi::CollectionTypes::ARGUMENTS, "not a hash")
+      end.to raise_error(Operandi::ArgTypeError, /must be a Hash/)
+    end
   end
 
   describe "initialization with invalid collection_type" do

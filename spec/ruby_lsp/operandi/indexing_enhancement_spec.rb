@@ -349,6 +349,20 @@ RSpec.describe RubyLsp::Operandi::IndexingEnhancement do
         expect(extract_type_for("arg :data, type: CustomTypes::JSON.optional")).to eq("Hash")
       end
     end
+
+    context "with nested method chains" do
+      before do
+        Operandi.config.ruby_lsp_type_mappings = {
+          "SomeClass" => "String",
+        }
+      end
+
+      it "extracts base type from deeply nested method chain" do
+        # This triggers the recursive call in extract_receiver_constant
+        # when receiver is a CallNode (e.g., SomeClass.method1.method2)
+        expect(extract_type_for("arg :data, type: SomeClass.method1.method2")).to eq("String")
+      end
+    end
   end
 
   describe "error handling in type mappings" do
