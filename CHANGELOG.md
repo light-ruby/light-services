@@ -8,6 +8,8 @@
   Reason: No folder nesting. The gem isn't really "light" anymore anyway.
 
 - Removed dry-types support. Sorbet runtime types are now the recommended type system for advanced type validation. Plain Ruby class types continue to work as before.
+ 
+- The `run` and `run!` methods now accept only keyword arguments, passing a hash as the first argument is no longer supported.
 
 ## 3.3.1 (2025-12-16)
 

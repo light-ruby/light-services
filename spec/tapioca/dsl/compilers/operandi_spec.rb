@@ -45,8 +45,16 @@ module Tapioca
         @root = root
       end
 
-      def create_param(name, type:)
-        MockParam.new(name, type)
+      def create_param(name, type:, default: nil)
+        MockParam.new(name, type, default, :positional)
+      end
+
+      def create_kw_param(name, type:)
+        MockParam.new(name, type, nil, :keyword)
+      end
+
+      def create_kw_opt_param(name, type:, default:)
+        MockParam.new(name, type, default, :keyword_opt)
       end
     end
   end
@@ -83,11 +91,17 @@ end
 
 # Mock classes for testing
 class MockParam
-  attr_reader :name, :type
+  attr_reader :name, :type, :default, :kind
 
-  def initialize(name, type)
+  def initialize(name, type, default = nil, kind = :positional)
     @name = name
     @type = type
+    @default = default
+    @kind = kind
+  end
+
+  def keyword?
+    @kind == :keyword || @kind == :keyword_opt
   end
 end
 
@@ -292,10 +306,11 @@ RSpec.describe Tapioca::Dsl::Compilers::Operandi do
         expect(find_method(scope, "output")).not_to be_nil
       end
 
-      it "generates 6 methods total (3 per field)" do
+      it "generates 9 methods total (3 per field + 3 class methods)" do
         scope = compiler.decorate
 
-        expect(scope.methods.size).to eq(6)
+        # 3 class methods (run, run!, with) + 6 field methods (3 per field)
+        expect(scope.methods.size).to eq(9)
       end
     end
 
@@ -308,10 +323,12 @@ RSpec.describe Tapioca::Dsl::Compilers::Operandi do
         end
       end
 
-      it "returns nil when there are no arguments or outputs" do
-        result = compiler.decorate
+      it "still generates class methods even without arguments or outputs" do
+        scope = compiler.decorate
 
-        expect(result).to be_nil
+        expect(find_method(scope, "run")).not_to be_nil
+        expect(find_method(scope, "run!")).not_to be_nil
+        expect(find_method(scope, "with")).not_to be_nil
       end
     end
 
@@ -598,6 +615,330 @@ RSpec.describe Tapioca::Dsl::Compilers::Operandi do
 
         getter = find_method(scope, "mixed_unknown")
         expect(getter.return_type).to eq("T.any(::String, T.untyped, ::Integer)")
+      end
+    end
+  end
+
+  describe "class methods generation" do
+    let(:service_class) do
+      Class.new(Operandi::Base) do
+        def self.name
+          "ClassMethodsTestService"
+        end
+
+        arg :name, type: String
+        arg :email, type: String, optional: true
+        arg :admin, type: [TrueClass, FalseClass], default: false
+      end
+    end
+
+    describe ".run class method" do
+      it "generates .run as a class method" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        expect(run_method).not_to be_nil
+        expect(run_method.class_method).to be(true)
+      end
+
+      it "has correct return type (T.attached_class)" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        expect(run_method.return_type).to eq("T.attached_class")
+      end
+
+      it "generates keyword parameters for each argument" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        expect(run_method.parameters.size).to eq(3)
+        expect(run_method.parameters.all?(&:keyword?)).to be(true)
+      end
+
+      it "generates required keyword param for required argument" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        name_param = run_method.parameters.find { |p| p.name == "name" }
+
+        expect(name_param).not_to be_nil
+        expect(name_param.type).to eq("::String")
+        expect(name_param.kind).to eq(:keyword)
+        expect(name_param.default).to be_nil
+      end
+
+      it "generates optional keyword param with nil default for optional argument" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        email_param = run_method.parameters.find { |p| p.name == "email" }
+
+        expect(email_param).not_to be_nil
+        expect(email_param.type).to eq("T.nilable(::String)")
+        expect(email_param.kind).to eq(:keyword_opt)
+        expect(email_param.default).to eq("nil")
+      end
+
+      it "generates optional keyword param with default value" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        admin_param = run_method.parameters.find { |p| p.name == "admin" }
+
+        expect(admin_param).not_to be_nil
+        expect(admin_param.type).to eq("T::Boolean")
+        expect(admin_param.kind).to eq(:keyword_opt)
+        expect(admin_param.default).to eq("false")
+      end
+    end
+
+    describe ".run! class method" do
+      it "generates .run! as a class method" do
+        scope = compiler.decorate
+
+        run_bang_method = find_method(scope, "run!")
+        expect(run_bang_method).not_to be_nil
+        expect(run_bang_method.class_method).to be(true)
+      end
+
+      it "has correct return type (T.attached_class)" do
+        scope = compiler.decorate
+
+        run_bang_method = find_method(scope, "run!")
+        expect(run_bang_method.return_type).to eq("T.attached_class")
+      end
+
+      it "generates same keyword parameters as .run" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        run_bang_method = find_method(scope, "run!")
+
+        expect(run_bang_method.parameters.size).to eq(run_method.parameters.size)
+        run_bang_method.parameters.each_with_index do |param, i|
+          expect(param.name).to eq(run_method.parameters[i].name)
+          expect(param.type).to eq(run_method.parameters[i].type)
+          expect(param.kind).to eq(run_method.parameters[i].kind)
+        end
+      end
+    end
+
+    describe ".with class method" do
+      it "generates .with as a class method" do
+        scope = compiler.decorate
+
+        with_method = find_method(scope, "with")
+        expect(with_method).not_to be_nil
+        expect(with_method.class_method).to be(true)
+      end
+
+      it "has correct return type (::Operandi::BaseWithContext)" do
+        scope = compiler.decorate
+
+        with_method = find_method(scope, "with")
+        expect(with_method.return_type).to eq("::Operandi::BaseWithContext")
+      end
+
+      it "has single service_or_config keyword parameter with union type" do
+        scope = compiler.decorate
+
+        with_method = find_method(scope, "with")
+        expect(with_method.parameters.size).to eq(1)
+
+        param = with_method.parameters.first
+        expect(param.name).to eq("service_or_config")
+        expect(param.type).to eq("T.any(::Operandi::Base, T::Hash[T.any(::String, ::Symbol), T.untyped])")
+        expect(param.default).to eq("{}")
+        expect(param.keyword?).to be(true)
+      end
+    end
+
+    context "with inheritance" do
+      let(:parent_service) do
+        Class.new(Operandi::Base) do
+          def self.name
+            "ParentServiceWithClassMethods"
+          end
+
+          arg :parent_arg, type: String
+        end
+      end
+
+      let(:service_class) do
+        parent = parent_service
+        Class.new(parent) do
+          def self.name
+            "ChildServiceWithClassMethods"
+          end
+
+          arg :child_arg, type: Integer
+        end
+      end
+
+      it "generates class methods for child service" do
+        scope = compiler.decorate
+
+        expect(find_method(scope, "run")).not_to be_nil
+        expect(find_method(scope, "run!")).not_to be_nil
+        expect(find_method(scope, "with")).not_to be_nil
+      end
+
+      it "child service .run returns T.attached_class (preserves concrete type)" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        expect(run_method.return_type).to eq("T.attached_class")
+      end
+
+      it "child service .run includes both parent and child arguments" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        param_names = run_method.parameters.map(&:name)
+
+        expect(param_names).to include("parent_arg")
+        expect(param_names).to include("child_arg")
+      end
+    end
+
+    context "with no arguments" do
+      let(:service_class) do
+        Class.new(Operandi::Base) do
+          def self.name
+            "NoArgsService"
+          end
+        end
+      end
+
+      it "generates .run with no parameters" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        expect(run_method.parameters).to be_empty
+      end
+
+      it "generates .run! with no parameters" do
+        scope = compiler.decorate
+
+        run_bang_method = find_method(scope, "run!")
+        expect(run_bang_method.parameters).to be_empty
+      end
+    end
+
+    context "with optional argument before required (Sorbet parameter ordering)" do
+      let(:service_class) do
+        Class.new(Operandi::Base) do
+          def self.name
+            "MixedOrderService"
+          end
+
+          # Optional defined before required
+          arg :name, type: String, optional: true
+          arg :provider, type: String
+          arg :count, type: Integer, default: 1
+        end
+      end
+
+      it "sorts required parameters before optional ones" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        param_kinds = run_method.parameters.map(&:kind)
+
+        # Required params (:keyword) should come before optional (:keyword_opt)
+        required_indices = param_kinds.each_index.select { |i| param_kinds[i] == :keyword }
+        optional_indices = param_kinds.each_index.select { |i| param_kinds[i] == :keyword_opt }
+
+        expect(required_indices.max || -1).to be < (optional_indices.min || Float::INFINITY)
+      end
+
+      it "places provider (required) before name and count (optional)" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        param_names = run_method.parameters.map(&:name)
+
+        provider_index = param_names.index("provider")
+        name_index = param_names.index("name")
+        count_index = param_names.index("count")
+
+        expect(provider_index).to be < name_index
+        expect(provider_index).to be < count_index
+      end
+    end
+
+    context "with various default value types" do
+      let(:service_class) do
+        Class.new(Operandi::Base) do
+          def self.name
+            "DefaultValuesService"
+          end
+
+          arg :string_default, type: String, default: "hello"
+          arg :symbol_default, type: Symbol, default: :world
+          arg :numeric_default, type: Integer, default: 42
+          arg :nil_default, type: String, optional: true, default: nil
+          arg :empty_hash_default, type: Hash, default: {}
+          arg :empty_array_default, type: Array, default: []
+          arg :proc_default, type: String, default: -> { "computed" }
+        end
+      end
+
+      it "formats string defaults correctly" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        param = run_method.parameters.find { |p| p.name == "string_default" }
+        expect(param.default).to eq('"hello"')
+      end
+
+      it "formats symbol defaults correctly" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        param = run_method.parameters.find { |p| p.name == "symbol_default" }
+        expect(param.default).to eq(":world")
+      end
+
+      it "formats numeric defaults correctly" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        param = run_method.parameters.find { |p| p.name == "numeric_default" }
+        expect(param.default).to eq("42")
+      end
+
+      it "formats nil defaults correctly" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        param = run_method.parameters.find { |p| p.name == "nil_default" }
+        expect(param.default).to eq("nil")
+      end
+
+      it "formats empty hash defaults correctly" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        param = run_method.parameters.find { |p| p.name == "empty_hash_default" }
+        expect(param.default).to eq("{}")
+      end
+
+      it "formats empty array defaults correctly" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        param = run_method.parameters.find { |p| p.name == "empty_array_default" }
+        expect(param.default).to eq("[]")
+      end
+
+      it "formats Proc defaults as T.unsafe(nil)" do
+        scope = compiler.decorate
+
+        run_method = find_method(scope, "run")
+        param = run_method.parameters.find { |p| p.name == "proc_default" }
+        expect(param.default).to eq("T.unsafe(nil)")
       end
     end
   end

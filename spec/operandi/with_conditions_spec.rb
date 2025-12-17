@@ -22,7 +22,8 @@ RSpec.describe WithConditions do
   end
 
   context "with wrong arguments type in `run` method" do
-    it { expect { described_class.run("Hello, world!") }.to raise_error(Operandi::ArgTypeError) }
+    # With **kwargs, Ruby raises ArgumentError for positional arguments
+    it { expect { described_class.run("Hello, world!") }.to raise_error(ArgumentError) }
   end
 
   context "with wrong arguments type in `with` method" do

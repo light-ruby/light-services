@@ -106,8 +106,9 @@ RSpec.describe Operandi::Collection::Base do
   end
 
   describe "initialization with non-Hash" do
-    it "raises ArgTypeError" do
-      expect { WithConditions.run("not a hash") }.to raise_error(Operandi::ArgTypeError)
+    it "raises ArgumentError when passing positional argument to run" do
+      # With **kwargs, Ruby raises ArgumentError for positional arguments
+      expect { WithConditions.run("not a hash") }.to raise_error(ArgumentError)
     end
   end
 

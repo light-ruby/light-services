@@ -28,20 +28,20 @@ module Operandi
 
     # Run the service with the configured context.
     #
-    # @param args [Hash] arguments to pass to the service
+    # @param kwargs [Hash] keyword arguments matching service arguments
     # @return [Base] the executed service instance
-    def run(args = {})
-      @service_class.new(extend_arguments(args), @config, @parent_service).tap(&:call)
+    def run(**kwargs)
+      @service_class.new(extend_arguments(kwargs), @config, @parent_service).tap(&:call)
     end
 
     # Run the service and raise an error if it fails.
     #
-    # @param args [Hash] arguments to pass to the service
+    # @param kwargs [Hash] keyword arguments matching service arguments
     # @return [Base] the executed service instance
     # @raise [Error] if the service fails
-    def run!(args = {})
+    def run!(**kwargs)
       @config[:raise_on_error] = true
-      run(args)
+      run(**kwargs)
     end
 
     private

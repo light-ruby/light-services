@@ -61,6 +61,7 @@ module Tapioca
         extend T::Sig
 
         ConstantType = type_member { { fixed: T.class_of(::Operandi::Base) } }
+        CONFIG_TYPE = "T::Hash[T.any(::String, ::Symbol), T.untyped]"
 
         class << self
           extend T::Sig
@@ -75,25 +76,99 @@ module Tapioca
 
         sig { override.void }
         def decorate
-          arguments = constant.arguments
-          outputs = constant.outputs
-
-          return if arguments.empty? && outputs.empty?
-
           root.create_path(constant) do |klass|
+            # Generate class methods (.run, .run!, .with)
+            generate_class_methods(klass)
+
             # Generate argument methods
-            arguments.each_value do |field|
+            constant.arguments.each_value do |field|
               generate_field_methods(klass, field)
             end
 
             # Generate output methods
-            outputs.each_value do |field|
+            constant.outputs.each_value do |field|
               generate_field_methods(klass, field)
             end
           end
         end
 
         private
+
+        sig { params(klass: RBI::Scope).void }
+        def generate_class_methods(klass)
+          generate_run_method(klass)
+          generate_run_bang_method(klass)
+          generate_with_method(klass)
+        end
+
+        sig { params(klass: RBI::Scope).void }
+        def generate_run_method(klass)
+          klass.create_method(
+            "run",
+            parameters: generate_argument_parameters,
+            return_type: "T.attached_class",
+            class_method: true,
+          )
+        end
+
+        sig { params(klass: RBI::Scope).void }
+        def generate_run_bang_method(klass)
+          klass.create_method(
+            "run!",
+            parameters: generate_argument_parameters,
+            return_type: "T.attached_class",
+            class_method: true,
+          )
+        end
+
+        sig { params(klass: RBI::Scope).void }
+        def generate_with_method(klass)
+          klass.create_method(
+            "with",
+            parameters: [
+              create_kw_opt_param("service_or_config", type: "T.any(::Operandi::Base, #{CONFIG_TYPE})", default: "{}"),
+            ],
+            return_type: "::Operandi::BaseWithContext",
+            class_method: true,
+          )
+        end
+
+        sig { returns(T::Array[T.untyped]) }
+        def generate_argument_parameters
+          # Sort required params before optional (Sorbet requirement)
+          constant.arguments
+            .sort_by { |_, field| field.optional || field.default_exists ? 1 : 0 }
+            .map { |name, field| create_argument_param(name, field) }
+        end
+
+        sig { params(name: Symbol, field: ::Operandi::Settings::Field).returns(T.untyped) }
+        def create_argument_param(name, field)
+          ruby_type = resolve_type(field)
+          return create_kw_param(name.to_s, type: ruby_type) unless field.optional || field.default_exists
+
+          param_type = field.optional ? as_nilable_type(ruby_type) : ruby_type
+          create_kw_opt_param(name.to_s, type: param_type, default: format_default_value(field))
+        end
+
+        sig { params(field: ::Operandi::Settings::Field).returns(String) }
+        def format_default_value(field)
+          return "nil" if field.optional && !field.default_exists
+          return "T.unsafe(nil)" unless field.default_exists
+
+          format_literal_default(field.default)
+        end
+
+        sig { params(default: T.untyped).returns(String) }
+        def format_literal_default(default)
+          case default
+          when String, Symbol then default.inspect
+          when Numeric, TrueClass, FalseClass then default.to_s
+          when NilClass then "nil"
+          when Hash then default.empty? ? "{}" : "T.unsafe(nil)"
+          when Array then default.empty? ? "[]" : "T.unsafe(nil)"
+          else "T.unsafe(nil)" # Proc and other complex types
+          end
+        end
 
         sig { params(klass: RBI::Scope, field: ::Operandi::Settings::Field).void }
         def generate_field_methods(klass, field)

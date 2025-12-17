@@ -188,28 +188,26 @@ module Operandi
 
       # Run the service and return the result.
       #
-      # @param args [Hash] arguments to pass to the service
-      # @param config [Hash] runtime configuration overrides
+      # @param kwargs [Hash] keyword arguments matching service arguments
       # @return [Base] the executed service instance
       #
       # @example
       #   result = MyService.run(name: "test")
       #   result.success? # => true
-      def run(args = {}, config = {})
-        new(args, config).tap(&:call)
+      def run(**kwargs)
+        new(kwargs).tap(&:call)
       end
 
       # Run the service and raise an error if it fails.
       #
-      # @param args [Hash] arguments to pass to the service
-      # @param config [Hash] runtime configuration overrides
+      # @param kwargs [Hash] keyword arguments matching service arguments
       # @return [Base] the executed service instance
       # @raise [Error] if the service fails
       #
       # @example
       #   MyService.run!(name: "test") # raises if service fails
-      def run!(args = {}, config = {})
-        run(args, config.merge(raise_on_error: true))
+      def run!(**kwargs)
+        new(kwargs, { raise_on_error: true }).tap(&:call)
       end
 
       # Create a context for running the service with a parent service or config.
