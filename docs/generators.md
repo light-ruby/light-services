@@ -1,15 +1,15 @@
 # Rails Generators
 
-Light Services includes Rails generators to help you quickly set up and create services in your Rails application. These generators follow Rails conventions and integrate seamlessly with your Rails workflow.
+Operandi includes Rails generators to help you quickly set up and create services in your Rails application. These generators follow Rails conventions and integrate seamlessly with your Rails workflow.
 
 ## Install Generator
 
-The install generator sets up Light Services in your Rails application by creating the base `ApplicationService` class and configuration files.
+The install generator sets up Operandi in your Rails application by creating the base `ApplicationService` class and configuration files.
 
 ### Usage
 
 ```bash
-bin/rails generate light_services:install
+bin/rails generate operandi:install
 ```
 
 ### What It Creates
@@ -18,7 +18,7 @@ The install generator creates the following files:
 
 1. **`app/services/application_service.rb`** - Base service class for your application
    ```ruby
-   class ApplicationService < Light::Services::Base
+   class ApplicationService < Operandi::Base
      # Add common arguments, callbacks, or helpers shared across all services.
      #
      # Example: Add a context argument for the current user
@@ -26,8 +26,8 @@ The install generator creates the following files:
    end
    ```
 
-2. **`config/initializers/light_services.rb`** - Configuration file (unless `--skip-initializer` is used)
-   This file contains the global configuration for Light Services in your Rails application.
+2. **`config/initializers/operandi.rb`** - Configuration file (unless `--skip-initializer` is used)
+   This file contains the global configuration for Operandi in your Rails application.
 
 3. **`spec/services/application_service_spec.rb`** - RSpec test file (if RSpec is detected and `--skip-spec` is not used)
 
@@ -40,13 +40,13 @@ The install generator creates the following files:
 
 ```bash
 # Standard installation
-bin/rails generate light_services:install
+bin/rails generate operandi:install
 
 # Skip initializer
-bin/rails generate light_services:install --skip-initializer
+bin/rails generate operandi:install --skip-initializer
 
 # Skip spec file
-bin/rails generate light_services:install --skip-spec
+bin/rails generate operandi:install --skip-spec
 ```
 
 ## Service Generator
@@ -56,7 +56,7 @@ The service generator creates a new service class that inherits from `Applicatio
 ### Usage
 
 ```bash
-bin/rails generate light_services:service NAME [options]
+bin/rails generate operandi:service NAME [options]
 ```
 
 ### What It Creates
@@ -81,7 +81,7 @@ The service generator creates:
 Create a simple service without any predefined structure:
 
 ```bash
-bin/rails generate light_services:service user/create
+bin/rails generate operandi:service user/create
 ```
 
 This creates:
@@ -108,7 +108,7 @@ end
 Create a fully structured service:
 
 ```bash
-bin/rails generate light_services:service CreateOrder \
+bin/rails generate operandi:service CreateOrder \
   --args=user product quantity \
   --steps=validate_stock create_order send_confirmation \
   --outputs=order
@@ -152,7 +152,7 @@ end
 Create a service within a namespace:
 
 ```bash
-bin/rails generate light_services:service payment/process \
+bin/rails generate operandi:service payment/process \
   --args=order payment_method \
   --steps=validate_payment charge_card update_order \
   --outputs=transaction
@@ -195,7 +195,7 @@ end
 Create a service that inherits from a custom parent class:
 
 ```bash
-bin/rails generate light_services:service admin/reports/generate \
+bin/rails generate operandi:service admin/reports/generate \
   --parent=AdminService \
   --args=start_date end_date \
   --steps=fetch_data generate_report \
@@ -225,12 +225,12 @@ end
 You can skip spec file generation with the `--skip-spec` option:
 
 ```bash
-bin/rails generate light_services:service user/create --skip-spec
+bin/rails generate operandi:service user/create --skip-spec
 ```
 
 ## Best Practices
 
-1. **Run the install generator first** - Always run `light_services:install` before creating individual services to set up the base `ApplicationService` class.
+1. **Run the install generator first** - Always run `operandi:install` before creating individual services to set up the base `ApplicationService` class.
 
 2. **Use namespaces** - Organize related services under namespaces (e.g., `User::Create`, `Payment::Process`) to keep your services organized.
 

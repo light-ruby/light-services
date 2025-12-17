@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   # Disable require_arg_type and require_output_type for test services to allow testing other features
   config require_arg_type: false, require_output_type: false
 

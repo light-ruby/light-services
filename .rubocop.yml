@@ -26,8 +26,8 @@ Lint/EmptyFile:
 
 Metrics/AbcSize:
   Exclude:
-    - lib/light/services/dsl/steps_dsl.rb
-    - lib/light/services/messages.rb
+    - lib/operandi/dsl/steps_dsl.rb
+    - lib/operandi/messages.rb
   Max: 20
 
 Metrics/BlockLength:
@@ -66,7 +66,7 @@ RSpec/NestedGroups:
 
 Security/Eval:
   Exclude:
-    - spec/light/services/error_spec.rb
+    - spec/operandi/error_spec.rb
 
 Style/ClassAndModuleChildren:
   Exclude:
@@ -86,7 +86,7 @@ Style/GuardClause:
 
 Style/OptionalBooleanParameter:
   Exclude:
-    - lib/light/services/rspec/matchers/**/*.rb
+    - lib/operandi/rspec/matchers/**/*.rb
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes

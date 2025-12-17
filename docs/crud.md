@@ -400,7 +400,7 @@ end
 **app/services/application\_service.rb:**
 
 ```ruby
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   # Includes
   include CRUDServices
   include RequestConcern

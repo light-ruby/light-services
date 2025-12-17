@@ -1,13 +1,13 @@
 # Configuration
 
-Light Services provides a flexible configuration system that allows you to customize behavior at three levels: global, per-service, and per-call.
+Operandi provides a flexible configuration system that allows you to customize behavior at three levels: global, per-service, and per-call.
 
 ## Global Configuration
 
-Configure Light Services globally using an initializer. For Rails applications, create `config/initializers/light_services.rb`:
+Configure Operandi globally using an initializer. For Rails applications, create `config/initializers/operandi.rb`:
 
 ```ruby
-Light::Services.configure do |config|
+Operandi.configure do |config|
   # Type enforcement
   config.require_arg_type = true        # Require type option for all arguments
   config.require_output_type = true     # Require type option for all outputs
@@ -33,16 +33,16 @@ end
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `require_arg_type` | `true` | Raises `Light::Services::MissingTypeError` when defining arguments without a `type` option |
-| `require_output_type` | `true` | Raises `Light::Services::MissingTypeError` when defining outputs without a `type` option |
+| `require_arg_type` | `true` | Raises `Operandi::MissingTypeError` when defining arguments without a `type` option |
+| `require_output_type` | `true` | Raises `Operandi::MissingTypeError` when defining outputs without a `type` option |
 | `use_transactions` | `true` | Wraps service execution in `ActiveRecord::Base.transaction` |
 | `load_errors` | `true` | Propagates errors to parent service when using `.with(self)` |
 | `break_on_error` | `true` | Stops executing remaining steps when an error is added |
-| `raise_on_error` | `false` | Raises `Light::Services::Error` when an error is added |
+| `raise_on_error` | `false` | Raises `Operandi::Error` when an error is added |
 | `rollback_on_error` | `true` | Rolls back the transaction when an error is added |
 | `load_warnings` | `true` | Propagates warnings to parent service when using `.with(self)` |
 | `break_on_warning` | `false` | Stops executing remaining steps when a warning is added |
-| `raise_on_warning` | `false` | Raises `Light::Services::Error` when a warning is added |
+| `raise_on_warning` | `false` | Raises `Operandi::Error` when a warning is added |
 | `rollback_on_warning` | `false` | Rolls back the transaction when a warning is added |
 
 ## Per-Service Configuration
@@ -100,7 +100,7 @@ Configuration is merged in this order (later overrides earlier):
 
 ```ruby
 # Global: raise_on_error = false
-Light::Services.configure do |config|
+Operandi.configure do |config|
   config.raise_on_error = false
 end
 
@@ -160,7 +160,7 @@ end
 To disable type enforcement globally (not recommended):
 
 ```ruby
-Light::Services.configure do |config|
+Operandi.configure do |config|
   config.require_arg_type = false     # Disable for arguments
   config.require_output_type = false  # Disable for outputs
 end
@@ -194,7 +194,7 @@ end
 If you're not using ActiveRecord or want to manage transactions yourself:
 
 ```ruby
-Light::Services.configure do |config|
+Operandi.configure do |config|
   config.use_transactions = false
 end
 ```
@@ -208,7 +208,7 @@ end
 ```
 
 {% hint style="info" %}
-When `use_transactions` is `true`, Light Services uses `ActiveRecord::Base.transaction(requires_new: true)` to create savepoints, allowing nested services to rollback independently.
+When `use_transactions` is `true`, Operandi uses `ActiveRecord::Base.transaction(requires_new: true)` to create savepoints, allowing nested services to rollback independently.
 {% endhint %}
 
 ## What's Next?

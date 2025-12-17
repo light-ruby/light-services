@@ -13,7 +13,7 @@ require "bundler/setup"
 require "database_cleaner/active_record"
 require "rspec-benchmark"
 
-require "light/services"
+require "operandi"
 require "data/load"
 
 RSpec.configure do |config|

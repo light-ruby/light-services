@@ -1,6 +1,6 @@
-# Light Services
+# Operandi
 
-Light Services is a simple yet powerful way to organize business logic in Ruby applications. Build services that are easy to test, maintain, and understand.
+Operandi is a simple yet powerful way to organize business logic in Ruby applications. Build services that are easy to test, maintain, and understand.
 
 [Get started with Quickstart](quickstart.md)
 
@@ -23,7 +23,7 @@ Light Services is a simple yet powerful way to organize business logic in Ruby a
 ## Simple Example
 
 ```ruby
-class GreetService < Light::Services::Base
+class GreetService < Operandi::Base
   # Arguments
   arg :name, type: String
   arg :age, type: Integer
@@ -50,7 +50,7 @@ end
 ## Advanced Example (with Sorbet types and conditions)
 
 ```ruby
-class User::ResetPassword < Light::Services::Base
+class User::ResetPassword < Operandi::Base
   # Arguments with Sorbet types
   arg :user, type: User, optional: true
   arg :email, type: String, optional: true
@@ -102,4 +102,4 @@ class User::ResetPassword < Light::Services::Base
 end
 ```
 
-[Get started with Light Services](quickstart.md)
+[Get started with Operandi](quickstart.md)

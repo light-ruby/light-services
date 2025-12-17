@@ -217,6 +217,6 @@ end
 
 ## What's Next?
 
-Learn how to integrate Pundit authorization with Light Services:
+Learn how to integrate Pundit authorization with Operandi:
 
 [Next: Pundit Authorization](pundit-authorization.md)

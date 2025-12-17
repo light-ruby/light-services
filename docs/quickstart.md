@@ -1,19 +1,19 @@
 # Quickstart
 
-Light Services are framework-agnostic and can be used in any Ruby project.
+Operandi are framework-agnostic and can be used in any Ruby project.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem "light-services", "~> 3.0"
+gem "operandi", "~> 3.0"
 ```
 
 Or you can install it yourself by running:
 
 ```bash
-bundle add light-services --version "~> 3.0"
+bundle add operandi --version "~> 3.0"
 ```
 
 ## Create `ApplicationService`
@@ -24,10 +24,10 @@ This step is optional but recommended. Creating a base class for your services c
 
 ### For Rails Applications
 
-If you're using Rails, you can use the install generator to set up Light Services automatically:
+If you're using Rails, you can use the install generator to set up Operandi automatically:
 
 ```bash
-bin/rails generate light_services:install
+bin/rails generate operandi:install
 ```
 
 This will create the `ApplicationService` base class, an initializer, and a spec file (if RSpec is detected). See [Rails Generators](generators.md) for more details.
@@ -44,7 +44,7 @@ Next, create your base class. You can name it as you wish, but we recommend `App
 
 ```ruby
 # app/services/application_service.rb
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   # Add common arguments, callbacks, or helpers shared across all services.
   #
   # Example: Add a context argument for the current user
@@ -59,7 +59,7 @@ Now let's create our first service. We'll make a simple service that returns a g
 {% hint style="info" %}
 **Rails users:** You can use the service generator to create services quickly:
 ```bash
-bin/rails generate light_services:service GreetService --args=name --steps=greet --outputs=greeted
+bin/rails generate operandi:service GreetService --args=name --steps=greet --outputs=greeted
 ```
 See [Rails Generators](generators.md) for more information.
 {% endhint %}
@@ -112,7 +112,7 @@ end
 Use `run!` when you want errors to raise exceptions instead of being collected:
 
 ```ruby
-# This will raise Light::Services::Error if any errors are added
+# This will raise Operandi::Error if any errors are added
 service = GreetService.run!(name: "John")
 ```
 
@@ -123,12 +123,12 @@ service = GreetService.run({ name: "John" }, { raise_on_error: true })
 ```
 
 {% hint style="info" %}
-Looks easy, right? But this is just the beginning. Light Services can do much more 🚀
+Looks easy, right? But this is just the beginning. Operandi can do much more 🚀
 {% endhint %}
 
 ## What's Next?
 
-Learn how to configure Light Services for your application:
+Learn how to configure Operandi for your application:
 
 [Next: Configuration](configuration.md)
 

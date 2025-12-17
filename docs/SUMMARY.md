@@ -2,7 +2,7 @@
 
 ## Introduction
 
-* [Light Services](README.md)
+* [Operandi](README.md)
 * [Quickstart](quickstart.md)
 * [Concepts](concepts.md)
 

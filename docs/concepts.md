@@ -1,6 +1,6 @@
 # Concepts
 
-This section covers the core concepts of Light Services: **Arguments**, **Steps**, **Outputs**, **Context**, **Errors**, and **Callbacks**.
+This section covers the core concepts of Operandi: **Arguments**, **Steps**, **Outputs**, **Context**, **Errors**, and **Callbacks**.
 
 ## Service Execution Flow
 

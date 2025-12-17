@@ -1,8 +1,11 @@
 # Changelog
 
-## 4.0.0 (2025-12-16)
+## Unreleased
 
 ### Breaking changes
+
+- Rename gem from `light-services to `operandi`
+  Reason: No folder nesting. The gem isn't really "light" anymore anyway.
 
 - Removed dry-types support. Sorbet runtime types are now the recommended type system for advanced type validation. Plain Ruby class types continue to work as before.
 

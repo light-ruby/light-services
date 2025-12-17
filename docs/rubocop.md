@@ -1,6 +1,6 @@
 # RuboCop Integration
 
-Light Services provides custom RuboCop cops to help enforce best practices in your service definitions.
+Operandi provides custom RuboCop cops to help enforce best practices in your service definitions.
 
 ## Setup
 
@@ -8,12 +8,12 @@ Add this to your `.rubocop.yml`:
 
 ```yaml
 require:
-  - light/services/rubocop
+  - operandi/rubocop
 ```
 
 ## Available Cops
 
-### LightServices/ArgumentTypeRequired
+### Operandi/ArgumentTypeRequired
 
 Ensures all `arg` declarations include a `type:` option.
 
@@ -27,7 +27,7 @@ arg :user_id, type: Integer
 arg :params, type: Hash, default: {}
 ```
 
-### LightServices/OutputTypeRequired
+### Operandi/OutputTypeRequired
 
 Ensures all `output` declarations include a `type:` option.
 
@@ -41,7 +41,7 @@ output :result, type: Hash
 output :data, type: Hash, optional: true
 ```
 
-### LightServices/StepMethodExists
+### Operandi/StepMethodExists
 
 Ensures all `step` declarations have a corresponding method defined.
 
@@ -71,13 +71,13 @@ end
 **Configuration:** Use `ExcludedSteps` for inherited steps:
 
 ```yaml
-LightServices/StepMethodExists:
+Operandi/StepMethodExists:
   ExcludedSteps:
     - initialize_entity
     - assign_attributes
 ```
 
-### LightServices/ConditionMethodExists
+### Operandi/ConditionMethodExists
 
 Ensures symbol conditions (`:if`, `:unless`) have corresponding methods defined.
 
@@ -118,13 +118,13 @@ end
 **Configuration:** Use `ExcludedMethods` for inherited condition methods:
 
 ```yaml
-LightServices/ConditionMethodExists:
+Operandi/ConditionMethodExists:
   ExcludedMethods:
     - admin?
     - guest?
 ```
 
-### LightServices/DslOrder
+### Operandi/DslOrder
 
 Enforces consistent ordering of DSL declarations: `config` → `arg` → `step` → `output`
 
@@ -148,7 +148,7 @@ class MyService < ApplicationService
 end
 ```
 
-### LightServices/MissingPrivateKeyword
+### Operandi/MissingPrivateKeyword
 
 Ensures step methods are defined as private.
 
@@ -174,7 +174,7 @@ class MyService < ApplicationService
 end
 ```
 
-### LightServices/NoDirectInstantiation
+### Operandi/NoDirectInstantiation
 
 Prevents direct instantiation of service classes with `.new`.
 
@@ -191,11 +191,11 @@ UserService.call(name: "John")
 **Configuration:** Customize the pattern for service class detection:
 
 ```yaml
-LightServices/NoDirectInstantiation:
+Operandi/NoDirectInstantiation:
   ServicePattern: 'Service$'  # default: matches classes ending with "Service"
 ```
 
-### LightServices/DeprecatedMethods
+### Operandi/DeprecatedMethods
 
 Detects deprecated `done!` and `done?` method calls and suggests using `stop!` and `stopped?` instead. Includes autocorrection.
 
@@ -228,11 +228,11 @@ end
 **Configuration:** Customize the pattern for service class detection:
 
 ```yaml
-LightServices/DeprecatedMethods:
+Operandi/DeprecatedMethods:
   ServicePattern: 'Service$'  # default: matches classes ending with "Service"
 ```
 
-### LightServices/PreferFailMethod
+### Operandi/PreferFailMethod
 
 Detects `errors.add(:base, "message")` calls and suggests using the `fail!("message")` helper instead. Includes autocorrection.
 
@@ -267,7 +267,7 @@ The cop only detects `errors.add(:base, ...)` calls. It does not flag `errors.ad
 **Configuration:** Customize the base service classes to check:
 
 ```yaml
-LightServices/PreferFailMethod:
+Operandi/PreferFailMethod:
   BaseServiceClasses:
     - ApplicationService
     - BaseCreator
@@ -279,37 +279,37 @@ Full configuration example:
 
 ```yaml
 require:
-  - light/services/rubocop
+  - operandi/rubocop
 
-LightServices/ArgumentTypeRequired:
+Operandi/ArgumentTypeRequired:
   Enabled: true
 
-LightServices/OutputTypeRequired:
+Operandi/OutputTypeRequired:
   Enabled: true
 
-LightServices/StepMethodExists:
+Operandi/StepMethodExists:
   Enabled: true
   ExcludedSteps: []
 
-LightServices/ConditionMethodExists:
+Operandi/ConditionMethodExists:
   Enabled: true
   ExcludedMethods: []
 
-LightServices/DslOrder:
+Operandi/DslOrder:
   Enabled: true
 
-LightServices/MissingPrivateKeyword:
+Operandi/MissingPrivateKeyword:
   Enabled: true
 
-LightServices/NoDirectInstantiation:
-  Enabled: true
-  ServicePattern: 'Service$'
-
-LightServices/DeprecatedMethods:
+Operandi/NoDirectInstantiation:
   Enabled: true
   ServicePattern: 'Service$'
 
-LightServices/PreferFailMethod:
+Operandi/DeprecatedMethods:
+  Enabled: true
+  ServicePattern: 'Service$'
+
+Operandi/PreferFailMethod:
   Enabled: true
   BaseServiceClasses:
     - ApplicationService
@@ -318,7 +318,7 @@ LightServices/PreferFailMethod:
 To disable a cop for specific files:
 
 ```yaml
-LightServices/ArgumentTypeRequired:
+Operandi/ArgumentTypeRequired:
   Exclude:
     - 'spec/**/*'
     - 'test/**/*'

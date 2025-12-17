@@ -1,10 +1,10 @@
 # Errors
 
-Errors are a natural part of every application. This guide explores how to handle errors within Light Services, drawing parallels to ActiveModel errors.
+Errors are a natural part of every application. This guide explores how to handle errors within Operandi, drawing parallels to ActiveModel errors.
 
 ## Error Structure
 
-Light Service errors follow a structure similar to ActiveModel errors. Here's a simplified example:
+Operandi errors follow a structure similar to ActiveModel errors. Here's a simplified example:
 
 ```ruby
 {
@@ -196,7 +196,7 @@ end
 
 ## Checking for Errors and Warnings
 
-Light Services provides convenient methods to check error/warning states:
+Operandi provides convenient methods to check error/warning states:
 
 ```ruby
 service = MyService.run(args)
@@ -210,22 +210,22 @@ service.errors?   # => true/false (same as errors.any?)
 service.warnings? # => true/false (same as warnings.any?)
 ```
 
-By following these guidelines, you can effectively manage errors and warnings in Light Services, ensuring a smoother and more robust application experience.
+By following these guidelines, you can effectively manage errors and warnings in Operandi, ensuring a smoother and more robust application experience.
 
 ## Exception Classes
 
-Light Services defines several exception classes for different error scenarios:
+Operandi defines several exception classes for different error scenarios:
 
 | Exception | Description |
 |-----------|-------------|
-| `Light::Services::Error` | Base exception class for all Light Services errors |
-| `Light::Services::ArgTypeError` | Raised when an argument or output type validation fails |
-| `Light::Services::ReservedNameError` | Raised when using a reserved name for arguments, outputs, or steps |
-| `Light::Services::InvalidNameError` | Raised when using an invalid name format |
-| `Light::Services::NoStepsError` | Raised when a service has no steps defined and no `run` method |
-| `Light::Services::MissingTypeError` | Raised when defining an argument or output without a `type` option when `require_arg_type` or `require_output_type` is enabled |
-| `Light::Services::StopExecution` | Control flow exception raised by `stop_immediately!` to halt execution without rollback |
-| `Light::Services::FailExecution` | Control flow exception raised by `fail_immediately!` to halt execution and rollback transactions |
+| `Operandi::Error` | Base exception class for all Operandi errors |
+| `Operandi::ArgTypeError` | Raised when an argument or output type validation fails |
+| `Operandi::ReservedNameError` | Raised when using a reserved name for arguments, outputs, or steps |
+| `Operandi::InvalidNameError` | Raised when using an invalid name format |
+| `Operandi::NoStepsError` | Raised when a service has no steps defined and no `run` method |
+| `Operandi::MissingTypeError` | Raised when defining an argument or output without a `type` option when `require_arg_type` or `require_output_type` is enabled |
+| `Operandi::StopExecution` | Control flow exception raised by `stop_immediately!` to halt execution without rollback |
+| `Operandi::FailExecution` | Control flow exception raised by `fail_immediately!` to halt execution and rollback transactions |
 
 ### MissingTypeError
 
@@ -233,7 +233,7 @@ This exception is raised when you define an argument or output without a `type` 
 
 ```ruby
 class MyService < ApplicationService
-  arg :name  # => raises Light::Services::MissingTypeError
+  arg :name  # => raises Operandi::MissingTypeError
 end
 ```
 
@@ -266,7 +266,7 @@ class EmptyService < ApplicationService
   # No steps defined and no run method
 end
 
-EmptyService.run # => raises Light::Services::NoStepsError
+EmptyService.run # => raises Operandi::NoStepsError
 ```
 
 To fix this, either define at least one step or implement a `run` method:

@@ -1,6 +1,6 @@
 # Pundit Authorization
 
-[Pundit](https://github.com/varvet/pundit) is a simple, flexible authorization library for Ruby on Rails. This recipe shows how to integrate Pundit authorization into your Light Services.
+[Pundit](https://github.com/varvet/pundit) is a simple, flexible authorization library for Ruby on Rails. This recipe shows how to integrate Pundit authorization into your Operandi.
 
 ## Why Use Pundit with Services?
 
@@ -70,7 +70,7 @@ end
 
 ```ruby
 # app/services/application_service.rb
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   include AuthorizeUser
 end
 ```
@@ -298,7 +298,7 @@ end
 Or create a "system" flag:
 
 ```ruby
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   arg :system, type: [TrueClass, FalseClass], default: false, context: true
 end
 

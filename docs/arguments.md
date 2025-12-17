@@ -80,7 +80,7 @@ See the [Configuration documentation](configuration.md) for more details.
 
 ### Sorbet Runtime Types
 
-Light Services supports [Sorbet runtime types](https://sorbet.org/docs/runtime) for type validation. Sorbet types **only validate** and do not coerce values.
+Operandi supports [Sorbet runtime types](https://sorbet.org/docs/runtime) for type validation. Sorbet types **only validate** and do not coerce values.
 
 ```ruby
 require "sorbet-runtime"
@@ -196,7 +196,7 @@ Context arguments are automatically passed to all child services in the same con
 Learn more about context in the [Context documentation](context.md).
 
 ```ruby
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   arg :current_user, type: User, optional: true, context: true
 end
 ```

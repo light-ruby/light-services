@@ -1,19 +1,19 @@
 ---
-description: "Rules for writing RSpec tests for Light Services - testing arguments, steps, outputs, and behavior"
+description: "Rules for writing RSpec tests for Operandi - testing arguments, steps, outputs, and behavior"
 globs: "**/spec/services/*_spec.rb"
 alwaysApply: false
 ---
 
-# Light Services RSpec Testing Rules
+# Operandi RSpec Testing Rules
 
-When writing RSpec tests for services that inherit from `Light::Services::Base` or `ApplicationService`, follow these patterns.
+When writing RSpec tests for services that inherit from `Operandi::Base` or `ApplicationService`, follow these patterns.
 
 ## Setup
 
 Add to `spec/spec_helper.rb` or `spec/rails_helper.rb`:
 
 ```ruby
-require "light/services/rspec"
+require "operandi/rspec"
 ```
 
 ## Test Structure
@@ -158,7 +158,7 @@ it { is_expected.to have_warning_on(:format).with_message("format is deprecated"
 it { expect(described_class.run(amount: -100)).to be_failed }
 
 # .run! raises exception
-it { expect { described_class.run!(amount: -100) }.to raise_error(Light::Services::Error, /must be positive/) }
+it { expect { described_class.run!(amount: -100) }.to raise_error(Operandi::Error, /must be positive/) }
 ```
 
 ### Config Overrides
@@ -166,7 +166,7 @@ it { expect { described_class.run!(amount: -100) }.to raise_error(Light::Service
 ```ruby
 # With raise_on_error
 expect { described_class.run({ invalid: true }, { raise_on_error: true }) }
-  .to raise_error(Light::Services::Error)
+  .to raise_error(Operandi::Error)
 
 # With use_transactions: false
 service = described_class.with(use_transactions: false).run(params)
@@ -227,10 +227,10 @@ expect(service.stopped?).to be true
 
 ```ruby
 # Required argument nil
-expect { described_class.run(name: nil) }.to raise_error(Light::Services::ArgTypeError)
+expect { described_class.run(name: nil) }.to raise_error(Operandi::ArgTypeError)
 
 # Wrong type
-expect { described_class.run(name: 123) }.to raise_error(Light::Services::ArgTypeError, /must be a String/)
+expect { described_class.run(name: 123) }.to raise_error(Operandi::ArgTypeError, /must be a String/)
 
 # Optional accepts nil
 expect(described_class.run(name: "John", nickname: nil)).to be_successful
@@ -266,7 +266,7 @@ end
 
 ```ruby
 # app/services/application_service.rb
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   output :executed_steps, type: Array, default: -> { [] }
   after_step_run { |service, step| service.executed_steps << step }
 end
@@ -275,7 +275,7 @@ end
 ### Callback Tracking
 
 ```ruby
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   output :callback_log, type: Array, default: -> { [] }
   before_service_run { |s| s.callback_log << :before_service_run }
   after_service_run  { |s| s.callback_log << :after_service_run }

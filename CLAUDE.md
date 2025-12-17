@@ -2,9 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## About Light Services
+## About Operandi
 
-Light Services is a Ruby gem providing a service architecture pattern for organizing business logic. Services are defined as classes with `arguments`, `steps`, and `outputs`, featuring transactions, inheritance, error handling, and context sharing.
+Operandi is a Ruby gem providing a service architecture pattern for organizing business logic. Services are defined as classes with `arguments`, `steps`, and `outputs`, featuring transactions, inheritance, error handling, and context sharing.
 
 ## Development Commands
 
@@ -42,26 +42,26 @@ bundle exec rake
 
 ### Core Components
 
-1. **Base Service (`lib/light/services/base.rb:15`)**
+1. **Base Service (`lib/operandi/base.rb:15`)**
    - Main service class that all services inherit from
    - Handles service lifecycle: initialization, execution, callbacks, error management
    - Provides DSL for defining arguments, steps, and outputs
    - Manages transactions and error propagation to parent services
 
-2. **Callbacks System (`lib/light/services/callbacks.rb:5`)**
+2. **Callbacks System (`lib/operandi/callbacks.rb:5`)**
    - Supports service and step-level callbacks
    - Events: `before_service_run`, `after_service_run`, `around_service_run`, `on_service_success`, `on_service_failure`
    - Step events: `before_step_run`, `after_step_run`, `around_step_run`, `on_step_success`, `on_step_failure`
 
 3. **Settings**
-   - **Step (`lib/light/services/settings/step.rb:7`)**: Handles step execution with conditional logic (`if`, `unless`, `always`)
-   - **Field (`lib/light/services/settings/field.rb`)**: Manages argument and output validation and type checking
+   - **Step (`lib/operandi/settings/step.rb:7`)**: Handles step execution with conditional logic (`if`, `unless`, `always`)
+   - **Field (`lib/operandi/settings/field.rb`)**: Manages argument and output validation and type checking
 
-4. **Messages System (`lib/light/services/messages.rb`)**
+4. **Messages System (`lib/operandi/messages.rb`)**
    - Collects errors and warnings with options for breaking, raising, or rolling back
    - Supports copying messages between parent and child services
 
-5. **Collection (`lib/light/services/collection.rb`)**
+5. **Collection (`lib/operandi/collection.rb`)**
    - Manages arguments and outputs as collections with validation and defaults
    - Supports Sorbet runtime types for type validation
 
@@ -69,7 +69,7 @@ bundle exec rake
 
 Services use a declarative DSL:
 ```ruby
-class ExampleService < Light::Services::Base
+class ExampleService < Operandi::Base
   # Define input arguments
   arg :name, type: String
   arg :age, type: Integer, optional: true, default: 25

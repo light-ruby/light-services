@@ -1,0 +1,15 @@
+Description:
+    Installs Operandi into your Rails application by creating
+    an ApplicationService base class and an optional initializer.
+
+Example:
+    bin/rails generate operandi:install
+
+    This will create:
+        app/services/application_service.rb
+        config/initializers/operandi.rb
+        spec/services/application_service_spec.rb (if RSpec is detected)
+
+Options:
+    --skip-initializer  Skip creating the initializer file
+    --skip-spec         Skip creating the spec file

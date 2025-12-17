@@ -1,11 +1,11 @@
-# 🚀 Light Services
+# 🚀 Operandi
 
-Light Services is a simple yet powerful way to organize business logic in Ruby applications. Build services that are easy to test, maintain, and understand.
+Operandi is a simple yet powerful way to organize business logic in Ruby applications. Build services that are easy to test, maintain, and understand.
 
-![GitHub CI](https://github.com/light-ruby/light-services/actions/workflows/ci.yml/badge.svg)
-[![Codecov](https://codecov.io/gh/light-ruby/light-services/graph/badge.svg?token=IGJNZ2BQ26)](https://codecov.io/gh/light-ruby/light-services)
+![GitHub CI](https://github.com/akodkod/operandi/actions/workflows/ci.yml/badge.svg)
+[![Codecov](https://codecov.io/gh/akodkod/operandi/graph/badge.svg?token=IGJNZ2BQ26)](https://codecov.io/gh/akodkod/operandi)
 
-[Get started with Quickstart](https://light-services.kodkod.me/quickstart)
+[Get started with Quickstart](https://operandi.kodkod.me/quickstart)
 
 ## Features
 
@@ -25,17 +25,17 @@ Light Services is a simple yet powerful way to organize business logic in Ruby a
 ## Installation
 
 ```ruby
-gem "light-services", "~> 4.0"
+gem "operandi", "~> 4.0"
 ```
 
 ```bash
-rails generate light_services:install
+rails generate operandi:install
 ```
 
 ## Simple Example
 
 ```ruby
-class GreetService < Light::Services::Base
+class GreetService < Operandi::Base
   # Arguments
   arg :name, type: String
   arg :age, type: Integer
@@ -62,7 +62,7 @@ end
 ## Advanced Example (with Sorbet types and conditions)
 
 ```ruby
-class User::ResetPassword < Light::Services::Base
+class User::ResetPassword < Operandi::Base
   # Arguments with Sorbet types
   arg :user, type: User, optional: true
   arg :email, type: String, optional: true
@@ -114,23 +114,23 @@ class User::ResetPassword < Light::Services::Base
 end
 ```
 
-[Get started with Light Services](https://light-services.kodkod.me/quickstart)
+[Get started with Operandi](https://operandi.kodkod.me/quickstart)
 
 ## Rails Generators
 
-Light Services includes Rails generators to help you quickly set up and create services in your Rails application.
+Operandi includes Rails generators to help you quickly set up and create services in your Rails application.
 
 ### Install Generator
 
-Set up Light Services in your Rails application:
+Set up Operandi in your Rails application:
 
 ```bash
-bin/rails generate light_services:install
+bin/rails generate operandi:install
 ```
 
 This creates:
 - `app/services/application_service.rb` - Base service class for your application
-- `config/initializers/light_services.rb` - Configuration file
+- `config/initializers/operandi.rb` - Configuration file
 - `spec/services/application_service_spec.rb` - RSpec test file (if RSpec is detected)
 
 **Options:**
@@ -143,10 +143,10 @@ Create a new service class:
 
 ```bash
 # Basic service
-bin/rails generate light_services:service user/create
+bin/rails generate operandi:service user/create
 
 # Service with predefined structure
-bin/rails generate light_services:service CreateOrder \
+bin/rails generate operandi:service CreateOrder \
   --args=user product \
   --steps=validate process \
   --outputs=order
@@ -165,7 +165,7 @@ This creates:
 
 ## Documentation
 
-You can find the full documentation at [light-services.kodkod.me](https://light-services.kodkod.me).
+You can find the full documentation at [operandi.kodkod.me](https://operandi.kodkod.me).
 
 ## License
 

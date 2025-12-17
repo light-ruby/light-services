@@ -21,14 +21,14 @@ RSpec.describe "Sorbet Runtime Types Support" do # rubocop:disable RSpec/Describ
       context "with invalid string (integer instead of string)" do
         it "raises ArgTypeError" do
           expect { described_class.run(name: 123, age: 25) }
-            .to raise_error(Light::Services::ArgTypeError, /`name`.*expected String.*got Integer/)
+            .to raise_error(Operandi::ArgTypeError, /`name`.*expected String.*got Integer/)
         end
       end
 
       context "with invalid integer (string instead of integer)" do
         it "raises ArgTypeError" do
           expect { described_class.run(name: "John", age: "not a number") }
-            .to raise_error(Light::Services::ArgTypeError, /`age`.*expected Integer.*got String/)
+            .to raise_error(Operandi::ArgTypeError, /`age`.*expected Integer.*got String/)
         end
       end
 
@@ -47,7 +47,7 @@ RSpec.describe "Sorbet Runtime Types Support" do # rubocop:disable RSpec/Describ
 
         it "raises error for invalid type" do
           expect { described_class.run(name: "John", age: 25, status: 123) }
-            .to raise_error(Light::Services::ArgTypeError, /`status`/)
+            .to raise_error(Operandi::ArgTypeError, /`status`/)
         end
       end
 
@@ -81,7 +81,7 @@ RSpec.describe "Sorbet Runtime Types Support" do # rubocop:disable RSpec/Describ
 
         it "raises error for non-array value" do
           expect { described_class.run(name: "John", age: 25, tags: "not an array") }
-            .to raise_error(Light::Services::ArgTypeError, /`tags`/)
+            .to raise_error(Operandi::ArgTypeError, /`tags`/)
         end
       end
 
@@ -100,7 +100,7 @@ RSpec.describe "Sorbet Runtime Types Support" do # rubocop:disable RSpec/Describ
 
         it "raises error for non-boolean value" do
           expect { described_class.run(name: "John", age: 25, active: "yes") }
-            .to raise_error(Light::Services::ArgTypeError, /`active`/)
+            .to raise_error(Operandi::ArgTypeError, /`active`/)
         end
       end
     end
@@ -131,7 +131,7 @@ RSpec.describe "Sorbet Runtime Types Support" do # rubocop:disable RSpec/Describ
       context "when passing a string where integer is expected" do
         it "raises an error instead of coercing" do
           expect { described_class.run(name: "John", age: "30") }
-            .to raise_error(Light::Services::ArgTypeError, /`age`.*expected Integer/)
+            .to raise_error(Operandi::ArgTypeError, /`age`.*expected Integer/)
         end
       end
     end

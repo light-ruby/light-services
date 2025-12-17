@@ -1,6 +1,6 @@
 # Testing
 
-Testing Light Services is straightforward. This guide covers strategies for unit testing your services effectively.
+Testing Operandi is straightforward. This guide covers strategies for unit testing your services effectively.
 
 ## Basic Service Testing
 
@@ -209,7 +209,7 @@ RSpec.describe MyService do
     it "raises exception when configured" do
       expect {
         described_class.run({ invalid: true }, { raise_on_error: true })
-      }.to raise_error(Light::Services::Error)
+      }.to raise_error(Operandi::Error)
     end
 
     it "collects errors by default" do
@@ -239,7 +239,7 @@ RSpec.describe Payment::Process do
     it "raises exception on error" do
       expect {
         described_class.run!(amount: -100)
-      }.to raise_error(Light::Services::Error, /Amount must be positive/)
+      }.to raise_error(Operandi::Error, /Amount must be positive/)
     end
   end
 end
@@ -301,13 +301,13 @@ RSpec.describe MyService do
     it "requires name argument" do
       expect {
         described_class.run(name: nil)
-      }.to raise_error(Light::Services::ArgTypeError)
+      }.to raise_error(Operandi::ArgTypeError)
     end
 
     it "validates argument type" do
       expect {
         described_class.run(name: 123) # expects String
-      }.to raise_error(Light::Services::ArgTypeError, /must be a String/)
+      }.to raise_error(Operandi::ArgTypeError, /must be a String/)
     end
 
     it "accepts optional arguments as nil" do
@@ -369,14 +369,14 @@ end
 
 ## Custom RSpec Matchers
 
-Light Services provides built-in RSpec matchers to make testing more expressive and readable.
+Operandi provides built-in RSpec matchers to make testing more expressive and readable.
 
 ### Setup
 
 Add this to your `spec/spec_helper.rb` or `spec/rails_helper.rb`:
 
 ```ruby
-require 'light/services/rspec'
+require 'operandi/rspec'
 ```
 
 This automatically includes all matchers in your RSpec tests.
@@ -474,7 +474,7 @@ end
 These matchers require step tracking. Add this to your service:
 
 ```ruby
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   output :executed_steps, default: -> { [] }
   
   after_step_run do |service, step_name|
@@ -512,7 +512,7 @@ end
 These matchers require callback tracking. Add this to your service:
 
 ```ruby
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   output :callback_log, default: -> { [] }
   
   before_service_run { |service| service.callback_log << :before_service_run }

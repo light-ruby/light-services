@@ -1,6 +1,6 @@
 # Sorbet Runtime Types
 
-Light Services supports [Sorbet runtime types](https://sorbet.org/docs/runtime) for type validation of arguments and outputs. This provides runtime type checking using Sorbet's type system.
+Operandi supports [Sorbet runtime types](https://sorbet.org/docs/runtime) for type validation of arguments and outputs. This provides runtime type checking using Sorbet's type system.
 
 {% hint style="info" %}
 This page covers **runtime type checking** with `sorbet-runtime`. For **static type analysis** with Sorbet and RBI file generation, see [Tapioca / Sorbet Integration](tapioca.md).
@@ -85,7 +85,7 @@ arg :items, type: Array
 ```
 
 {% hint style="info" %}
-You can also use `T::Utils.coerce(String)` explicitly, but it's not required - Light Services handles the coercion automatically.
+You can also use `T::Utils.coerce(String)` explicitly, but it's not required - Operandi handles the coercion automatically.
 {% endhint %}
 
 ### Nilable Types
@@ -208,11 +208,11 @@ With Tapioca configured, you get:
 
 ## Error Messages
 
-When type validation fails, Light Services raises `ArgTypeError` with a descriptive message:
+When type validation fails, Operandi raises `ArgTypeError` with a descriptive message:
 
 ```ruby
 service = User::Create.run(name: 123, age: 25)
-# => Light::Services::ArgTypeError: User::Create argument `name` expected String, but got Integer with value: 123
+# => Operandi::ArgTypeError: User::Create argument `name` expected String, but got Integer with value: 123
 ```
 
 ## Full Example

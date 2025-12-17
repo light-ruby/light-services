@@ -1,6 +1,6 @@
 # Best Practices
 
-This guide explores best practices for building applications with Light Services, keeping things simple and effective.
+This guide explores best practices for building applications with Operandi, keeping things simple and effective.
 
 ## Create Top-Level Services
 
@@ -141,7 +141,7 @@ end
 
 ```ruby
 # app/services/application_service.rb
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   include AuthorizeUser
 end
 ```

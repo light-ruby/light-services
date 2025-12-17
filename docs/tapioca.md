@@ -1,10 +1,10 @@
 # Tapioca / Sorbet Integration
 
-Light Services provides a [Tapioca](https://github.com/Shopify/tapioca) DSL compiler that generates RBI signatures for methods automatically created by the `arg` and `output` DSL macros. This enables full Sorbet type checking for your services.
+Operandi provides a [Tapioca](https://github.com/Shopify/tapioca) DSL compiler that generates RBI signatures for methods automatically created by the `arg` and `output` DSL macros. This enables full Sorbet type checking for your services.
 
 ## Features
 
-When you use the `arg` or `output` keywords, Light Services dynamically generates methods at runtime:
+When you use the `arg` or `output` keywords, Operandi dynamically generates methods at runtime:
 
 ```ruby
 class CreateUser < ApplicationService
@@ -84,7 +84,7 @@ bundle exec tapioca init
 
 ### 2. Generate RBI Files
 
-The Light Services compiler is automatically discovered by Tapioca. Generate RBI files with:
+The Operandi compiler is automatically discovered by Tapioca. Generate RBI files with:
 
 ```bash
 bundle exec tapioca dsl
@@ -97,7 +97,7 @@ This will create RBI files in `sorbet/rbi/dsl/` for all your services.
 After adding or modifying `arg`/`output` declarations, regenerate the RBI files:
 
 ```bash
-bundle exec tapioca dsl LightServices
+bundle exec tapioca dsl Operandi
 ```
 
 ## Type Mappings
@@ -173,7 +173,7 @@ The compiler handles inherited arguments and outputs. If a child service inherit
 
 ### RBI files not generated
 
-Ensure Light Services is properly loaded in your application. The compiler only runs if `Light::Services::Base` is defined.
+Ensure Operandi is properly loaded in your application. The compiler only runs if `Operandi::Base` is defined.
 
 ### Types showing as `T.untyped`
 

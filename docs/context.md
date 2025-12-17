@@ -65,7 +65,7 @@ Context arguments are shared between services running in the same context. This 
 It's recommended to use context arguments only when necessary and keep them as close to the root service as possible. For example, you can use them to share `current_user` or `current_organization` between services.
 
 ```ruby
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   arg :current_user, type: User, context: true
 end
 ```
@@ -122,7 +122,7 @@ end
 
 # What's Next?
 
-The next step is to learn about error handling in Light Service.
+The next step is to learn about error handling in Operandi.
 
 [Next: Errors](errors.md)
 

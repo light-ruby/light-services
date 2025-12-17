@@ -1,12 +1,12 @@
 ---
-description: "Rules for managing Light Services - Ruby service objects with arguments, steps, and outputs"
+description: "Rules for managing Operandi - Ruby service objects with arguments, steps, and outputs"
 globs: "**/services/**/*.rb"
 alwaysApply: false
 ---
 
-# Light Services Creation Rules
+# Operandi Creation Rules
 
-When creating or modifying services that inherit from `Light::Services::Base` or `ApplicationService`, follow these patterns.
+When creating or modifying services that inherit from `Operandi::Base` or `ApplicationService`, follow these patterns.
 
 ## Service Structure
 
@@ -201,7 +201,7 @@ on_service_failure :notify_error
 
 ## Using Sorbet Runtime Types
 
-Light Services supports [Sorbet runtime types](https://sorbet.org/docs/runtime) for type validation. Sorbet types **only validate** and do not coerce values.
+Operandi supports [Sorbet runtime types](https://sorbet.org/docs/runtime) for type validation. Sorbet types **only validate** and do not coerce values.
 
 ### Arguments with Sorbet Types
 

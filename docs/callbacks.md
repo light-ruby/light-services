@@ -250,7 +250,7 @@ end
 Callbacks are inherited from parent classes. Child class callbacks run after parent callbacks:
 
 ```ruby
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   before_service_run :log_service_start
 
   private
@@ -278,7 +278,7 @@ end
 Callbacks accumulate through the inheritance chain:
 
 ```ruby
-class BaseService < Light::Services::Base
+class BaseService < Operandi::Base
   before_service_run :base_callback
 end
 
@@ -335,7 +335,7 @@ on_step_crash
 ### Logging
 
 ```ruby
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   before_service_run :log_start
   after_service_run :log_finish
 
@@ -362,7 +362,7 @@ end
 ### Benchmarking
 
 ```ruby
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   around_service_run :benchmark
 
   private
@@ -382,7 +382,7 @@ end
 ### Error Tracking
 
 ```ruby
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   on_service_failure :track_failure
   on_step_failure :track_step_error
   on_step_crash :track_step_crash
@@ -444,7 +444,7 @@ end
 ### Database Instrumentation
 
 ```ruby
-class ApplicationService < Light::Services::Base
+class ApplicationService < Operandi::Base
   around_step_run :track_queries
 
   private
