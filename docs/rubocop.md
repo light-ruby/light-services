@@ -273,6 +273,92 @@ Operandi/PreferFailMethod:
     - BaseCreator
 ```
 
+### Operandi/PreferOptionalOverDefaultNil
+
+Detects `default: nil` usage and suggests using `optional: true` instead. Includes autocorrection.
+
+```ruby
+# bad
+class MyService < ApplicationService
+  arg :user, type: User, default: nil
+  output :result, type: Hash, default: nil
+end
+
+# good
+class MyService < ApplicationService
+  arg :user, type: User, optional: true
+  output :result, type: Hash, optional: true
+end
+
+# bad - redundant default: nil
+class MyService < ApplicationService
+  arg :user, type: User, optional: true, default: nil
+end
+
+# good
+class MyService < ApplicationService
+  arg :user, type: User, optional: true
+end
+```
+
+### Operandi/RedundantOptional
+
+Detects redundant `optional: true` when a `default:` value is provided. Includes autocorrection.
+
+```ruby
+# bad
+class MyService < ApplicationService
+  arg :name, type: String, optional: true, default: "guest"
+end
+
+# good
+class MyService < ApplicationService
+  arg :name, type: String, default: "guest"
+end
+```
+
+### Operandi/ReservedName
+
+Detects reserved argument and output names that conflict with Operandi internals.
+
+```ruby
+# bad
+class MyService < ApplicationService
+  arg :errors, type: Array
+  arg :warnings, type: Array
+  output :context, type: Hash
+end
+
+# good
+class MyService < ApplicationService
+  arg :validation_errors, type: Array
+  arg :user_warnings, type: Array
+  output :result_context, type: Hash
+end
+```
+
+### Operandi/NoHashArgument
+
+Detects hash arguments passed to `.run` or `.run!` instead of keyword arguments. Disabled by default.
+
+```ruby
+# bad
+UserService.run({ name: "John", age: 30 })
+UserService.run!(options)
+
+# good
+UserService.run(name: "John", age: 30)
+UserService.run!(**options)
+```
+
+**Configuration:** Customize the pattern for service class detection:
+
+```yaml
+Operandi/NoHashArgument:
+  Enabled: true
+  ServicePattern: 'Service$'  # default: matches classes ending with "Service"
+```
+
 ## Configuration
 
 Full configuration example:
@@ -313,6 +399,19 @@ Operandi/PreferFailMethod:
   Enabled: true
   BaseServiceClasses:
     - ApplicationService
+
+Operandi/PreferOptionalOverDefaultNil:
+  Enabled: true
+
+Operandi/RedundantOptional:
+  Enabled: true
+
+Operandi/ReservedName:
+  Enabled: true
+
+Operandi/NoHashArgument:
+  Enabled: false
+  ServicePattern: 'Service$'
 ```
 
 To disable a cop for specific files:

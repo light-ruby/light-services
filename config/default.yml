@@ -31,6 +31,10 @@ Operandi/OutputTypeRequired:
   Enabled: true
   Description: "Requires a `type:` option for all outputs."
 
+Operandi/PreferOptionalOverDefaultNil:
+  Enabled: true
+  Description: "Prefers `optional: true` over `default: nil`."
+
 Operandi/PreferFailMethod:
   Enabled: true
   Description: "Prefers `fail!` over manual error handling."
