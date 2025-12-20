@@ -46,3 +46,4 @@ Operandi/ReservedName:
 Operandi/StepMethodExists:
   Enabled: true
   Description: "Ensures step methods exist in Operandi services."
+  ExcludedSteps: []
