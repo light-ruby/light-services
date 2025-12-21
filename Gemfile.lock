@@ -50,6 +50,7 @@ GEM
     logger (1.7.0)
     mini_portile2 (2.8.9)
     minitest (5.27.0)
+    openssl (3.3.2)
     parallel (1.27.0)
     parser (3.3.10.0)
       ast (~> 2.4.1)
@@ -127,6 +128,7 @@ DEPENDENCIES
   codecov
   connection_pool (< 3)
   database_cleaner-active_record
+  openssl (= 3.3.2)
   operandi!
   rake
   rspec

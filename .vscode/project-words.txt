@@ -1,4 +1,9 @@
+activerecord
+andrewmcodes
+bindir
 Hanami
+Kodkod
 kwargs
+libsqlite
 nilable
 rubocop

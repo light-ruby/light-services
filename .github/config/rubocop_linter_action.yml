@@ -1,5 +1,0 @@
-versions:
-  - rubocop: "1.81.7"
-  - rubocop-performance: "1.26.1"
-  - rubocop-rake: "0.7.1"
-  - rubocop-rspec: "3.8.0"
