@@ -9,18 +9,22 @@ module Interface
   Position = Struct.new(:line, :character, keyword_init: true)
 end
 
+# Mock URI class for testing - avoids polluting the real URI::Generic
+class MockUri
+  def initialize(path)
+    @path = path
+  end
+
+  def to_s
+    "file://#{@path}"
+  end
+end
+
+# Stub the from_path method without redefining the class
 module URI
   class Generic
     def self.from_path(path:)
-      new(path)
-    end
-
-    def initialize(path)
-      @path = path
-    end
-
-    def to_s
-      "file://#{@path}"
+      MockUri.new(path)
     end
   end
 end
