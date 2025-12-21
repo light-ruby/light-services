@@ -112,7 +112,7 @@ GEM
       simplecov (~> 0.19)
     simplecov-html (0.13.2)
     simplecov_json_formatter (0.1.4)
-    sorbet-runtime (0.6.12854)
+    sorbet-runtime (0.6.12865)
     sqlite3 (2.8.1)
       mini_portile2 (~> 2.8.0)
     timeout (0.6.0)
