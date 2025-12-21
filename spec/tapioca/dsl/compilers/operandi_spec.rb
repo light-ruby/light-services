@@ -6,7 +6,7 @@ require "spec_helper"
 # Must be defined before Tapioca mocks since Compiler extends T::Sig
 unless defined?(T::Sig)
   module T
-    def self.sig(&block); end
+    def self.sig(&); end
 
     def self.type_member
       # Returns a placeholder for type_member
@@ -14,7 +14,7 @@ unless defined?(T::Sig)
     end
 
     module Sig
-      def sig(&block); end
+      def sig(&); end
     end
   end
 end

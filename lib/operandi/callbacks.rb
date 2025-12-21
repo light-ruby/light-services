@@ -53,11 +53,11 @@ module Operandi
     # @param args [Array] arguments to pass to callbacks
     # @yield for around callbacks, the block to wrap
     # @return [void]
-    def run_callbacks(event, *args, &block)
+    def run_callbacks(event, *args, &)
       callbacks = self.class.all_callbacks_for(event)
 
       if event.to_s.start_with?("around_")
-        run_around_callbacks(callbacks, args, &block)
+        run_around_callbacks(callbacks, args, &)
       else
         run_simple_callbacks(callbacks, args)
         yield if block_given?
@@ -118,8 +118,8 @@ module Operandi
     #
     # @example With block
     #   before_step_run { |service, step_name| puts "Starting #{step_name}" }
-    def before_step_run(method_name = nil, &block)
-      register_callback(:before_step_run, method_name, &block)
+    def before_step_run(method_name = nil, &)
+      register_callback(:before_step_run, method_name, &)
     end
 
     # Registers a callback to run after each step executes.
@@ -136,8 +136,8 @@ module Operandi
     #
     # @example With block
     #   after_step_run { |service, step_name| puts "Finished #{step_name}" }
-    def after_step_run(method_name = nil, &block)
-      register_callback(:after_step_run, method_name, &block)
+    def after_step_run(method_name = nil, &)
+      register_callback(:after_step_run, method_name, &)
     end
 
     # Registers an around callback that wraps each step execution.
@@ -158,8 +158,8 @@ module Operandi
     #     yield
     #     puts "#{step_name} took #{Time.now - start}s"
     #   end
-    def around_step_run(method_name = nil, &block)
-      register_callback(:around_step_run, method_name, &block)
+    def around_step_run(method_name = nil, &)
+      register_callback(:around_step_run, method_name, &)
     end
 
     # Registers a callback to run when a step completes successfully (without adding errors).
@@ -176,8 +176,8 @@ module Operandi
     #
     # @example With block
     #   on_step_success { |service, step_name| Analytics.track("step.success", step: step_name) }
-    def on_step_success(method_name = nil, &block)
-      register_callback(:on_step_success, method_name, &block)
+    def on_step_success(method_name = nil, &)
+      register_callback(:on_step_success, method_name, &)
     end
 
     # Registers a callback to run when a step fails (adds errors).
@@ -194,8 +194,8 @@ module Operandi
     #
     # @example With block
     #   on_step_failure { |service, step_name| Rails.logger.error("Step #{step_name} failed") }
-    def on_step_failure(method_name = nil, &block)
-      register_callback(:on_step_failure, method_name, &block)
+    def on_step_failure(method_name = nil, &)
+      register_callback(:on_step_failure, method_name, &)
     end
 
     # Registers a callback to run when a step raises an exception.
@@ -213,8 +213,8 @@ module Operandi
     #
     # @example With block
     #   on_step_crash { |service, step_name, error| Sentry.capture_exception(error) }
-    def on_step_crash(method_name = nil, &block)
-      register_callback(:on_step_crash, method_name, &block)
+    def on_step_crash(method_name = nil, &)
+      register_callback(:on_step_crash, method_name, &)
     end
 
     # Registers a callback to run before the service starts executing.
@@ -230,8 +230,8 @@ module Operandi
     #
     # @example With block
     #   before_service_run { |service| Rails.logger.info("Starting #{service.class.name}") }
-    def before_service_run(method_name = nil, &block)
-      register_callback(:before_service_run, method_name, &block)
+    def before_service_run(method_name = nil, &)
+      register_callback(:before_service_run, method_name, &)
     end
 
     # Registers a callback to run after the service completes (regardless of success/failure).
@@ -247,8 +247,8 @@ module Operandi
     #
     # @example With block
     #   after_service_run { |service| Rails.logger.info("Done!") }
-    def after_service_run(method_name = nil, &block)
-      register_callback(:after_service_run, method_name, &block)
+    def after_service_run(method_name = nil, &)
+      register_callback(:after_service_run, method_name, &)
     end
 
     # Registers an around callback that wraps the entire service execution.
@@ -268,8 +268,8 @@ module Operandi
     #     yield
     #     puts "Took #{Time.now - start}s"
     #   end
-    def around_service_run(method_name = nil, &block)
-      register_callback(:around_service_run, method_name, &block)
+    def around_service_run(method_name = nil, &)
+      register_callback(:around_service_run, method_name, &)
     end
 
     # Registers a callback to run when the service completes successfully (without errors).
@@ -285,8 +285,8 @@ module Operandi
     #
     # @example With block
     #   on_service_success { |service| NotificationMailer.success(service.user).deliver_later }
-    def on_service_success(method_name = nil, &block)
-      register_callback(:on_service_success, method_name, &block)
+    def on_service_success(method_name = nil, &)
+      register_callback(:on_service_success, method_name, &)
     end
 
     # Registers a callback to run when the service completes with errors.
@@ -302,8 +302,8 @@ module Operandi
     #
     # @example With block
     #   on_service_failure { |service| Rails.logger.error(service.errors.full_messages) }
-    def on_service_failure(method_name = nil, &block)
-      register_callback(:on_service_failure, method_name, &block)
+    def on_service_failure(method_name = nil, &)
+      register_callback(:on_service_failure, method_name, &)
     end
 
     # Get callbacks defined in this class for a specific event.

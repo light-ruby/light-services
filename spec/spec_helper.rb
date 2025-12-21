@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 require "simplecov"
-require "codecov"
+require "simplecov-cobertura"
 
-SimpleCov.formatter = SimpleCov::Formatter::Codecov if ENV["CODECOV_TOKEN"]
 SimpleCov.start do
   add_filter "/spec/"
   add_filter "/example/"
+
+  formatter SimpleCov::Formatter::CoberturaFormatter if ENV["CI"]
 end
 
 require "bundler/setup"

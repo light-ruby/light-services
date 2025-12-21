@@ -68,9 +68,9 @@ module Operandi
       end
 
       # Execute block within transaction if configured
-      def within_transaction(&block)
+      def within_transaction(&)
         if @config[:use_transactions] && defined?(ActiveRecord::Base)
-          ActiveRecord::Base.transaction(requires_new: true, &block)
+          ActiveRecord::Base.transaction(requires_new: true, &)
         else
           yield
         end

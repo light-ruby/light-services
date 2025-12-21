@@ -12,11 +12,11 @@ group :test do
   gem "database_cleaner-active_record"
   gem "sqlite3"
 
-  gem "codecov"
   gem "rake"
   gem "rspec"
   gem "rspec-benchmark"
   gem "simplecov"
+  gem "simplecov-cobertura"
 
   gem "rubocop"
   gem "rubocop-performance"
