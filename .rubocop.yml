@@ -7,7 +7,7 @@ AllCops:
   DisplayCopNames: true
   DisplayStyleGuide: true
   NewCops: enable
-  TargetRubyVersion: 3
+  TargetRubyVersion: 3.1
 
 Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent

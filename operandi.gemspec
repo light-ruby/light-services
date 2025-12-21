@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description   = "Operandi is a simple yet powerful way to organize business logic in Ruby applications. Build services that are easy to test, maintain, and understand." # rubocop:disable Layout/LineLength
   spec.homepage      = "https://operandi-docs.vercel.app/"
   spec.license       = "MIT"
-  spec.required_ruby_version = Gem::Requirement.new(">= 3.0.0")
+  spec.required_ruby_version = Gem::Requirement.new(">= 3.1.0")
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
