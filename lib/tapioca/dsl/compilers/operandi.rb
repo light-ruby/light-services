@@ -62,6 +62,7 @@ module Tapioca
 
         ConstantType = type_member { { fixed: T.class_of(::Operandi::Base) } }
         CONFIG_TYPE = "T::Hash[T.any(::String, ::Symbol), T.untyped]"
+        SERVICE_OR_CONFIG_TYPE = "T.any(::Operandi::Base, #{CONFIG_TYPE})".freeze
 
         class << self
           extend T::Sig
@@ -125,9 +126,8 @@ module Tapioca
         def generate_with_method(klass)
           klass.create_method(
             "with",
-            parameters: [
-              create_kw_opt_param("service_or_config", type: "T.any(::Operandi::Base, #{CONFIG_TYPE})", default: "{}"),
-            ],
+            parameters: [create_param("service_or_config", type: SERVICE_OR_CONFIG_TYPE),
+                         create_opt_param("config", type: CONFIG_TYPE, default: "{}"),],
             return_type: "::Operandi::BaseWithContext",
             class_method: true,
           )

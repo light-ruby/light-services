@@ -49,6 +49,10 @@ module Tapioca
         MockParam.new(name, type, default, :positional)
       end
 
+      def create_opt_param(name, type:, default:)
+        MockParam.new(name, type, default, :positional_opt)
+      end
+
       def create_kw_param(name, type:)
         MockParam.new(name, type, nil, :keyword)
       end
@@ -740,17 +744,24 @@ RSpec.describe Tapioca::Dsl::Compilers::Operandi do
         expect(with_method.return_type).to eq("::Operandi::BaseWithContext")
       end
 
-      it "has single service_or_config keyword parameter with union type" do
+      it "has two positional parameters: service_or_config (required) and config (optional)" do
         scope = compiler.decorate
 
         with_method = find_method(scope, "with")
-        expect(with_method.parameters.size).to eq(1)
+        expect(with_method.parameters.size).to eq(2)
 
-        param = with_method.parameters.first
-        expect(param.name).to eq("service_or_config")
-        expect(param.type).to eq("T.any(::Operandi::Base, T::Hash[T.any(::String, ::Symbol), T.untyped])")
-        expect(param.default).to eq("{}")
-        expect(param.keyword?).to be(true)
+        service_or_config_param = with_method.parameters.first
+        expect(service_or_config_param.name).to eq("service_or_config")
+        expect(service_or_config_param.type)
+          .to eq("T.any(::Operandi::Base, T::Hash[T.any(::String, ::Symbol), T.untyped])")
+        expect(service_or_config_param.default).to be_nil
+        expect(service_or_config_param.keyword?).to be(false)
+
+        config_param = with_method.parameters.last
+        expect(config_param.name).to eq("config")
+        expect(config_param.type).to eq("T::Hash[T.any(::String, ::Symbol), T.untyped]")
+        expect(config_param.default).to eq("{}")
+        expect(config_param.keyword?).to be(false)
       end
     end
 

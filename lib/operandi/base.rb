@@ -221,7 +221,7 @@ module Operandi
       #
       # @example With configuration
       #   MyService.with(use_transactions: false).run(name: "test")
-      def with(service_or_config = {}, config = {})
+      def with(service_or_config, config = {})
         service = service_or_config.is_a?(Hash) ? nil : service_or_config
         config = service_or_config unless service
 
