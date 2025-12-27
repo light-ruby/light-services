@@ -24,5 +24,5 @@ group :test do
   gem "rubocop-rspec"
 
   # Fix OpenSSL 3.x CRL verification issues
-  gem "openssl", "3.3.2"
+  gem "openssl", "4.0.0"
 end
