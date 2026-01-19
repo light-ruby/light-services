@@ -7,7 +7,7 @@ gemspec
 group :test do
   gem "sorbet-runtime"
 
-  gem "activerecord", "< 8"
+  gem "activerecord", ">= 8"
   gem "connection_pool", "< 3"
   gem "database_cleaner-active_record"
   gem "sqlite3"
