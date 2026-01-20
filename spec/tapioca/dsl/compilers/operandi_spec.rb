@@ -737,11 +737,11 @@ RSpec.describe Tapioca::Dsl::Compilers::Operandi do
         expect(with_method.class_method).to be(true)
       end
 
-      it "has correct return type (::Operandi::BaseWithContext)" do
+      it "has correct return type (T.self_type)" do
         scope = compiler.decorate
 
         with_method = find_method(scope, "with")
-        expect(with_method.return_type).to eq("::Operandi::BaseWithContext")
+        expect(with_method.return_type).to eq("T.self_type")
       end
 
       it "has two positional parameters: service_or_config (required) and config (optional)" do

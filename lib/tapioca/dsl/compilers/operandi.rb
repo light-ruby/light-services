@@ -128,7 +128,7 @@ module Tapioca
             "with",
             parameters: [create_param("service_or_config", type: SERVICE_OR_CONFIG_TYPE),
                          create_opt_param("config", type: CONFIG_TYPE, default: "{}"),],
-            return_type: "::Operandi::BaseWithContext",
+            return_type: "T.self_type",
             class_method: true,
           )
         end
