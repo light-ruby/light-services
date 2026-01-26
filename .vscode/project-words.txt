@@ -6,4 +6,5 @@ Kodkod
 kwargs
 libsqlite
 nilable
+noreturn
 rubocop
