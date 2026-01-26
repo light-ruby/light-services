@@ -122,6 +122,27 @@ module Operandi
         args
       end
 
+      # Access a value using method call syntax.
+      #
+      # @param method_name [Symbol] the method name (used as key)
+      # @param args [Array] method arguments (must be empty)
+      # @return [Object, nil] the stored value or nil
+      # @raise [NoMethodError] if the key doesn't exist
+      def method_missing(method_name, *args, &)
+        return super unless respond_to_missing?(method_name, false)
+
+        get(method_name)
+      end
+
+      # Check if a method name corresponds to a stored key.
+      #
+      # @param method_name [Symbol] the method name to check
+      # @param include_private [Boolean] whether to include private methods
+      # @return [Boolean] true if the key exists
+      def respond_to_missing?(method_name, include_private = false)
+        key?(method_name) || settings_collection.key?(method_name) || super
+      end
+
       private
 
       def validate_collection_type!(type)

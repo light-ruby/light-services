@@ -127,6 +127,43 @@ RSpec.describe Operandi::Collection::Base do
       end.to raise_error(ArgumentError, /collection_type must be one of/)
     end
   end
+
+  describe "#method_missing" do
+    let(:service) { WithConditions.run }
+
+    it "returns value for existing key" do
+      expect(service.arguments.add_c).to be(false)
+    end
+
+    it "returns nil for defined but unset key" do
+      expect(service.arguments.do_not_add_d).to be(true)
+    end
+
+    it "raises NoMethodError for undefined key" do
+      expect { service.arguments.undefined_key }.to raise_error(NoMethodError)
+    end
+  end
+
+  describe "#respond_to_missing?" do
+    let(:service) { WithConditions.run }
+
+    it "returns true for existing key in storage" do
+      expect(service.arguments.respond_to?(:add_c)).to be(true)
+    end
+
+    it "returns true for defined key in settings" do
+      expect(service.arguments.respond_to?(:do_not_add_d)).to be(true)
+    end
+
+    it "returns false for undefined key" do
+      expect(service.arguments.respond_to?(:undefined_key)).to be(false)
+    end
+
+    it "works with outputs collection" do
+      expect(service.outputs.respond_to?(:word)).to be(true)
+      expect(service.outputs.respond_to?(:nonexistent)).to be(false)
+    end
+  end
 end
 
 RSpec.describe Operandi::Collection::Arguments do
