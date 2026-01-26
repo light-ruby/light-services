@@ -7,12 +7,6 @@
 module Operandi
   class Base
     # Attributes
-    sig { returns(Operandi::Collection::Base) }
-    def outputs; end
-
-    sig { returns(Operandi::Collection::Base) }
-    def arguments; end
-
     sig { returns(Operandi::Messages) }
     def errors; end
 

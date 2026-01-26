@@ -15,6 +15,10 @@ module Tapioca
       # - Predicate: `def name?` - returns boolean
       # - Setter: `def name=` (private) - sets the value
       #
+      # Additionally, typed inner classes are generated:
+      # - `Arguments` - T::Struct representing all service arguments
+      # - `Outputs` - T::Struct representing all service outputs
+      #
       # @example Service definition
       #   class CreateUser < Operandi::Base
       #     arg :name, type: String
@@ -26,6 +30,22 @@ module Tapioca
       #
       # @example Generated RBI
       #   class CreateUser
+      #     class Arguments < T::Struct
+      #       prop :name, ::String
+      #       prop :email, T.nilable(::String), default: nil
+      #       prop :role, T.any(::Symbol, ::String)
+      #     end
+      #
+      #     class Outputs < T::Struct
+      #       prop :user, ::User
+      #     end
+      #
+      #     sig { returns(Arguments) }
+      #     def arguments; end
+      #
+      #     sig { returns(Outputs) }
+      #     def outputs; end
+      #
       #     sig { returns(String) }
       #     def name; end
       #
@@ -81,6 +101,10 @@ module Tapioca
             # Generate class methods (.run, .run!, .with)
             generate_class_methods(klass)
 
+            # Generate typed inner classes for arguments and outputs
+            generate_arguments_type(klass)
+            generate_outputs_type(klass)
+
             # Generate argument methods
             constant.arguments.each_value do |field|
               generate_field_methods(klass, field)
@@ -100,6 +124,22 @@ module Tapioca
           generate_run_method(klass)
           generate_run_bang_method(klass)
           generate_with_method(klass)
+        end
+
+        sig { params(klass: RBI::Scope).void }
+        def generate_arguments_type(klass)
+          return if constant.arguments.empty?
+
+          generate_struct_class(klass, "Arguments", constant.arguments)
+          klass.create_method("arguments", return_type: "Arguments")
+        end
+
+        sig { params(klass: RBI::Scope).void }
+        def generate_outputs_type(klass)
+          return if constant.outputs.empty?
+
+          generate_struct_class(klass, "Outputs", constant.outputs)
+          klass.create_method("outputs", return_type: "Outputs")
         end
 
         sig { params(klass: RBI::Scope).void }
@@ -247,6 +287,33 @@ module Tapioca
           return type if type == "T.untyped"
 
           "T.nilable(#{type})"
+        end
+
+        sig do
+          params(
+            klass: RBI::Scope,
+            class_name: String,
+            fields: T::Hash[Symbol, ::Operandi::Settings::Field],
+          ).void
+        end
+        def generate_struct_class(klass, class_name, fields)
+          return if fields.empty?
+
+          klass.create_class(class_name, superclass_name: "T::Struct") do |struct_klass|
+            fields.each_value do |field|
+              generate_struct_prop(struct_klass, field)
+            end
+          end
+        end
+
+        sig { params(struct_klass: RBI::Scope, field: ::Operandi::Settings::Field).void }
+        def generate_struct_prop(struct_klass, field)
+          name = field.name.to_s
+          ruby_type = resolve_type(field)
+          prop_type = field.optional ? as_nilable_type(ruby_type) : ruby_type
+          default_value = format_default_value(field) if field.optional || field.default_exists
+
+          struct_klass << RBI::TStructProp.new(name, prop_type, default: default_value)
         end
       end
     end

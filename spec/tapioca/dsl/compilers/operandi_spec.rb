@@ -67,14 +67,27 @@ end
 # Mock RBI module
 module RBI
   class Scope
-    attr_reader :methods
+    attr_reader :methods, :classes, :nodes
 
     def initialize
       @methods = []
+      @classes = []
+      @nodes = []
     end
 
     def create_method(name, parameters: [], return_type: nil, visibility: nil, class_method: false)
       @methods << MockMethod.new(name, parameters, return_type, visibility, class_method)
+    end
+
+    def create_class(name, superclass_name: nil)
+      child_scope = Scope.new
+      yield child_scope if block_given?
+      @classes << MockClass.new(name, superclass_name, child_scope)
+      child_scope
+    end
+
+    def <<(node)
+      @nodes << node
     end
   end
 
@@ -90,6 +103,27 @@ module RBI
     def to_s
       "private"
     end
+  end
+
+  class TStructProp
+    attr_reader :name, :type, :default
+
+    def initialize(name, type, default: nil)
+      @name = name
+      @type = type
+      @default = default
+    end
+  end
+end
+
+# Mock class for generated inner classes
+class MockClass
+  attr_reader :name, :superclass_name, :scope
+
+  def initialize(name, superclass_name, scope)
+    @name = name
+    @superclass_name = superclass_name
+    @scope = scope
   end
 end
 
@@ -310,11 +344,11 @@ RSpec.describe Tapioca::Dsl::Compilers::Operandi do
         expect(find_method(scope, "output")).not_to be_nil
       end
 
-      it "generates 9 methods total (3 per field + 3 class methods)" do
+      it "generates 11 methods total (3 per field + 3 class methods + 2 collection accessors)" do
         scope = compiler.decorate
 
-        # 3 class methods (run, run!, with) + 6 field methods (3 per field)
-        expect(scope.methods.size).to eq(9)
+        # 3 class methods (run, run!, with) + 6 field methods (3 per field) + 2 collection accessors (arguments, outputs)
+        expect(scope.methods.size).to eq(11)
       end
     end
 
