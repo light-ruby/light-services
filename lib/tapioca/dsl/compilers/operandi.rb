@@ -238,6 +238,8 @@ module Tapioca
 
           if type.is_a?(Array)
             resolve_array_type(type)
+          elsif sorbet_type?(type)
+            resolve_sorbet_type(type)
           elsif type.is_a?(Class) || type.is_a?(Module)
             ruby_type_for_class(type)
           else
@@ -278,6 +280,16 @@ module Tapioca
           else
             "::#{name}"
           end
+        end
+
+        sig { params(type: T.untyped).returns(T::Boolean) }
+        def sorbet_type?(type)
+          defined?(T::Types::Base) && type.is_a?(T::Types::Base)
+        end
+
+        sig { params(type: T.untyped).returns(String) }
+        def resolve_sorbet_type(type)
+          type.name || "T.untyped"
         end
 
         sig { params(type: String).returns(String) }
