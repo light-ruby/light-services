@@ -77,7 +77,7 @@ module Tapioca
       #
       #     # ... other setters
       #   end
-      class Operandi < Compiler
+      class Operandi < Compiler # rubocop:disable Metrics/ClassLength
         extend T::Sig
 
         ConstantType = type_member { { fixed: T.class_of(::Operandi::Base) } }

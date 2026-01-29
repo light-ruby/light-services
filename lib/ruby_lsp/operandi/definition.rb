@@ -47,8 +47,10 @@ module RubyLsp
 
         # Check if this is the first argument (step method name)
         first_arg = call_node.arguments&.arguments&.first
-        if first_arg.is_a?(Prism::SymbolNode) && first_arg.value.to_sym == symbol_value && same_location?(first_arg,
-                                                                                                          symbol_node)
+        if first_arg.is_a?(Prism::SymbolNode) && first_arg.value.to_sym == symbol_value && same_location?(
+          first_arg,
+          symbol_node,
+        )
           # Verify the symbol node location matches (same node, not just same value)
           return symbol_value.to_s
         end

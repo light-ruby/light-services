@@ -4,19 +4,36 @@ RSpec.describe "Reserved Names Validation" do # rubocop:disable RSpec/DescribeCl
   describe "ReservedNames constants" do
     it "includes expected base methods" do
       expect(Operandi::ReservedNames::BASE_METHODS).to include(
-        :outputs, :arguments, :errors, :warnings,
-        :success?, :failed?, :errors?, :warnings?,
-        :stop!, :stopped?, :stop_immediately!,
-        :done!, :done?, :call,
+        :outputs,
+        :arguments,
+        :errors,
+        :warnings,
+        :success?,
+        :failed?,
+        :errors?,
+        :warnings?,
+        :stop!,
+        :stopped?,
+        :stop_immediately!,
+        :done!,
+        :done?,
+        :call,
       )
     end
 
     it "includes expected callback methods" do
       expect(Operandi::ReservedNames::CALLBACK_METHODS).to include(
-        :before_step_run, :after_step_run, :around_step_run,
-        :on_step_success, :on_step_failure, :on_step_crash,
-        :before_service_run, :after_service_run, :around_service_run,
-        :on_service_success, :on_service_failure,
+        :before_step_run,
+        :after_step_run,
+        :around_step_run,
+        :on_step_success,
+        :on_step_failure,
+        :on_step_crash,
+        :before_service_run,
+        :after_service_run,
+        :around_service_run,
+        :on_service_success,
+        :on_service_failure,
       )
     end
 

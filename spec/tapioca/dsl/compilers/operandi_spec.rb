@@ -347,7 +347,7 @@ RSpec.describe Tapioca::Dsl::Compilers::Operandi do
       it "generates 11 methods total (3 per field + 3 class methods + 2 collection accessors)" do
         scope = compiler.decorate
 
-        # 3 class methods (run, run!, with) + 6 field methods (3 per field) + 2 collection accessors (arguments, outputs)
+        # 3 class methods (run, run!, with) +6 field methods (3 per field) +2 collection accessors (arguments, outputs)
         expect(scope.methods.size).to eq(11)
       end
     end

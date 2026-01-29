@@ -60,7 +60,10 @@ module Operandi
           step_obj = Settings::Step.new(name, self, opts)
 
           if opts[:before] || opts[:after]
-            step_operations << { action: :insert, name: name, step: step_obj, before: opts[:before],
+            step_operations << { action: :insert,
+                                 name: name,
+                                 step: step_obj,
+                                 before: opts[:before],
                                  after: opts[:after], }
           else
             step_operations << { action: :add, name: name, step: step_obj }

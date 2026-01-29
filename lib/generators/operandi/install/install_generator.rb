@@ -7,10 +7,14 @@ module Operandi
     class InstallGenerator < ::Rails::Generators::Base
       source_root File.expand_path("templates", __dir__)
 
-      class_option :skip_initializer, type: :boolean, default: false,
-                                      desc: "Skip creating the initializer file"
-      class_option :skip_spec, type: :boolean, default: false,
-                               desc: "Skip creating the spec file"
+      class_option :skip_initializer,
+                   type: :boolean,
+                   default: false,
+                   desc: "Skip creating the initializer file"
+      class_option :skip_spec,
+                   type: :boolean,
+                   default: false,
+                   desc: "Skip creating the spec file"
 
       desc "Creates ApplicationService and initializer for Operandi"
 

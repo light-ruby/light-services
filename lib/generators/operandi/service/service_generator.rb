@@ -7,19 +7,31 @@ module Operandi
     class ServiceGenerator < ::Rails::Generators::Base
       source_root File.expand_path("templates", __dir__)
 
-      argument :name, type: :string, required: true,
-                      desc: "The name of the service (e.g., user/create or CreateUser)"
+      argument :name,
+               type: :string,
+               required: true,
+               desc: "The name of the service (e.g., user/create or CreateUser)"
 
-      class_option :args, type: :array, default: [],
-                          desc: "List of arguments for the service"
-      class_option :steps, type: :array, default: [],
-                           desc: "List of steps for the service"
-      class_option :outputs, type: :array, default: [],
-                             desc: "List of outputs for the service"
-      class_option :skip_spec, type: :boolean, default: false,
-                               desc: "Skip creating the spec file"
-      class_option :parent, type: :string, default: "ApplicationService",
-                            desc: "Parent class for the service"
+      class_option :args,
+                   type: :array,
+                   default: [],
+                   desc: "List of arguments for the service"
+      class_option :steps,
+                   type: :array,
+                   default: [],
+                   desc: "List of steps for the service"
+      class_option :outputs,
+                   type: :array,
+                   default: [],
+                   desc: "List of outputs for the service"
+      class_option :skip_spec,
+                   type: :boolean,
+                   default: false,
+                   desc: "Skip creating the spec file"
+      class_option :parent,
+                   type: :string,
+                   default: "ApplicationService",
+                   desc: "Parent class for the service"
 
       desc "Creates a new service class"
 

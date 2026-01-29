@@ -215,8 +215,10 @@ RSpec.describe Operandi::Config do
             Class.new(Operandi::Base) do
               arg :name
             end
-          end.to raise_error(Operandi::MissingTypeError,
-                             /Argument `name`.*must have a type specified.*require_arg_type/)
+          end.to raise_error(
+            Operandi::MissingTypeError,
+            /Argument `name`.*must have a type specified.*require_arg_type/,
+          )
         end
 
         it "does not raise for output without type" do
@@ -256,8 +258,10 @@ RSpec.describe Operandi::Config do
             Class.new(Operandi::Base) do
               output :result
             end
-          end.to raise_error(Operandi::MissingTypeError,
-                             /Output `result`.*must have a type specified.*require_output_type/)
+          end.to raise_error(
+            Operandi::MissingTypeError,
+            /Output `result`.*must have a type specified.*require_output_type/,
+          )
         end
 
         it "does not raise for argument without type" do
